@@ -34,6 +34,14 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
+export interface Section {
+  id: number;
+  name: string;
+  floor:string;
+  block:string;
+  created_at: string;
+}
+
 declare global {
   interface Window {
     electronAPI: {
