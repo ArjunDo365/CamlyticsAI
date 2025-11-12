@@ -10,15 +10,14 @@ class Database {
   async init() {
     try {
       this.pool = mysql.createPool({
-        host: "localhost",
-        user: "root",
-        password: "Login123",
-        database: "app",
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME,
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0,
       });
-
       console.log("✅ Connected to MySQL database");
       await this.initTables();
     } catch (error) {
@@ -186,4 +185,3 @@ class Database {
 }
 
 module.exports = Database;
-

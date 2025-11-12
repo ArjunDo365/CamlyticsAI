@@ -58,8 +58,23 @@ const BlockService = require('./services/block');
 
 const db = new Database();
 const authService = new AuthService(db);
-// const BlockService = new BlockService(db);
+const blockService = new BlockService(db);
 
+
+// ---------------------------
+// Auth handlers
+// ---------------------------
+ipcMain.handle('auth:login', (event, { email, password }) =>
+  authService.login(email, password)
+);
+
+ipcMain.handle('auth:register', (event, userData) =>
+  authService.register(userData)
+);
+
+ipcMain.handle('auth:verify-token', (event, token) =>
+  authService.verifyToken(token)
+);
 
 // ---------------------------
 // User handlers
@@ -99,7 +114,7 @@ ipcMain.handle('dialog:showOpenDialog', async () => {
 
 //block
 ipcMain.handle('block:create',async(event,blockData)=>{
-  return await BlockService.createBlock(blockData);
+  return await blockService.createBlock(blockData);
 }) 
 
 ipcMain.handle('block:readAll', async () => {
