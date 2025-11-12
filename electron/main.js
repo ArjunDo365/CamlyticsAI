@@ -54,26 +54,12 @@ app.on('activate', () => {
 // ---------------------------
 const Database = require('./database');
 const AuthService = require('./services/auth');
-const FileService = require('./services/file');
+const BlockService = require('./services/block');
 
 const db = new Database();
 const authService = new AuthService(db);
-const fileService = new FileService(db);
+// const BlockService = new BlockService(db);
 
-// ---------------------------
-// Auth handlers
-// ---------------------------
-ipcMain.handle('auth:login', (event, { email, password }) =>
-  authService.login(email, password)
-);
-
-ipcMain.handle('auth:register', (event, userData) =>
-  authService.register(userData)
-);
-
-ipcMain.handle('auth:verify-token', (event, token) =>
-  authService.verifyToken(token)
-);
 
 // ---------------------------
 // User handlers
@@ -100,18 +86,6 @@ ipcMain.handle('roles:update', (event, { id, roleData }) =>
 ipcMain.handle('roles:delete', (event, id) => authService.deleteRole(id));
 
 // ---------------------------
-// File handlers
-// ---------------------------
-ipcMain.handle('files:upload', (event, { filePath, fileName, userId }) =>
-  fileService.processFile(filePath, fileName, userId)
-);
-
-ipcMain.handle('files:getAll', () => fileService.getAllFiles());
-ipcMain.handle('files:getUserFiles', (event, userId) =>
-  fileService.getUserFiles(userId)
-);
-
-// ---------------------------
 // Dialog handler
 // ---------------------------
 ipcMain.handle('dialog:showOpenDialog', async () => {
@@ -120,4 +94,26 @@ ipcMain.handle('dialog:showOpenDialog', async () => {
     filters: [{ name: 'PDF Files', extensions: ['pdf'] }],
   });
   return result;
+});
+
+
+//block
+ipcMain.handle('block:create',async(event,blockData)=>{
+  return await BlockService.createBlock(blockData);
+}) 
+
+ipcMain.handle('block:readAll', async () => {
+  return await blockService.getAllBlocks();
+});
+
+ipcMain.handle('block:readById', async (event,id) => {
+  return await blockService.getAllBlocks(id);
+});
+
+ipcMain.handle('block:update', async (event, data) => {
+  return await blockService.updateBlock(data);
+});
+
+ipcMain.handle('block:delete', async (event, id) => {
+  return await blockService.deleteBlock(id);
 });

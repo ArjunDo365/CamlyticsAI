@@ -18,11 +18,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateRole: (id, roleData) => ipcRenderer.invoke('roles:update', { id, roleData }),
   deleteRole: (id) => ipcRenderer.invoke('roles:delete', id),
   
-  // File methods
-  uploadFile: (fileData) => ipcRenderer.invoke('files:upload', fileData),
-  getAllFiles: () => ipcRenderer.invoke('files:getAll'),
-  getUserFiles: (userId) => ipcRenderer.invoke('files:getUserFiles', userId),
-  
   // Dialog methods
   showOpenDialog: () => ipcRenderer.invoke('dialog:showOpenDialog'),
+
+  //block
+  createBlock: (data) => ipcRenderer.invoke('block:create', data),
+  getAllBlocks: () => ipcRenderer.invoke('block:readAll'),
+  getByIdBlocks: (id) => ipcRenderer.invoke('block:readById',id),
+  updateBlock: (data) => ipcRenderer.invoke('block:update', data),
+  deleteBlock: (id) => ipcRenderer.invoke('block:delete', id)
 });
