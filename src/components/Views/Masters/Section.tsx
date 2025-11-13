@@ -5,40 +5,40 @@ import type { Section, User } from "../../../types/index";
 const sampleData= [
         {
           id: 1,
-          name: "A1",
+          name: "Billing",
           floor: "1st Floor",
           block: "Block A",
           created_at: "2023-11-12T10:30:00Z",
         },
         {
           id: 2,
-          name: "B3",
+          name: "Cash Counter",
           floor: "2nd Floor",
           block: "Block B",
           created_at: "2023-11-10T15:45:00Z",
         },
         {
           id: 3,
-          name: "C4",
+          name: "Diamonds",
           floor: "3rd Floor",
           block: "Block C",
           created_at: "2023-11-08T09:20:00Z",
         },
         {
           id: 4,
-          name: "D5",
+          name: "Silver",
           floor: "4th Floor",
           block: "Block D",
           created_at: "2023-11-05T12:00:00Z",
         },
         {
           id: 5,
-          name: "E2",
+          name: "Gold",
           floor: "5th Floor",
           block: "Block E",
           created_at: "2023-11-01T14:10:00Z",
         },
-      ]
+      ];
 
 const Section = () => {
   const [showModal, setShowModal] = useState(false);
@@ -47,7 +47,6 @@ const Section = () => {
   const [blocks,setBlocks] = useState([{id:1,name:'Block A'},{id:2,name:'Block B'},{id:3,name:'Block C'}]);
   const [editingSection, setEditingSection] = useState<Section | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     floor: "",
@@ -63,7 +62,6 @@ const Section = () => {
       id: 0,
     });
     setEditingSection(null);
-    setShowPassword(false);
   };
 
   const loadData = async () => {
@@ -71,35 +69,35 @@ const Section = () => {
       const sectionData:Section[] = [
         {
           id: 1,
-          name: "A1",
+          name: "Billing",
           floor: "1st Floor",
           block: "Block A",
           created_at: "2023-11-12T10:30:00Z",
         },
         {
           id: 2,
-          name: "B3",
+          name: "Cash Counter",
           floor: "2nd Floor",
           block: "Block B",
           created_at: "2023-11-10T15:45:00Z",
         },
         {
           id: 3,
-          name: "C4",
+          name: "Diamonds",
           floor: "3rd Floor",
           block: "Block C",
           created_at: "2023-11-08T09:20:00Z",
         },
         {
           id: 4,
-          name: "D5",
+          name: "Silver",
           floor: "4th Floor",
           block: "Block D",
           created_at: "2023-11-05T12:00:00Z",
         },
         {
           id: 5,
-          name: "E2",
+          name: "Gold",
           floor: "5th Floor",
           block: "Block E",
           created_at: "2023-11-01T14:10:00Z",
@@ -145,20 +143,23 @@ const Section = () => {
       e.preventDefault();
       
       try {
-        let result;
-        if (editingSection) {
-          result = await window.electronAPI.updateUser(editingSection.id, formData);
-        } else {
-          result = await window.electronAPI.createUser(formData);
-        }
+
+        console.log('payload for section api: ',editingSection?.id,formData)
+
+        // let result;
+        // if (editingSection) {
+        //   result = await window.electronAPI.updateUser(editingSection.id, formData);
+        // } else {
+        //   result = await window.electronAPI.createUser(formData);
+        // }
   
-        if (result.success) {
-          await loadData();
-          setShowModal(false);
-          resetForm();
-        } else {
-          alert(result.error || 'Operation failed');
-        }
+        // if (result.success) {
+        //   await loadData();
+        //   setShowModal(false);
+        //   resetForm();
+        // } else {
+        //   alert(result.error || 'Operation failed');
+        // }
       } catch (error) {
         console.error('Error saving section:', error);
         alert('An error occurred');

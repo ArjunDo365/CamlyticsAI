@@ -42,6 +42,31 @@ export interface Section {
   created_at: string;
 }
 
+export interface Floor {
+  id: number;
+  name: string;
+  block:string;
+  created_at?: string;
+}
+
+export interface Block{
+  id:number;
+  name:string;
+  description:string;
+  created_at?: string;
+}
+
+export interface NVR{
+id:number;
+name:string;
+serialNum:string;
+assetNum:string;
+modalName:string;
+manufacturer:string;
+vendor:string;
+installedDate:string;
+}
+
 declare global {
   interface Window {
     electronAPI: {
