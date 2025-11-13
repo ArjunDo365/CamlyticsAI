@@ -8,10 +8,10 @@ class FloorsService {
 
   async createFloors(data) {
     try {
-      const { block_id, name, description } = data;
+      const { block_id, name, description,display_order } = data;
       const [result] = await this.db.pool.query(
-        "INSERT INTO floors (block_id, name, description) VALUES (?, ?, ?)",
-        [block_id, name, description]
+        "INSERT INTO floors (block_id, name, description,display_order) VALUES (?, ?, ?)",
+        [block_id, name, description,display_order]
       );
 
       return successResponse(
@@ -32,6 +32,7 @@ class FloorsService {
          f.name,
          f.discription,
          f.block_id,
+         f.display_order,
          b.name as block_name
          from floors f
          join blocks b on f.block_id = id
@@ -51,6 +52,7 @@ class FloorsService {
          f.display_order,
          f.name,
          f.discription,
+         f.display_order,
          f.block_id,
          b.name as block_name
          from floors f
@@ -71,11 +73,11 @@ class FloorsService {
 
   async updateFloors(data) {
     try {
-      const { id, block_id, name, description } = data;
+      const { id, block_id, name, description,display_order } = data;
 
       const [result] = await this.db.pool.query(
-        "UPDATE floors SET block_id = ?, name = ?, description = ?, update_at = CURRENT_TIMESTAMP WHERE id = ?",
-        [block_id, name, description, id]
+        "UPDATE floors SET block_id = ?, name = ?, description = ?, display_order = ?, update_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [block_id, name, description,display_order, id]
       );
 
       if (result.affectedRows === 0)

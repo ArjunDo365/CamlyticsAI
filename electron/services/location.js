@@ -8,11 +8,11 @@ class LocationService {
 
   async createLocation(data) {
     try {
-      const { floors_id, name, description } = data;
+      const { floors_id, name, description,display_order } = data;
 
       const [result] = await this.db.pool.query(
-        "INSERT INTO location (floors_id, name, description) VALUES (?, ?, ?)",
-        [floors_id, name, description]
+        "INSERT INTO location (floors_id, name, description,display_order) VALUES (?, ?, ?)",
+        [floors_id, name, description,display_order]
       );
 
       return successResponse(
@@ -32,6 +32,7 @@ class LocationService {
           l.name,
           l.discription,
           l.floor_id,
+          l.display_order,
           f.name as floor_name,
           f.block_id,
           b.name as block_name
@@ -53,6 +54,7 @@ class LocationService {
           l.id,
           l.name,
           l.discription,
+          l.display_order,
           l.floor_id,
           f.name as floor_name,
           f.block_id,
@@ -76,11 +78,11 @@ class LocationService {
 
   async updateLocation(data) {
     try {
-      const { id, floors_id, name, description } = data;
+      const { id, floors_id, name, description,display_order } = data;
 
       const [result] = await this.db.pool.query(
-        "UPDATE location SET floors_id = ?, name = ?, description = ?, update_at = CURRENT_TIMESTAMP WHERE id = ?",
-        [floors_id, name, description, id]
+        "UPDATE location SET floors_id = ?, name = ?, description = ?, display_order = ?, update_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [floors_id, name, description,display_order, id]
       );
 
       if (result.affectedRows === 0)

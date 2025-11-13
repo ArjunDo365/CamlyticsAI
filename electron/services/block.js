@@ -7,10 +7,10 @@ class BlockService {
 
   async createBlock(data) {
     try {
-      const { name, description } = data;
+      const { name, description,display_order } = data;
       const [result] = await this.db.pool.query(
-        "INSERT INTO blocks (name, description) VALUES (?, ?)",
-        [name, description]
+        "INSERT INTO blocks (name, description,display_order) VALUES (?, ?)",
+        [name, description,display_order]
       );
       return successResponse(
         { nvrId: result.insertId },
@@ -47,10 +47,10 @@ class BlockService {
 
   async updateBlock(data) {
     try{
-    const { id, name, description } = data;
+    const { id, name, description,display_order } = data;
    const [result]= await this.db.pool.query(
-      "UPDATE blocks SET name = ?, description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-      [name, description, id]
+      "UPDATE blocks SET name = ?, description = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      [name, description,display_order, id]
     );
     console.log('block data:',result)
     if (result.affectedRows === 0) {
