@@ -55,10 +55,12 @@ app.on('activate', () => {
 const Database = require('./database');
 const AuthService = require('./services/auth');
 const BlockService = require('./services/block');
+const FloorsService = require('./services/floors');
 
 const db = new Database();
 const authService = new AuthService(db);
 const blockService = new BlockService(db);
+const floorsService = new FloorsService(db)
 
 
 // ---------------------------
@@ -113,8 +115,8 @@ ipcMain.handle('dialog:showOpenDialog', async () => {
 
 
 //block
-ipcMain.handle('block:create',async(event,blockData)=>{
-  return await blockService.createBlock(blockData);
+ipcMain.handle('block:create',async(event,data)=>{
+  return await blockService.createBlock(data);
 }) 
 
 ipcMain.handle('block:readAll', async () => {
@@ -132,3 +134,50 @@ ipcMain.handle('block:update', async (event, data) => {
 ipcMain.handle('block:delete', async (event, id) => {
   return await blockService.deleteBlock(id);
 });
+
+
+
+//floors
+ipcMain.handle('floors:create',async(event,data)=>{
+  return await floorsService.createfloors(data);
+}) 
+
+ipcMain.handle('floors:readAll', async () => {
+  return await floorsService.getAllFloors();
+});
+
+ipcMain.handle('floors:readById', async (event,id) => {
+  return await floorsService.getByIdFloors(id);
+});
+
+ipcMain.handle('floors:update', async (event, data) => {
+  return await floorsService.updateFloors(data);
+});
+
+ipcMain.handle('floors:delete', async (event, id) => {
+  return await floorsService.deleteFloors(id);
+});
+
+
+
+//location
+ipcMain.handle('location:create', async (event, data) => {
+  return await locationService.createLocation(data);
+});
+
+ipcMain.handle('location:readAll', async () => {
+  return await locationService.getAllLocation();
+});
+
+ipcMain.handle('location:readById', async (event, id) => {
+  return await locationService.getByIdLocation(id);
+});
+
+ipcMain.handle('location:update', async (event, data) => {
+  return await locationService.updateLocation(data);
+});
+
+ipcMain.handle('location:delete', async (event, id) => {
+  return await locationService.deleteLocation(id);
+});
+

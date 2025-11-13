@@ -26,5 +26,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getAllBlocks: () => ipcRenderer.invoke('block:readAll'),
   getByIdBlocks: (id) => ipcRenderer.invoke('block:readById',id),
   updateBlock: (data) => ipcRenderer.invoke('block:update', data),
-  deleteBlock: (id) => ipcRenderer.invoke('block:delete', id)
+  deleteBlock: (id) => ipcRenderer.invoke('block:delete', id),
+
+  //floors
+  createFloors: (data) => ipcRenderer.invoke('floors:create', data),
+  getAllFloors: () => ipcRenderer.invoke('floors:readAll'),
+  getByIdFloors: (id) => ipcRenderer.invoke('floors:readById',id),
+  updateFloors: (data) => ipcRenderer.invoke('floors:update', data),
+  deleteFloors: (id) => ipcRenderer.invoke('floors:delete', id),
+
+  //location
+  createLocation: (data) => ipcRenderer.invoke('location:create', data),
+  getAllLocation: () => ipcRenderer.invoke('location:readAll'),
+  getByIdLocation: (id) => ipcRenderer.invoke('location:readById', id),
+  updateLocation: (data) => ipcRenderer.invoke('location:update', data),
+  deleteLocation: (id) => ipcRenderer.invoke('location:delete', id),
 });

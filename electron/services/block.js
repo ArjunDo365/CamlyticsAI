@@ -5,13 +5,13 @@ class BlockService {
     this.db = database;
   }
 
-  async createBlock(blockData) {
-    const { block_name, description } = blockData;
+  async createBlock(data) {
+    const { name, description } = data;
     const [result] = await this.db.pool.query(
-      'INSERT INTO block (block_name, description) VALUES (?, ?)',
-      [block_name, description]
+      'INSERT INTO block (name, description) VALUES (?, ?)',
+      [name, description]
     );
-    return { id: result.insertId, ...blockData };
+    return { id: result.insertId, ...data };
   }
 
   async getAllBlocks() {
@@ -19,7 +19,7 @@ class BlockService {
     return rows;
   }
 
-  async getByIDBlocks(id) {
+  async getByIdBlocks(id) {
   const [rows] = await this.db.pool.query(
     'SELECT * FROM block WHERE id = ?',
     [id]
@@ -28,11 +28,11 @@ class BlockService {
 }
 
 
-  async updateBlock(blockData) {
-    const { id, block_name, description } = blockData;
+  async updateBlock(data) {
+    const { id, name, description } = data;
     await this.db.pool.query(
-      'UPDATE block SET block_name = ?, description = ? WHERE id = ?',
-      [block_name, description, id]
+      'UPDATE block SET name = ?, description = ?, update_on = CURRENT_TIMESTAMP WHERE id = ?',
+      [name, description, id]
     );
     return { success: true };
   }
