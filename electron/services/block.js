@@ -1,46 +1,78 @@
-
-
 class BlockService {
   constructor(database) {
     this.db = database;
   }
 
   async createBlock(data) {
-    const { name, description } = data;
-    const [result] = await this.db.pool.query(
-      'INSERT INTO blocks (name, description) VALUES (?, ?)',
-      [name, description]
-    );
-    return { id: result.insertId, ...data };
+    try {
+      const { name, description } = data;
+      const [result] = await this.db.pool.query(
+        "INSERT INTO blocks (name, description) VALUES (?, ?)",
+        [name, description]
+      );
+      return successResponse(
+        { nvrId: result.insertId },
+        "block created successfully"
+      );
+    } catch (error) {
+      return errorResponse(error, "Failed to create block");
+    }
   }
 
   async getAllBlocks() {
-    const [rows] = await this.db.pool.query('SELECT * FROM blocks');
-    return rows;
+    try{
+    const [rows] = await this.db.pool.query("SELECT * FROM blocks");
+     return successResponse(rows, "block fetched successfully");
+        } catch (error) {
+          return errorResponse(error, "Failed to fetch block");
+        }
   }
 
   async getByIdBlocks(id) {
-  const [rows] = await this.db.pool.query(
-    'SELECT * FROM blocks WHERE id = ?',
-    [id]
-  );
-  return rows.length > 0 ? rows[0] : null;
-}
-
+    try{
+    const [rows] = await this.db.pool.query(
+      "SELECT * FROM blocks WHERE id = ?",
+      [id]
+    );
+     if (rows.length === 0) {
+            return errorResponse("block not found", "No record found");
+          }
+          return successResponse(rows[0], "block fetched successfully");
+        } catch (error) {
+          return errorResponse(error, "Failed to fetch block");
+        }
+  }
 
   async updateBlock(data) {
+    try{
     const { id, name, description } = data;
     await this.db.pool.query(
-      'UPDATE blocks SET name = ?, description = ?, update_on = CURRENT_TIMESTAMP WHERE id = ?',
+      "UPDATE blocks SET name = ?, description = ?, update_on = CURRENT_TIMESTAMP WHERE id = ?",
       [name, description, id]
     );
-    return { success: true };
+    if (result.affectedRows === 0) {
+            return errorResponse("block not found", "Update failed");
+          }
+    
+          return successResponse({ id }, "block updated successfully");
+        } catch (error) {
+          return errorResponse(error, "Failed to update block");
+        }
   }
 
   async deleteBlock(id) {
-    await this.db.pool.query('DELETE FROM blocks WHERE id = ?', [id]);
-    return { success: true };
+    try{
+    await this.db.pool.query("DELETE FROM blocks WHERE id = ?", [id]);
+    if (result.affectedRows === 0) {
+            return errorResponse("block not found", "Delete failed");
+          }
+    
+          return successResponse({ id }, "block deleted successfully");
+        } catch (error) {
+          return errorResponse(error, "Failed to delete block");
+        }
+      }
   }
-}
+
 
 module.exports = BlockService;

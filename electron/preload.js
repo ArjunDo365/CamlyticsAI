@@ -55,4 +55,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getCameraById: (id) => ipcRenderer.invoke('location:readById', id),
   updateCamera: (id,data) => ipcRenderer.invoke('location:update', {id,data}),
   deleteCamera: (id) => ipcRenderer.invoke('location:delete', id),
+  
 });
