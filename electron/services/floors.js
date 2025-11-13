@@ -10,7 +10,7 @@ class FloorsService {
     try {
       const { block_id, name, description,display_order } = data;
       const [result] = await this.db.pool.query(
-        "INSERT INTO floors (block_id, name, description,display_order) VALUES (?, ?, ?)",
+        "INSERT INTO floors (block_id, name, description,display_order) VALUES (?, ?, ?, ?)",
         [block_id, name, description,display_order]
       );
 
@@ -24,52 +24,51 @@ class FloorsService {
   }
 
   async getAllFloors() {
-    try {
-      const [rows] = await this.db.pool.query(`
-        SELECT
-         f.id,
-         f.display_order,
-         f.name,
-         f.discription,
-         f.block_id,
-         f.display_order,
-         b.name as block_name
-         from floors f
-         join blocks b on f.block_id = id
-         order by f.id DESC
-        `);
-      return successResponse(rows, "Floors fetched successfully");
-    } catch (error) {
-      return errorResponse(error, "Failed to fetch floors");
-    }
+  try {
+    const [rows] = await this.db.pool.query(`
+      SELECT
+        f.id,
+        f.name,
+        f.description,
+        f.block_id,
+        b.name AS block_name
+      FROM floors f
+      JOIN blocks b ON f.block_id = b.id
+      ORDER BY f.display_order ASC
+    `);
+    return successResponse(rows, "Floors fetched successfully");
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch floors");
   }
+}
 
   async getByIdFloors(id) {
-    try {
-      const [rows] = await this.db.pool.query(
-        `SELECT
-         f.id,
-         f.display_order,
-         f.name,
-         f.discription,
-         f.display_order,
-         f.block_id,
-         b.name as block_name
-         from floors f
-         join blocks b on f.block_id = id
-         order by f.id DESC
-         where f.id = ?`,
-        [id]
-      );
+  try {
+    const [rows] = await this.db.pool.query(
+      `
+      SELECT
+        f.id,
+        f.name,
+        f.description,
+        f.block_id,
+        b.name AS block_name
+      FROM floors f
+      JOIN blocks b ON f.block_id = b.id
+      WHERE f.id = ?
+      ORDER BY f.id DESC
+      `,
+      [id]
+    );
 
-      if (rows.length === 0)
-        return errorResponse("Floor not found", "No record found");
+    if (rows.length === 0)
+      return errorResponse("Floor not found", "No record found");
 
-      return successResponse(rows[0], "Floor fetched successfully");
-    } catch (error) {
-      return errorResponse(error, "Failed to fetch floor");
-    }
+    return successResponse(rows[0], "Floor fetched successfully");
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch floor");
   }
+}
+
 
   async updateFloors(data) {
     try {

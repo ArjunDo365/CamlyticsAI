@@ -11,7 +11,7 @@ class LocationService {
       const { floors_id, name, description,display_order } = data;
 
       const [result] = await this.db.pool.query(
-        "INSERT INTO location (floors_id, name, description,display_order) VALUES (?, ?, ?)",
+        "INSERT INTO location (floors_id, name, description,display_order) VALUES (?, ?, ?, ?)",
         [floors_id, name, description,display_order]
       );
 

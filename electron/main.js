@@ -145,7 +145,7 @@ ipcMain.handle('block:delete', async (event, id) => {
 
 //floors
 ipcMain.handle('floors:create',async(event,data)=>{
-  return await floorsService.createfloors(...data);
+  return await floorsService.createFloors(data);
 }) 
 
 ipcMain.handle('floors:readAll', async () => {
@@ -167,7 +167,7 @@ ipcMain.handle('floors:delete', async (event, id) => {
 
 //location
 ipcMain.handle('location:create', async (event, data) => {
-  return await locationService.createLocation(...data);
+  return await locationService.createLocation(data);
 });
 
 ipcMain.handle('location:readAll', async () => {
