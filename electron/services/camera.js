@@ -53,27 +53,88 @@ class CameraService {
 
 
   async getAllCameras() {
-    try {
-      const [rows] = await this.db.pool.query("SELECT * FROM cameras");
-      return successResponse(rows, "Cameras fetched successfully");
-    } catch (error) {
-      return errorResponse(error, "Failed to fetch cameras");
-    }
+  try {
+    const [rows] = await this.db.pool.query(`
+      SELECT 
+        c.id,
+        c.asset_no,
+        c.serial_number,
+        c.model_name,
+        c.ip_address,
+        c.port,
+        c.manufacturer,
+        c.vendor,
+        c.install_date,
+        c.last_working_on,
+        c.is_working,
+        c.created_at,
+        c.updated_at,
+        n.id AS nvr_id,
+        n.asset_no AS nvr_asset_no,
+        n.model_name AS nvr_model_name,
+        n.ip_address AS nvr_ip,
+        l.id AS location_id,
+        l.name AS location_name,
+        f.id AS floor_id,
+        f.name AS floor_name,
+        b.id AS block_id,
+        b.name AS block_name
+      FROM cameras c
+      JOIN nvrs n ON c.nvr_id = n.id
+      JOIN locations l ON c.location_id = l.id
+      JOIN floors f ON l.floor_id = f.id
+      JOIN blocks b ON f.block_id = b.id
+    `);
+
+    return successResponse(rows, "Cameras fetched successfully");
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch cameras");
   }
+}
 
+async getCameraById(id) {
+  try {
+    const [rows] = await this.db.pool.query(`
+      SELECT 
+        c.id,
+        c.asset_no,
+        c.serial_number,
+        c.model_name,
+        c.ip_address,
+        c.port,
+        c.manufacturer,
+        c.vendor,
+        c.install_date,
+        c.last_working_on,
+        c.is_working,
+        c.created_at,
+        c.updated_at,
+        n.id AS nvr_id,
+        n.asset_no AS nvr_asset_no,
+        n.model_name AS nvr_model_name,
+        n.ip_address AS nvr_ip,
+        l.id AS location_id,
+        l.name AS location_name,
+        f.id AS floor_id,
+        f.name AS floor_name,
+        b.id AS block_id,
+        b.name AS block_name
+      FROM cameras c
+      JOIN nvrs n ON c.nvr_id = n.id
+      JOIN locations l ON c.location_id = l.id
+      JOIN floors f ON l.floor_id = f.id
+      JOIN blocks b ON f.block_id = b.id
+      WHERE c.id = ?
+    `, [id]);
 
-  async getCameraById(id) {
-    try {
-      const [rows] = await this.db.pool.query("SELECT * FROM cameras WHERE id = ?", [id]);
-      if (rows.length === 0) {
-        return errorResponse("Camera not found", "No record found");
-      }
-      return successResponse(rows[0], "Camera fetched successfully");
-    } catch (error) {
-      return errorResponse(error, "Failed to fetch camera");
-    }
+    if (rows.length === 0)
+      return errorResponse("Camera not found", "No record found");
+
+    return successResponse(rows[0], "Camera fetched successfully");
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch camera");
   }
-
+}
 
   async updateCamera(data) {
     try {

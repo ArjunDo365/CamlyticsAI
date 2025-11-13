@@ -49,27 +49,78 @@ class NvrService {
   }
 
 
-  async getAllNvrs() {
-    try {
-      const [rows] = await this.db.pool.query("SELECT * FROM nvrs");
-      return successResponse(rows, "NVRs fetched successfully");
-    } catch (error) {
-      return errorResponse(error, "Failed to fetch NVRs");
-    }
-  }
+ async getAllNvrs() {
+  try {
+    const [rows] = await this.db.pool.query(`
+      SELECT 
+        n.id,
+        n.location_id,
+        l.name AS location_name,
+        f.id AS floor_id,
+        f.name AS floor_name,
+        b.id AS block_id,
+        b.name AS block_name,
+        n.asset_no,
+        n.serial_number,
+        n.model_name,
+        n.ip_address,
+        n.manufacturer,
+        n.vendor,
+        n.install_date,
+        n.last_working_on,
+        n.is_working,
+        n.created_at,
+        n.updated_at
+      FROM nvrs n
+      JOIN locations l ON n.location_id = l.id
+      JOIN floors f ON l.floor_id = f.id
+      JOIN blocks b ON f.block_id = b.id
+    `);
 
-
-  async getNvrById(id) {
-    try {
-      const [rows] = await this.db.pool.query("SELECT * FROM nvrs WHERE id = ?", [id]);
-      if (rows.length === 0) {
-        return errorResponse("NVR not found", "No record found");
-      }
-      return successResponse(rows[0], "NVR fetched successfully");
-    } catch (error) {
-      return errorResponse(error, "Failed to fetch NVR");
-    }
+    return successResponse(rows, "NVRs fetched successfully");
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch NVRs");
   }
+}
+
+async getNvrById(id) {
+  try {
+    const [rows] = await this.db.pool.query(`
+      SELECT 
+        n.id,
+        n.location_id,
+        l.name AS location_name,
+        f.id AS floor_id,
+        f.name AS floor_name,
+        b.id AS block_id,
+        b.name AS block_name,
+        n.asset_no,
+        n.serial_number,
+        n.model_name,
+        n.ip_address,
+        n.manufacturer,
+        n.vendor,
+        n.install_date,
+        n.last_working_on,
+        n.is_working,
+        n.created_at,
+        n.updated_at
+      FROM nvrs n
+      JOIN locations l ON n.location_id = l.id
+      JOIN floors f ON l.floor_id = f.id
+      JOIN blocks b ON f.block_id = b.id
+      WHERE n.id = ?
+    `, [id]);
+
+    if (rows.length === 0)
+      return errorResponse("NVR not found", "No record found");
+
+    return successResponse(rows[0], "NVR fetched successfully");
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch NVR");
+  }
+}
+
 
   async updateNvr(data) {
     try {

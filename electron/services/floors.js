@@ -25,7 +25,18 @@ class FloorsService {
 
   async getAllFloors() {
     try {
-      const [rows] = await this.db.pool.query("SELECT * FROM floors");
+      const [rows] = await this.db.pool.query(`
+        SELECT
+         f.id,
+         f.display_order,
+         f.name,
+         f.discription,
+         f.block_id,
+         b.name as block_name
+         from floors f
+         join blocks b on f.block_id = id
+         order by f.id DESC
+        `);
       return successResponse(rows, "Floors fetched successfully");
     } catch (error) {
       return errorResponse(error, "Failed to fetch floors");
@@ -35,7 +46,17 @@ class FloorsService {
   async getByIdFloors(id) {
     try {
       const [rows] = await this.db.pool.query(
-        "SELECT * FROM floors WHERE id = ?",
+        `SELECT
+         f.id,
+         f.display_order,
+         f.name,
+         f.discription,
+         f.block_id,
+         b.name as block_name
+         from floors f
+         join blocks b on f.block_id = id
+         order by f.id DESC
+         where f.id = ?`,
         [id]
       );
 

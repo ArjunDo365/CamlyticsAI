@@ -26,7 +26,20 @@ class LocationService {
 
   async getAllLocation() {
     try {
-      const [rows] = await this.db.pool.query("SELECT * FROM location");
+      const [rows] = await this.db.pool.query(`
+        SELECT
+          l.id,
+          l.name,
+          l.discription,
+          l.floor_id,
+          f.name as floor_name,
+          f.block_id,
+          b.name as block_name
+          from location l 
+          join floors f on l.floor_id = id,
+          join blocks b on f.block_id = id  
+          ORDER BY l.id DESC
+        `);
       return successResponse(rows, "Locations fetched successfully");
     } catch (error) {
       return errorResponse(error, "Failed to fetch locations");
@@ -36,7 +49,19 @@ class LocationService {
   async getByIdLocation(id) {
     try {
       const [rows] = await this.db.pool.query(
-        "SELECT * FROM location WHERE id = ?",
+        `SELECT
+          l.id,
+          l.name,
+          l.discription,
+          l.floor_id,
+          f.name as floor_name,
+          f.block_id,
+          b.name as block_name
+          from location l 
+          join floors f on l.floor_id = id,
+          join blocks b on f.block_id = id  
+          ORDER BY l.id DESC
+          where l.id = ?`,
         [id]
       );
 
