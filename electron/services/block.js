@@ -8,20 +8,20 @@ class BlockService {
   async createBlock(data) {
     const { name, description } = data;
     const [result] = await this.db.pool.query(
-      'INSERT INTO block (name, description) VALUES (?, ?)',
+      'INSERT INTO blocks (name, description) VALUES (?, ?)',
       [name, description]
     );
     return { id: result.insertId, ...data };
   }
 
   async getAllBlocks() {
-    const [rows] = await this.db.pool.query('SELECT * FROM block');
+    const [rows] = await this.db.pool.query('SELECT * FROM blocks');
     return rows;
   }
 
   async getByIdBlocks(id) {
   const [rows] = await this.db.pool.query(
-    'SELECT * FROM block WHERE id = ?',
+    'SELECT * FROM blocks WHERE id = ?',
     [id]
   );
   return rows.length > 0 ? rows[0] : null;
@@ -31,14 +31,14 @@ class BlockService {
   async updateBlock(data) {
     const { id, name, description } = data;
     await this.db.pool.query(
-      'UPDATE block SET name = ?, description = ?, update_on = CURRENT_TIMESTAMP WHERE id = ?',
+      'UPDATE blocks SET name = ?, description = ?, update_on = CURRENT_TIMESTAMP WHERE id = ?',
       [name, description, id]
     );
     return { success: true };
   }
 
   async deleteBlock(id) {
-    await this.db.pool.query('DELETE FROM block WHERE id = ?', [id]);
+    await this.db.pool.query('DELETE FROM blocks WHERE id = ?', [id]);
     return { success: true };
   }
 }
