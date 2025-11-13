@@ -54,7 +54,7 @@ export interface Block{
   id:number;
   name:string;
   description:string;
-  displayOrder?:number;
+  displayOrder:number;
 }
 
 export interface NVR{
