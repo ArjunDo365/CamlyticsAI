@@ -25,14 +25,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   createBlock: (data) => ipcRenderer.invoke('block:create', data),
   getAllBlocks: () => ipcRenderer.invoke('block:readAll'),
   getByIdBlocks: (id) => ipcRenderer.invoke('block:readById',id),
-  updateBlock: (data) => ipcRenderer.invoke('block:update', {id,data}),
+  updateBlock: (id,data) => ipcRenderer.invoke('block:update', {id,data}),
   deleteBlock: (id) => ipcRenderer.invoke('block:delete', id),
 
   //floors
   createFloors: (data) => ipcRenderer.invoke('floors:create', data),
   getAllFloors: () => ipcRenderer.invoke('floors:readAll'),
   getByIdFloors: (id) => ipcRenderer.invoke('floors:readById',id),
-  updateFloors: (data) => ipcRenderer.invoke('floors:update', {id,data}),
+  updateFloors: (id,data) => ipcRenderer.invoke('floors:update', {id,data}),
   deleteFloors: (id) => ipcRenderer.invoke('floors:delete', id),
 
   //location
@@ -46,13 +46,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   createNvr: (data) => ipcRenderer.invoke('nvrs:create', data),
   getAllNvrs: () => ipcRenderer.invoke('nvrs:readAll'),
   getNvrById: (id) => ipcRenderer.invoke('nvrs:readById', id),
-  updateNvr: (data) => ipcRenderer.invoke('nvrs:update',{id,data}),
+  updateNvr: (id,data) => ipcRenderer.invoke('nvrs:update',{id,data}),
   deleteNvr: (id) => ipcRenderer.invoke('nvrs:delete', id),
 
   //cameras
   createCamera: (data) => ipcRenderer.invoke('location:create', data),
   getAllCameras: () => ipcRenderer.invoke('location:readAll'),
   getCameraById: (id) => ipcRenderer.invoke('location:readById', id),
-  updateCamera: (data) => ipcRenderer.invoke('location:update', {id,data}),
+  updateCamera: (id,data) => ipcRenderer.invoke('location:update', {id,data}),
   deleteCamera: (id) => ipcRenderer.invoke('location:delete', id),
 });
