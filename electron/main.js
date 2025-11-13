@@ -41,6 +41,7 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
@@ -58,11 +59,13 @@ const BlockService = require('./services/block');
 const NvrService = require('./services/nvr');
 const CameraService = require('./services/camera');
 const LocationService = require('./services/location');
+const FloorsService = require('./services/floors');
 
 const db = new Database();
 const authService = new AuthService(db);
 const blockService = new BlockService(db);
-const floorsService = new LocationService(db);
+const floorsService = new FloorsService(db);
+const locationService = new LocationService(db);
 const nvrService = new NvrService(db);
 const cameraService = new CameraService(db)
 

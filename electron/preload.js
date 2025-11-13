@@ -39,7 +39,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   createLocation: (data) => ipcRenderer.invoke('location:create', data),
   getAllLocation: () => ipcRenderer.invoke('location:readAll'),
   getByIdLocation: (id) => ipcRenderer.invoke('location:readById', id),
-  updateLocation: (data) => ipcRenderer.invoke('location:update', {id,data}),
+  updateLocation: (id,data) => ipcRenderer.invoke('location:update', {id,data}),
   deleteLocation: (id) => ipcRenderer.invoke('location:delete', id),
 
   //nvr
