@@ -79,7 +79,7 @@ class LocationService {
       const { id, floors_id, name, description } = data;
 
       const [result] = await this.db.pool.query(
-        "UPDATE location SET floors_id = ?, name = ?, description = ?, update_on = CURRENT_TIMESTAMP WHERE id = ?",
+        "UPDATE location SET floors_id = ?, name = ?, description = ?, update_at = CURRENT_TIMESTAMP WHERE id = ?",
         [floors_id, name, description, id]
       );
 

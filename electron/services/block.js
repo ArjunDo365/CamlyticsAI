@@ -48,10 +48,11 @@ class BlockService {
   async updateBlock(data) {
     try{
     const { id, name, description } = data;
-    await this.db.pool.query(
-      "UPDATE blocks SET name = ?, description = ?, update_on = CURRENT_TIMESTAMP WHERE id = ?",
+   const [result]= await this.db.pool.query(
+      "UPDATE blocks SET name = ?, description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
       [name, description, id]
     );
+    console.log('block data:',result)
     if (result.affectedRows === 0) {
             return errorResponse("block not found", "Update failed");
           }
@@ -64,7 +65,7 @@ class BlockService {
 
   async deleteBlock(id) {
     try{
-    await this.db.pool.query("DELETE FROM blocks WHERE id = ?", [id]);
+    const [result]= await this.db.pool.query("DELETE FROM blocks WHERE id = ?", [id]);
     if (result.affectedRows === 0) {
             return errorResponse("block not found", "Delete failed");
           }

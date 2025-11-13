@@ -132,7 +132,7 @@ ipcMain.handle('block:readById', async (event,id) => {
 });
 
 ipcMain.handle('block:update', async (event,{id,data}) => {
-  return await blockService.updateBlock(id,data);
+  return await blockService.updateBlock({id,...data});
 });
 
 ipcMain.handle('block:delete', async (event, id) => {
@@ -154,7 +154,7 @@ ipcMain.handle('floors:readById', async (event,id) => {
 });
 
 ipcMain.handle('floors:update', async (event,{id,data}) => {
-  return await floorsService.updateFloors(id,data);
+  return await floorsService.updateFloors({id,...data});
 });
 
 ipcMain.handle('floors:delete', async (event, id) => {
@@ -176,7 +176,7 @@ ipcMain.handle('location:readById', async (event, id) => {
 });
 
 ipcMain.handle('location:update', async (event,{id,data}) => {
-  return await locationService.updateLocation(id,data);
+  return await locationService.updateLocation({id,...data});
 });
 
 ipcMain.handle('location:delete', async (event, id) => {
@@ -198,7 +198,7 @@ ipcMain.handle('nvrs:readById', async (event, id) => {
 });
 
 ipcMain.handle('nvrs:update', async (event,{id,data}) => {
-  return await nvrService.updateNvr(id,data);
+  return await nvrService.updateNvr({id,...data});
 });
 
 ipcMain.handle('nvrs:delete', async (event, id) => {
@@ -220,7 +220,7 @@ ipcMain.handle('camera:readById', async (event, id) => {
 });
 
 ipcMain.handle('camera:update', async (event,{id,data}) => {
-  return await cameraService.updateCamera(id,data);
+  return await cameraService.updateCamera({id,...data});
 });
 
 ipcMain.handle('camera:delete', async (event, id) => {
