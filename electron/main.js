@@ -55,14 +55,14 @@ app.on('activate', () => {
 const Database = require('./database');
 const AuthService = require('./services/auth');
 const BlockService = require('./services/block');
-const FloorsService = require('./services/floors');
 const NvrService = require('./services/nvr');
 const CameraService = require('./services/camera');
+const LocationService = require('./services/location');
 
 const db = new Database();
 const authService = new AuthService(db);
 const blockService = new BlockService(db);
-const floorsService = new FloorsService(db);
+const floorsService = new LocationService(db);
 const nvrService = new NvrService(db);
 const cameraService = new CameraService(db)
 

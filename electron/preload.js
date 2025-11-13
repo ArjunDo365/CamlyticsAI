@@ -50,10 +50,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteNvr: (id) => ipcRenderer.invoke('nvrs:delete', id),
 
   //cameras
-  createCamera: (data) => ipcRenderer.invoke('location:create', data),
-  getAllCameras: () => ipcRenderer.invoke('location:readAll'),
-  getCameraById: (id) => ipcRenderer.invoke('location:readById', id),
-  updateCamera: (id,data) => ipcRenderer.invoke('location:update', {id,data}),
-  deleteCamera: (id) => ipcRenderer.invoke('location:delete', id),
+  createCamera: (data) => ipcRenderer.invoke('cameras:create', data),
+  getAllCameras: () => ipcRenderer.invoke('cameras:readAll'),
+  getCameraById: (id) => ipcRenderer.invoke('cameras:readById', id),
+  updateCamera: (id,data) => ipcRenderer.invoke('cameras:update', {id,data}),
+  deleteCamera: (id) => ipcRenderer.invoke('cameras:delete', id),
 
 });
