@@ -11,7 +11,7 @@ const Blocks = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    displayOrder:0
+    display_order:0
   });
 
     useEffect(() => {
@@ -22,7 +22,7 @@ const Blocks = () => {
     setFormData({
       name: "",
       description: "",
-      displayOrder:1
+      display_order:1
     });
     setEditingBlock(null);
   };
@@ -31,7 +31,7 @@ const Blocks = () => {
     try {
       setLoading(true);
       const blockData = await window.electronAPI.getAllBlocks();
-      console.log("data from backend for blocks: ", blockData);
+      // console.log("data from backend for blocks: ", blockData);
 
       if (blockData.success) {
         setBlocks(blockData.data);
@@ -48,7 +48,7 @@ const Blocks = () => {
     setFormData({
       name: block.name,      
       description: block.description,
-      displayOrder:block.displayOrder
+      display_order:block.display_order
     });
     setShowModal(true);
   };
@@ -57,7 +57,7 @@ const Blocks = () => {
     if (confirm("Are you sure you want to delete this block?")) {
       try {
         const result = await window.electronAPI.deleteBlock(id);
-        console.log('result on delete block: ',result);
+        // console.log('result on delete block: ',result);
         if (result.success) {
           await loadData();
         } else {
@@ -77,14 +77,16 @@ const Blocks = () => {
       // console.log("payload for block api: ", editingBlock?.id, formData);
       let result;
       if (editingBlock) {
+        // console.log('payload for block update: ',formData);
         result = await window.electronAPI.updateBlock(
           editingBlock.id,
           formData
         );
-        console.log('result on edit block submit',result);
+        // console.log('result on edit block submit',result);
       } else {
+        // console.log('payload for block submit: ',formData);
         result = await window.electronAPI.createBlock(formData);
-        console.log('result on block submit',result);
+        // console.log('result on block submit',result);
       }
 
       if (result.success) {
@@ -252,12 +254,14 @@ const Blocks = () => {
                 </label>
                 <input
                   type="number"
-                  value={formData.displayOrder}
-                  onChange={(e) =>
+                  value={formData.display_order}
+                  onChange={(e) =>{
+                    const valueConvert=e.target.value?e.target.value:'0';
                     setFormData((prevData) => ({
                       ...prevData,
-                      displayOrder: parseInt(e.target.value),
+                      display_order: parseInt(valueConvert),
                     }))
+                  }
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                   required

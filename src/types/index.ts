@@ -21,7 +21,7 @@ export interface FileRecord {
   file_path: string;
   output_path?: string;
   extracted_text?: string;
-  processing_status: 'pending' | 'processing' | 'completed' | 'error';
+  processing_status: "pending" | "processing" | "completed" | "error";
   upload_time: string;
   processed_at?: string;
   user_name: string;
@@ -37,35 +37,38 @@ export interface AuthState {
 export interface Section {
   id: number;
   name: string;
-  floorId:number;
-  description:string;
-  displayOrder?:number;
+  floorId: number;
+  description: string;
+  display_order: number;
 }
 
 export interface Floor {
   id: number;
   name: string;
-  blockId:number;
-  description:string;
-  displayOrder?:number;
+  blockId: number;
+  description: string;
+  display_order?: number;
 }
 
-export interface Block{
-  id:number;
-  name:string;
-  description:string;
-  displayOrder:number;
+export interface Block {
+  id: number;
+  name: string;
+  description: string;
+  display_order: number;
 }
 
-export interface NVR{
-id:number;
-name:string;
-serialNum:string;
-assetNum:string;
-modalName:string;
-manufacturer:string;
-vendor:string;
-installedDate:string;
+export interface NVR {
+  id: number;
+  location_id: number;
+  asset_no: string;
+  serial_number: string;
+  model_name: string;
+  ip_address: string;
+  manufacturer: string;
+  vendor: string;
+  install_date: string;
+  // last_working_on?:string;
+  // is_working?:string;
 }
 
 declare global {
@@ -96,35 +99,35 @@ declare global {
       // Dialog methods
       showOpenDialog: () => Promise<any>;
 
-      //block methods      
+      //block methods
       getAllBlocks: () => Promise<any>;
       createBlock: (data: any) => Promise<any>;
       getByIdBlocks: (id: number) => Promise<any>;
       updateBlock: (id: number, data: any) => Promise<any>;
       deleteBlock: (id: number) => Promise<any>;
 
-      //floor methods      
+      //floor methods
       getAllFloors: () => Promise<any>;
       createFloors: (data: any) => Promise<any>;
       getByIdFloors: (id: number) => Promise<any>;
       updateFloors: (id: number, data: any) => Promise<any>;
       deleteFloors: (id: number) => Promise<any>;
 
-      //section methods      
+      //section methods
       getAllLocation: () => Promise<any>;
       createLocation: (data: any) => Promise<any>;
       getByIdLocation: (id: number) => Promise<any>;
       updateLocation: (id: number, data: any) => Promise<any>;
       deleteLocation: (id: number) => Promise<any>;
 
-      //Nvr methods      
+      //Nvr methods
       getAllNvrs: () => Promise<any>;
       createNvr: (data: any) => Promise<any>;
       getNvrById: (id: number) => Promise<any>;
       updateNvr: (id: number, data: any) => Promise<any>;
       deleteNvr: (id: number) => Promise<any>;
 
-      //camera methods      
+      //camera methods
       getAllCameras: () => Promise<any>;
       createCamera: (data: any) => Promise<any>;
       getCameraById: (id: number) => Promise<any>;

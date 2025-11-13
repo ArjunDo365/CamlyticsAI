@@ -1,99 +1,52 @@
 import { Edit, Plus, Trash2 } from "lucide-react";
-import React, { useState } from "react";
-import type { Section, User } from "../../../types/index";
-
-const sampleData= [
-        {
-          id: 1,
-          name: "Billing",
-          floorId: 2,
-          description:''
-        },
-        {
-          id: 2,
-          name: "Cash Counter",
-          floorId: 6,
-          description:''
-        },
-        {
-          id: 3,
-          name: "Diamonds",
-          floorId: 1,
-          description:''
-        },
-        {
-          id: 4,
-          name: "Silver",
-          floorId: 4,
-          description:''
-        },
-        {
-          id: 5,
-          name: "Gold",
-          floorId: 3,
-          description:''
-        },
-      ];
+import React, { useEffect, useState } from "react";
+import type { Block, Floor, Section, User } from "../../../types/index";
 
 const Section = () => {
   const [showModal, setShowModal] = useState(false);
-  const [sections, setSections] = useState<Section[]>(sampleData);
-  const [floors,setFloors] = useState([{id:1,name:'Floor 1'},{id:2,name:'Floor 2'},{id:3,name:'Floor 3'}]);
-  const [blocks,setBlocks] = useState([{id:1,name:'Block A'},{id:2,name:'Block B'},{id:3,name:'Block C'}]);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [floors, setFloors] = useState<Floor[] | null>([]);
+  const [blocks, setBlocks] = useState<Block[] | null>([]);
   const [editingSection, setEditingSection] = useState<Section | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
-    floorId: 3,
-    description:''
+    floorId: 0,
+    description: "",
+    display_order: 0,
   });
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const resetForm = () => {
     setFormData({
       name: "",
-      floorId:0,
-      description:''
-      
+      floorId: 0,
+      description: "",
+      display_order: 0,
     });
     setEditingSection(null);
   };
 
   const loadData = async () => {
+    setLoading(true);
     try {
-      const sectionData:Section[] = [
-        {
-          id: 1,
-          name: "Billing",
-          floorId: 1,
-          description:''
-        },
-        {
-          id: 2,
-          name: "Cash Counter",
-          floorId: 2,
-          description:''
-        },
-        {
-          id: 3,
-          name: "Diamonds",
-          floorId: 3,
-          description:''
-        },
-        {
-          id: 4,
-          name: "Silver",
-          floorId: 2,
-          description:''
-        },
-        {
-          id: 5,
-          name: "Gold",
-          floorId: 5,
-          description:''
-        },
-      ];
-
-      setSections(sectionData);
+      const [sectionData, floorData, blockData] = await Promise.all([
+        window.electronAPI.getAllLocation(),
+        window.electronAPI.getAllFloors(),
+        window.electronAPI.getAllBlocks(),
+      ]);
+      if (sectionData.success) {
+        setSections(sectionData.data);
+      }
+      if (floorData.success) {
+        setFloors(floorData.data);
+      }
+      if (blockData.success) {
+        setBlocks(blockData.data);
+      }
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
@@ -106,7 +59,8 @@ const Section = () => {
     setFormData({
       name: section.name,
       floorId: section.floorId,
-      description:''
+      description: "",
+      display_order:0
     });
     setShowModal(true);
   };
@@ -114,7 +68,7 @@ const Section = () => {
   const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this section?")) {
       try {
-        const result = await window.electronAPI.deleteUser(id);
+        const result = await window.electronAPI.deleteLocation(id);
         if (result.success) {
           await loadData();
         } else {
@@ -127,32 +81,43 @@ const Section = () => {
     }
   };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      
-      try {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        console.log('payload for section api: ',editingSection?.id,formData)
+    try {
+      console.log("payload for section api: ", editingSection?.id, formData);
 
-        // let result;
-        // if (editingSection) {
-        //   result = await window.electronAPI.updateUser(editingSection.id, formData);
-        // } else {
-        //   result = await window.electronAPI.createUser(formData);
-        // }
-  
-        // if (result.success) {
-        //   await loadData();
-        //   setShowModal(false);
-        //   resetForm();
-        // } else {
-        //   alert(result.error || 'Operation failed');
-        // }
-      } catch (error) {
-        console.error('Error saving section:', error);
-        alert('An error occurred');
+      let result;
+      if (editingSection) {
+        result = await window.electronAPI.updateLocation(editingSection.id, formData);
+      } else {
+        result = await window.electronAPI.createLocation(formData);
       }
-    };
+
+      if (result.success) {
+        await loadData();
+        setShowModal(false);
+        resetForm();
+      } else {
+        alert(result.error || 'Operation failed');
+      }
+    } catch (error) {
+      console.error("Error saving section:", error);
+      alert("An error occurred");
+    }
+  };
+
+
+    if (loading) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="p-6">
@@ -267,9 +232,12 @@ const Section = () => {
                   type="text"
                   value={formData.name}
                   onChange={(e) =>
-                    setFormData(prevData => ({ ...prevData, name: e.target.value }))
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      name: e.target.value,
+                    }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                   required
                 />
               </div>
@@ -285,10 +253,10 @@ const Section = () => {
                       floorId: parseInt(e.target.value),
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                   required
                 >
-                  {floors.map((floor) => (
+                  {floors?.map((floor) => (
                     <option key={floor.id} value={floor.id}>
                       {floor.name}
                     </option>
@@ -319,7 +287,7 @@ const Section = () => {
                 </select>
                 </div>
               </div> */}
-              
+
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"

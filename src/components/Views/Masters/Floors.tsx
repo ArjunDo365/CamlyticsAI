@@ -12,7 +12,7 @@ const Floors = () => {
     name: "",
     description: "",
     blockId: 1,
-    displayOrder: 0,
+    display_order: 0,
   });
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const Floors = () => {
       name: "",
       description: "",
       blockId: 1,
-      displayOrder: 0,
+      display_order: 0,
     });
     setEditingFloor(null);
   };
@@ -57,7 +57,7 @@ const Floors = () => {
       name: floor.name,
       description: floor.description,
       blockId: floor.blockId,
-      displayOrder: floor.displayOrder ?? 0,
+      display_order: floor.display_order ?? 0,
     });
     setShowModal(true);
   };
