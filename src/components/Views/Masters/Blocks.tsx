@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Block } from "../../../types";
 import { Edit, Plus, Trash2 } from "lucide-react";
 
@@ -7,12 +7,16 @@ const Blocks = () => {
   const [showModal, setShowModal] = useState(false);
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [editingBlock, setEditingBlock] = useState<Block | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
   });
 
+    useEffect(() => {
+      loadData();
+    }, []);
+    
   const resetForm = () => {
     setFormData({
       name: "",
@@ -24,7 +28,7 @@ const Blocks = () => {
   const loadData = async () => {
     try {
       const blockData = await window.electronAPI.getAllBlocks();
-      console.log("data from backend for blocks: ", blockData);
+      // console.log("data from backend for blocks: ", blockData);
 
       if (blockData.success) {
         setBlocks(blockData.data);
@@ -49,6 +53,7 @@ const Blocks = () => {
     if (confirm("Are you sure you want to delete this block?")) {
       try {
         const result = await window.electronAPI.deleteBlock(id);
+        console.log('result on delete block: ',result);
         if (result.success) {
           await loadData();
         } else {
@@ -72,8 +77,10 @@ const Blocks = () => {
           editingBlock.id,
           formData
         );
+        console.log('result on edit block submit',result);
       } else {
         result = await window.electronAPI.createBlock(formData);
+        console.log('result on block submit',result);
       }
 
       if (result.success) {
@@ -100,7 +107,7 @@ const Blocks = () => {
     );
   }
 
-  
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -215,7 +222,7 @@ const Blocks = () => {
                       name: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                   required
                 />
               </div>
@@ -231,7 +238,7 @@ const Blocks = () => {
                       description: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                   required
                 />
               </div>

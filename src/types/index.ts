@@ -45,7 +45,7 @@ export interface Section {
 export interface Floor {
   id: number;
   name: string;
-  blockId:string;
+  blockId:number;
   description:string;
   displayOrder?:number;
 }
