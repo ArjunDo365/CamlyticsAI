@@ -11,7 +11,7 @@ const Floors = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    blockId: 1,
+    block_id: 1,
     display_order: 0,
   });
 
@@ -23,7 +23,7 @@ const Floors = () => {
     setFormData({
       name: "",
       description: "",
-      blockId: 1,
+      block_id: 1,
       display_order: 0,
     });
     setEditingFloor(null);
@@ -56,7 +56,7 @@ const Floors = () => {
     setFormData({
       name: floor.name,
       description: floor.description,
-      blockId: floor.blockId,
+      block_id: floor.block_id,
       display_order: floor.display_order ?? 0,
     });
     setShowModal(true);
@@ -180,7 +180,7 @@ const Floors = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {floor.blockId}
+                    {floor.block_id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center gap-3">
@@ -255,11 +255,11 @@ const Floors = () => {
                   Block
                 </label>
                 <select
-                  value={formData.blockId}
+                  value={formData.block_id}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      blockId: parseInt(e.target.value),
+                      block_id: parseInt(e.target.value),
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
@@ -271,6 +271,24 @@ const Floors = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Display Order
+                </label>
+                <input
+                  type="number"
+                  value={formData.display_order}
+                  onChange={(e) => {
+                    const valueConvert = e.target.value ? e.target.value : "0";
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      display_order: parseInt(valueConvert),
+                    }));
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
+                  required
+                />
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <button

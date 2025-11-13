@@ -37,7 +37,7 @@ export interface AuthState {
 export interface Section {
   id: number;
   name: string;
-  floorId: number;
+  floors_id: number;
   description: string;
   display_order: number;
 }
@@ -45,7 +45,7 @@ export interface Section {
 export interface Floor {
   id: number;
   name: string;
-  blockId: number;
+  block_id: number;
   description: string;
   display_order?: number;
 }
@@ -57,7 +57,7 @@ export interface Block {
   display_order: number;
 }
 
-export interface NVR {
+export interface Nvr {
   id: number;
   location_id: number;
   asset_no: string;
