@@ -37,23 +37,24 @@ export interface AuthState {
 export interface Section {
   id: number;
   name: string;
-  floor:string;
-  block:string;
-  created_at: string;
+  floorId:number;
+  description:string;
+  displayOrder?:number;
 }
 
 export interface Floor {
   id: number;
   name: string;
-  block:string;
-  created_at?: string;
+  blockId:string;
+  description:string;
+  displayOrder?:number;
 }
 
 export interface Block{
   id:number;
   name:string;
   description:string;
-  created_at?: string;
+  displayOrder?:number;
 }
 
 export interface NVR{
@@ -94,6 +95,41 @@ declare global {
 
       // Dialog methods
       showOpenDialog: () => Promise<any>;
+
+      //block methods      
+      getAllBlocks: () => Promise<any>;
+      createBlock: (data: any) => Promise<any>;
+      getByIdBlocks: (id: number) => Promise<any>;
+      updateBlock: (id: number, data: any) => Promise<any>;
+      deleteBlock: (id: number) => Promise<any>;
+
+      //floor methods      
+      getAllFloors: () => Promise<any>;
+      createFloors: (data: any) => Promise<any>;
+      getByIdFloors: (id: number) => Promise<any>;
+      updateFloors: (id: number, data: any) => Promise<any>;
+      deleteFloors: (id: number) => Promise<any>;
+
+      //section methods      
+      getAllLocation: () => Promise<any>;
+      createLocation: (data: any) => Promise<any>;
+      getByIdLocation: (id: number) => Promise<any>;
+      updateLocation: (id: number, data: any) => Promise<any>;
+      deleteLocation: (id: number) => Promise<any>;
+
+      //Nvr methods      
+      getAllNvrs: () => Promise<any>;
+      createNvr: (data: any) => Promise<any>;
+      getNvrById: (id: number) => Promise<any>;
+      updateNvr: (id: number, data: any) => Promise<any>;
+      deleteNvr: (id: number) => Promise<any>;
+
+      //camera methods      
+      getAllCameras: () => Promise<any>;
+      createCamera: (data: any) => Promise<any>;
+      getCameraById: (id: number) => Promise<any>;
+      updateCamera: (id: number, data: any) => Promise<any>;
+      deleteCamera: (id: number) => Promise<any>;
     };
   }
 }

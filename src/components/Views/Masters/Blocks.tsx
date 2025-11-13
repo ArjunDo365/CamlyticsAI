@@ -2,63 +2,20 @@ import React, { useState } from "react";
 import { Block } from "../../../types";
 import { Edit, Plus, Trash2 } from "lucide-react";
 
-const sampleData = [
-  {
-    id: 1,
-    name: "Block A",
-    description:
-      "Main administrative block housing the reception area, security control room, and staff offices.",
-    created_at: "2023-11-12T10:30:00Z",
-  },
-  {
-    id: 2,
-    name: "Block B",
-    description:
-      "Main administrative block housing the reception area, security control room, and staff offices.",
-    created_at: "2023-11-10T15:45:00Z",
-  },
-  {
-    id: 3,
-    name: "Block C",
-    description:
-      "Main administrative block housing the reception area, security control room, and staff offices.",
-    created_at: "2023-11-08T09:20:00Z",
-  },
-  {
-    id: 4,
-    name: "Block D",
-    description:
-      "Main administrative block housing the reception area, security control room, and staff offices.",
-    created_at: "2023-11-05T12:00:00Z",
-  },
-  {
-    id: 5,
-    name: "Block E",
-    description:
-      "Main administrative block housing the reception area, security control room, and staff offices.",
-    created_at: "2023-11-01T14:10:00Z",
-  },
-];
 
 const Blocks = () => {
   const [showModal, setShowModal] = useState(false);
-  const [blocks, setBlocks] = useState([
-    { id: 1, name: "Block A", description: "Main administrative block housing the reception area, security control room, and staff offices." },
-    { id: 2, name: "Block B", description: "Main administrative block housing the reception area, security control room, and staff offices." },
-    { id: 3, name: "Block C", description: "Main administrative block housing the reception area, security control room, and staff offices." },
-  ]);
+  const [blocks, setBlocks] = useState<Block[]>([]);
   const [editingBlock, setEditingBlock] = useState<Block | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
-    id: 0,
     description: "",
   });
 
   const resetForm = () => {
     setFormData({
       name: "",
-      id: 0,
       description: "",
     });
     setEditingBlock(null);
@@ -66,44 +23,12 @@ const Blocks = () => {
 
   const loadData = async () => {
     try {
-      const blockData: Block[] = [
-        {
-          id: 1,
-          name: "Block A",
-          description:
-            "Main administrative block housing the reception area, security control room, and staff offices.",
-          created_at: "2023-11-12T10:30:00Z",
-        },
-        {
-          id: 2,
-          name: "Block B",
-          description:
-            "Main administrative block housing the reception area, security control room, and staff offices.",
-          created_at: "2023-11-10T15:45:00Z",
-        },
-        {
-          id: 3,
-          name: "Block C",
-          description:
-            "Main administrative block housing the reception area, security control room, and staff offices.",
-          created_at: "2023-11-08T09:20:00Z",
-        },
-        {
-          id: 4,
-          name: "Block D",
-          description:
-            "Main administrative block housing the reception area, security control room, and staff offices.",
-          created_at: "2023-11-05T12:00:00Z",
-        },
-        {
-          id: 5,
-          name: "Block E",
-          description:
-            "Main administrative block housing the reception area, security control room, and staff offices.",
-          created_at: "2023-11-01T14:10:00Z",
-        },
-      ];
-      setBlocks(blockData);
+      const blockData = await window.electronAPI.getAllBlocks();
+      console.log("data from backend for blocks: ", blockData);
+
+      if (blockData.success) {
+        setBlocks(blockData.data);
+      }
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
@@ -114,8 +39,7 @@ const Blocks = () => {
   const handleEdit = (block: Block) => {
     setEditingBlock(block);
     setFormData({
-      name: block.name,
-      id: block.id,
+      name: block.name,      
       description: block.description,
     });
     setShowModal(true);
@@ -124,7 +48,7 @@ const Blocks = () => {
   const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this block?")) {
       try {
-        const result = await window.electronAPI.deleteUser(id);
+        const result = await window.electronAPI.deleteBlock(id);
         if (result.success) {
           await loadData();
         } else {
@@ -141,27 +65,42 @@ const Blocks = () => {
     e.preventDefault();
 
     try {
-      console.log("payload for block api: ", editingBlock?.id, formData);
-      // let result;
-      // if (editingBlock) {
-      //   result = await window.electronAPI.updateUser(editingBlock.id, formData);
-      // } else {
-      //   result = await window.electronAPI.createUser(formData);
-      // }
+      // console.log("payload for block api: ", editingBlock?.id, formData);
+      let result;
+      if (editingBlock) {
+        result = await window.electronAPI.updateBlock(
+          editingBlock.id,
+          formData
+        );
+      } else {
+        result = await window.electronAPI.createBlock(formData);
+      }
 
-      // if (result.success) {
-      //   await loadData();
-      //   setShowModal(false);
-      //   resetForm();
-      // } else {
-      //   alert(result.error || 'Operation failed');
-      // }
+      if (result.success) {
+        await loadData();
+        setShowModal(false);
+        resetForm();
+      } else {
+        alert(result.error || "Operation failed");
+      }
     } catch (error) {
       console.error("Error saving block:", error);
       alert("An error occurred");
     }
   };
 
+
+    if (loading) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -222,8 +161,8 @@ const Blocks = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">
-                          {block.description}
-                        </div>
+                      {block.description}
+                    </div>
                   </td>
                   {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {section.block}

@@ -6,37 +6,32 @@ const sampleData= [
         {
           id: 1,
           name: "Billing",
-          floor: "1st Floor",
-          block: "Block A",
-          created_at: "2023-11-12T10:30:00Z",
+          floorId: 2,
+          description:''
         },
         {
           id: 2,
           name: "Cash Counter",
-          floor: "2nd Floor",
-          block: "Block B",
-          created_at: "2023-11-10T15:45:00Z",
+          floorId: 6,
+          description:''
         },
         {
           id: 3,
           name: "Diamonds",
-          floor: "3rd Floor",
-          block: "Block C",
-          created_at: "2023-11-08T09:20:00Z",
+          floorId: 1,
+          description:''
         },
         {
           id: 4,
           name: "Silver",
-          floor: "4th Floor",
-          block: "Block D",
-          created_at: "2023-11-05T12:00:00Z",
+          floorId: 4,
+          description:''
         },
         {
           id: 5,
           name: "Gold",
-          floor: "5th Floor",
-          block: "Block E",
-          created_at: "2023-11-01T14:10:00Z",
+          floorId: 3,
+          description:''
         },
       ];
 
@@ -49,17 +44,16 @@ const Section = () => {
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
-    floor: "",
-    block: "",
-    id: 0,
+    floorId: 3,
+    description:''
   });
 
   const resetForm = () => {
     setFormData({
       name: "",
-      floor: "",
-      block: "",
-      id: 0,
+      floorId:0,
+      description:''
+      
     });
     setEditingSection(null);
   };
@@ -70,37 +64,32 @@ const Section = () => {
         {
           id: 1,
           name: "Billing",
-          floor: "1st Floor",
-          block: "Block A",
-          created_at: "2023-11-12T10:30:00Z",
+          floorId: 1,
+          description:''
         },
         {
           id: 2,
           name: "Cash Counter",
-          floor: "2nd Floor",
-          block: "Block B",
-          created_at: "2023-11-10T15:45:00Z",
+          floorId: 2,
+          description:''
         },
         {
           id: 3,
           name: "Diamonds",
-          floor: "3rd Floor",
-          block: "Block C",
-          created_at: "2023-11-08T09:20:00Z",
+          floorId: 3,
+          description:''
         },
         {
           id: 4,
           name: "Silver",
-          floor: "4th Floor",
-          block: "Block D",
-          created_at: "2023-11-05T12:00:00Z",
+          floorId: 2,
+          description:''
         },
         {
           id: 5,
           name: "Gold",
-          floor: "5th Floor",
-          block: "Block E",
-          created_at: "2023-11-01T14:10:00Z",
+          floorId: 5,
+          description:''
         },
       ];
 
@@ -116,9 +105,8 @@ const Section = () => {
     setEditingSection(section);
     setFormData({
       name: section.name,
-      floor: section.floor,
-      block: section.block,
-      id: section.id,
+      floorId: section.floorId,
+      description:''
     });
     setShowModal(true);
   };
@@ -230,12 +218,12 @@ const Section = () => {
                         ? 'bg-purple-100 text-purple-800'
                         : 'bg-green-100 text-green-800'
                     }`}> */}
-                    {section.floor}
+                    {section.floorId}
                     {/* </span> */}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {section.block}
-                  </td>
+                  </td> */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center gap-3">
                       <button
@@ -290,11 +278,11 @@ const Section = () => {
                   Floor
                 </label>
                 <select
-                  value={formData.floor}
+                  value={formData.floorId}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      floor: e.target.value,
+                      floorId: parseInt(e.target.value),
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -307,7 +295,7 @@ const Section = () => {
                   ))}
                 </select>
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Block 
                 </label>
@@ -330,7 +318,7 @@ const Section = () => {
                   ))}
                 </select>
                 </div>
-              </div>
+              </div> */}
               
               <div className="flex justify-end gap-3 pt-4">
                 <button
