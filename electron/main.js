@@ -56,11 +56,15 @@ const Database = require('./database');
 const AuthService = require('./services/auth');
 const BlockService = require('./services/block');
 const FloorsService = require('./services/floors');
+const NvrService = require('./services/nvr');
+const CameraService = require('./services/camera');
 
 const db = new Database();
 const authService = new AuthService(db);
 const blockService = new BlockService(db);
-const floorsService = new FloorsService(db)
+const floorsService = new FloorsService(db);
+const nvrService = new NvrService(db);
+const cameraService = new CameraService(db)
 
 
 // ---------------------------
@@ -127,14 +131,13 @@ ipcMain.handle('block:readById', async (event,id) => {
   return await blockService.getAllBlocks(id);
 });
 
-ipcMain.handle('block:update', async (event, data) => {
-  return await blockService.updateBlock(data);
+ipcMain.handle('block:update', async (event,{id,data}) => {
+  return await blockService.updateBlock(id,data);
 });
 
 ipcMain.handle('block:delete', async (event, id) => {
   return await blockService.deleteBlock(id);
 });
-
 
 
 //floors
@@ -150,14 +153,13 @@ ipcMain.handle('floors:readById', async (event,id) => {
   return await floorsService.getByIdFloors(id);
 });
 
-ipcMain.handle('floors:update', async (event, data) => {
-  return await floorsService.updateFloors(data);
+ipcMain.handle('floors:update', async (event,{id,data}) => {
+  return await floorsService.updateFloors(id,data);
 });
 
 ipcMain.handle('floors:delete', async (event, id) => {
   return await floorsService.deleteFloors(id);
 });
-
 
 
 //location
@@ -173,11 +175,55 @@ ipcMain.handle('location:readById', async (event, id) => {
   return await locationService.getByIdLocation(id);
 });
 
-ipcMain.handle('location:update', async (event, data) => {
-  return await locationService.updateLocation(data);
+ipcMain.handle('location:update', async (event,{id,data}) => {
+  return await locationService.updateLocation(id,data);
 });
 
 ipcMain.handle('location:delete', async (event, id) => {
   return await locationService.deleteLocation(id);
+});
+
+
+//nvrs
+ipcMain.handle('nvrs:create', async (event, data) => {
+  return await nvrService.createNvr(data);
+});
+
+ipcMain.handle('nvrs:readAll', async () => {
+  return await nvrService.getAllNvrs();
+});
+
+ipcMain.handle('nvrs:readById', async (event, id) => {
+  return await nvrService.getNvrById(id);
+});
+
+ipcMain.handle('nvrs:update', async (event,{id,data}) => {
+  return await nvrService.updateNvr(id,data);
+});
+
+ipcMain.handle('nvrs:delete', async (event, id) => {
+  return await nvrService.deleteNvr(id);
+});
+
+
+//cameras
+ipcMain.handle('camera:create', async (event, data) => {
+  return await cameraService.createCamera(data);
+});
+
+ipcMain.handle('camera:readAll', async () => {
+  return await cameraService.getAllCameras();
+});
+
+ipcMain.handle('camera:readById', async (event, id) => {
+  return await cameraService.getCameraById(id);
+});
+
+ipcMain.handle('camera:update', async (event,{id,data}) => {
+  return await cameraService.updateCamera(id,data);
+});
+
+ipcMain.handle('camera:delete', async (event, id) => {
+  return await cameraService.deleteCamera(id);
 });
 
