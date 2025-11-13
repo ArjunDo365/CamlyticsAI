@@ -9,11 +9,11 @@ class BlockService {
     try {
       const { name, description,display_order } = data;
       const [result] = await this.db.pool.query(
-        "INSERT INTO blocks (name, description,display_order) VALUES (?, ?)",
-        [name, description,display_order]
+        "INSERT INTO blocks (name, display_order, description) VALUES (?, ?, ?)",
+        [name, display_order,description]
       );
       return successResponse(
-        { nvrId: result.insertId },
+        { Id: result.insertId },
         "block created successfully"
       );
     } catch (error) {
@@ -23,7 +23,8 @@ class BlockService {
 
   async getAllBlocks() {
     try{
-    const [rows] = await this.db.pool.query("SELECT * FROM blocks");
+    const [rows] = await this.db.pool.query("SELECT * FROM blocks ORDER BY display_order ASC");
+
      return successResponse(rows, "block fetched successfully");
         } catch (error) {
           return errorResponse(error, "Failed to fetch block");
@@ -52,7 +53,6 @@ class BlockService {
       "UPDATE blocks SET name = ?, description = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
       [name, description,display_order, id]
     );
-    console.log('block data:',result)
     if (result.affectedRows === 0) {
             return errorResponse("block not found", "Update failed");
           }

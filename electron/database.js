@@ -64,6 +64,7 @@ class Database {
     const createFloors = `
       CREATE TABLE IF NOT EXISTS floors (
         id INT AUTO_INCREMENT PRIMARY KEY,
+        display_order INT UNIQUE,
         block_id INT NOT NULL,
         name VARCHAR(100) NOT NULL,
         description TEXT,
@@ -77,6 +78,7 @@ class Database {
     const createLocations = `
       CREATE TABLE IF NOT EXISTS locations (
         id INT AUTO_INCREMENT PRIMARY KEY,
+        display_order INT UNIQUE,
         floor_id INT NOT NULL,
         name VARCHAR(100) NOT NULL,
         description TEXT,

@@ -120,7 +120,7 @@ ipcMain.handle('dialog:showOpenDialog', async () => {
 
 //block
 ipcMain.handle('block:create',async(event,data)=>{
-  return await blockService.createBlock(data);
+  return await blockService.createBlock({...data});
 }) 
 
 ipcMain.handle('block:readAll', async () => {
@@ -142,7 +142,7 @@ ipcMain.handle('block:delete', async (event, id) => {
 
 //floors
 ipcMain.handle('floors:create',async(event,data)=>{
-  return await floorsService.createfloors(data);
+  return await floorsService.createfloors(...data);
 }) 
 
 ipcMain.handle('floors:readAll', async () => {
@@ -164,7 +164,7 @@ ipcMain.handle('floors:delete', async (event, id) => {
 
 //location
 ipcMain.handle('location:create', async (event, data) => {
-  return await locationService.createLocation(data);
+  return await locationService.createLocation(...data);
 });
 
 ipcMain.handle('location:readAll', async () => {
@@ -186,7 +186,7 @@ ipcMain.handle('location:delete', async (event, id) => {
 
 //nvrs
 ipcMain.handle('nvrs:create', async (event, data) => {
-  return await nvrService.createNvr(data);
+  return await nvrService.createNvr(...data);
 });
 
 ipcMain.handle('nvrs:readAll', async () => {
@@ -208,7 +208,7 @@ ipcMain.handle('nvrs:delete', async (event, id) => {
 
 //cameras
 ipcMain.handle('camera:create', async (event, data) => {
-  return await cameraService.createCamera(data);
+  return await cameraService.createCamera(...data);
 });
 
 ipcMain.handle('camera:readAll', async () => {

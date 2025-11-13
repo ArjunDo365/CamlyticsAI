@@ -40,7 +40,7 @@ class NvrService {
       );
 
       return successResponse(
-        { nvrId: result.insertId },
+        { Id: result.insertId },
         "NVR created successfully"
       );
     } catch (error) {
