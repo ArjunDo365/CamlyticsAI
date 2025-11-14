@@ -241,6 +241,6 @@ ipcMain.handle('ping:updateInterval', async (event, data) => {
   return await pingService.updatePingInterval(data);
 });
 
-ipcMain.handle('ping:nvrcamerasummery', async () => {
-  return await pingService.nvrcamerasummery();
+ipcMain.handle('ping:nvrcameracount', async () => {
+  return await pingService.nvrcamerasummary();
 });

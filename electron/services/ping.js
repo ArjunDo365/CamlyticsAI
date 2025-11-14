@@ -1,5 +1,5 @@
 const ping = require('ping');
-
+const { successResponse, errorResponse } = require("../utils/responseHandler");
 class PingService {
   constructor(database) {
     this.db = database;
@@ -8,7 +8,7 @@ class PingService {
   }
 
 
-  async nvrcamerasummery(){
+  async nvrcamerasummary(){
     try{
       const [cameraNvrCount] = await this.db.pool.query(`
           SELECT
@@ -23,15 +23,15 @@ class PingService {
         const result={
           total_cameras : cameraNvrCount[0].total_cameras|| 0 ,
           active_cameras: cameraNvrCount[0].active_cameras||0,
-          inactive_camera: cameraNvrCount[0].inactive_camera||0,
+          inactive_cameras: cameraNvrCount[0].inactive_cameras||0,
           total_nvrs: cameraNvrCount[0].total_nvrs||0,
           active_nvrs: cameraNvrCount[0].active_nvrs||0,
           inactive_nvrs:cameraNvrCount[0].inactive_nvrs||0,
           timestamp: new Date().toISOString(),
         }
-      return successResponse(result, "nvrcamerasummery fetched successfully");
+      return successResponse(result, "nvrcamerasummary fetched successfully");
     }catch(error){
-       return errorResponse(error, "Failed to fetch nvrcamerasummery");
+       return errorResponse(error, "Failed to fetch nvrcamerasummary");
     }
   }
 

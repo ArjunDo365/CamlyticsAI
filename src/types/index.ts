@@ -133,6 +133,9 @@ declare global {
       getCameraById: (id: number) => Promise<any>;
       updateCamera: (id: number, data: any) => Promise<any>;
       deleteCamera: (id: number) => Promise<any>;
+
+      // Dashboard
+      nvrcamerasummary: () => Promise<any>;
     };
   }
 }

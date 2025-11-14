@@ -1,8 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
 const DashboardNew = () => {
   const [loading, setLoading] = useState(false);
+    const [Dashboard, setDashboard] = useState([]);
+  
+   useEffect(() => {
+        loadData();
+      }, []);
+
+
+     const loadData = async () => {
+    try {
+      setLoading(true);
+      const DashboardData = await window.electronAPI.nvrcamerasummary();
+      console.log("data from backend for Dashboard: ", DashboardData);
+
+      if (DashboardData.success) {
+        setDashboard(DashboardData.data);
+      }
+    } catch (error) {
+      console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };   
 
   const nvrStatus: any = {
     series: [98,2],
