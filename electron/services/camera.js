@@ -18,14 +18,12 @@ class CameraService {
         manufacturer,
         vendor,
         install_date,
-        last_working_on,
-        is_working,
       } = data;
 
       const [result] = await this.db.pool.query(
         `INSERT INTO cameras 
-        (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date, last_working_on, is_working)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,)`,
         [
           location_id,
           nvr_id,
@@ -33,12 +31,10 @@ class CameraService {
           serial_number,
           model_name,
           ip_address,
-          port || 80,
+          port ,
           manufacturer,
           vendor,
           install_date,
-          last_working_on,
-          is_working || "active",
         ]
       );
 
@@ -150,14 +146,13 @@ async getCameraById(id) {
         manufacturer,
         vendor,
         install_date,
-        last_working_on,
-        is_working,
+
       } = data;
 
       const [result] = await this.db.pool.query(
         `UPDATE cameras 
          SET location_id=?, nvr_id=?, asset_no=?, serial_number=?, model_name=?, ip_address=?, port=?, manufacturer=?, vendor=?, 
-             install_date=?, last_working_on=?, is_working=?, updated_at=CURRENT_TIMESTAMP 
+             install_date=?, updated_at=CURRENT_TIMESTAMP 
          WHERE id=?`,
         [
           location_id,
@@ -170,8 +165,6 @@ async getCameraById(id) {
           manufacturer,
           vendor,
           install_date,
-          last_working_on,
-          is_working,
           id,
         ]
       );

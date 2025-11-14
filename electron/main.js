@@ -212,23 +212,23 @@ ipcMain.handle('nvrs:delete', async (event, id) => {
 
 
 //cameras
-ipcMain.handle('camera:create', async (event, data) => {
+ipcMain.handle('cameras:create', async (event, data) => {
   return await cameraService.createCamera(...data);
 });
 
-ipcMain.handle('camera:readAll', async () => {
+ipcMain.handle('cameras:readAll', async () => {
   return await cameraService.getAllCameras();
 });
 
-ipcMain.handle('camera:readById', async (event, id) => {
+ipcMain.handle('cameras:readById', async (event, id) => {
   return await cameraService.getCameraById(id);
 });
 
-ipcMain.handle('camera:update', async (event,{id,data}) => {
+ipcMain.handle('cameras:update', async (event,{id,data}) => {
   return await cameraService.updateCamera({id,...data});
 });
 
-ipcMain.handle('camera:delete', async (event, id) => {
+ipcMain.handle('cameras:delete', async (event, id) => {
   return await cameraService.deleteCamera(id);
 });
 
@@ -243,4 +243,8 @@ ipcMain.handle('ping:updateInterval', async (event, data) => {
 
 ipcMain.handle('ping:nvrcameracount', async () => {
   return await pingService.nvrcamerasummary();
+});
+
+ipcMain.handle('ping:notworkingdata', async () => {
+  return await pingService.notworkinglist();
 });
