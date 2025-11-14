@@ -97,7 +97,7 @@ const DashboardNew = () => {
                       label: "Total NVRS",
                       color: "#000",        // <<< TOTAL LABEL BLACK
                       fontSize: "29px",
-                      formatter: () => d.total_nvrs,
+                      formatter: () => d.total_nvrs ?? "Not Found",
                     },
                   },
                 },
@@ -203,7 +203,7 @@ const DashboardNew = () => {
                       label: "Total Cameras",
                       color: "#000",        // <<< TOTAL LABEL BLACK
                       fontSize: "29px",
-                      formatter: () => d.total_cameras,
+                       formatter: () => d.total_cameras ?? "Not Found",
                     },
                   },
                 },
@@ -248,73 +248,78 @@ const DashboardNew = () => {
 
 
   return (
-    
-    
-   <div className="grid xl:grid-cols-2 gap-6 mb-6">
 
-  {/* NVR Status */}
-  <div className="panel h-full transition-all duration-300 hover:shadow-lg rounded-2xl">
-    <div className="bg-white dark:bg-[#9d9ea1] rounded-2xl shadow-md border border-gray-200 dark:border-gray-700">
+      <div>
 
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
-        <h5 className="font-semibold text-lg text-gray-800 dark:text-dark">
-          NVR Status
-        </h5>
+    <h2 className="text-2xl font-semibold text-gray-800 dark:text-black mb-6">
+      Dashboard 
+    </h2>
+    
+    <div className="grid xl:grid-cols-2 gap-6 mb-6">
+
+      {/* NVR Status */}
+      <div className="panel h-full transition-all duration-300 dark:bg-[#c7c8c9]  rounded-2xl pb-3 mb-6">
+        <div className=" rounded-2xl ">
+
+          {/* Header */}
+          <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
+            <h5 className="font-semibold text-lg text-gray-800 dark:text-dark">
+              NVR Status
+            </h5>
+          </div>
+
+          {/* Chart */}
+          <div className="p-4">
+            {loading ? (
+              <div className="min-h-[325px] grid place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-20 rounded-xl">
+                <span className="animate-spin border-2 border-gray-600 dark:border-white !border-l-transparent rounded-full w-6 h-6 inline-flex"></span>
+              </div>
+            ) : (
+              <ReactApexChart
+                series={nvrStatus.series}
+                options={nvrStatus.options}
+                type="donut"
+                height={380}
+              />
+            )}
+          </div>
+
+        </div>
       </div>
 
-      {/* Chart */}
-      <div className="p-4">
-        {loading ? (
-          <div className="min-h-[325px] grid place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-20 rounded-xl">
-            <span className="animate-spin border-2 border-gray-600 dark:border-white !border-l-transparent rounded-full w-6 h-6 inline-flex"></span>
+
+      {/* Camera Status */}
+      <div className="panel h-full transition-all duration-300 dark:bg-[#c7c8c9]  rounded-2xl pb-3 mb-6">
+        <div className=" rounded-2xl ">
+
+          {/* Header */}
+          <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
+            <h5 className="font-semibold text-lg text-gray-800 dark:text-dark">
+              Camera Status
+            </h5>
           </div>
-        ) : (
-          <ReactApexChart
-            series={nvrStatus.series}
-            options={nvrStatus.options}
-            type="donut"
-            height={380}
-          />
-        )}
+
+          {/* Chart */}
+          <div className="p-4">
+            {loading ? (
+              <div className="min-h-[325px] grid place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-20 rounded-xl">
+                <span className="animate-spin border-2 border-gray-600 dark:border-white !border-l-transparent rounded-full w-6 h-6 inline-flex"></span>
+              </div>
+            ) : (
+              <ReactApexChart
+                series={cameraStatus.series}
+                options={cameraStatus.options}
+                type="donut"
+                height={380}
+              />
+            )}
+          </div>
+
+        </div>
       </div>
 
     </div>
   </div>
-
-
-  {/* Camera Status */}
-  <div className="panel h-full transition-all duration-300 hover:shadow-lg rounded-2xl">
-    <div className="bg-white dark:bg-[#9d9ea1] rounded-2xl shadow-md border border-gray-200 dark:border-gray-700">
-
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
-        <h5 className="font-semibold text-lg text-gray-800 dark:text-dark">
-          Camera Status
-        </h5>
-      </div>
-
-      {/* Chart */}
-      <div className="p-4">
-        {loading ? (
-          <div className="min-h-[325px] grid place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-20 rounded-xl">
-            <span className="animate-spin border-2 border-gray-600 dark:border-white !border-l-transparent rounded-full w-6 h-6 inline-flex"></span>
-          </div>
-        ) : (
-          <ReactApexChart
-            series={cameraStatus.series}
-            options={cameraStatus.options}
-            type="donut"
-            height={380}
-          />
-        )}
-      </div>
-
-    </div>
-  </div>
-
-</div>
-
 
   );
 };
