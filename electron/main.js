@@ -191,7 +191,7 @@ ipcMain.handle('location:delete', async (event, id) => {
 
 //nvrs
 ipcMain.handle('nvrs:create', async (event, data) => {
-  return await nvrService.createNvr(...data);
+  return await nvrService.createNvr(data);
 });
 
 ipcMain.handle('nvrs:readAll', async () => {
@@ -213,7 +213,7 @@ ipcMain.handle('nvrs:delete', async (event, id) => {
 
 //cameras
 ipcMain.handle('cameras:create', async (event, data) => {
-  return await cameraService.createCamera(...data);
+  return await cameraService.createCamera(data);
 });
 
 ipcMain.handle('cameras:readAll', async () => {
