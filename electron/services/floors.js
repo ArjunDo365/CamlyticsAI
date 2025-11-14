@@ -77,7 +77,7 @@ class FloorsService {
       const { id, block_id, name, description,display_order } = data;
 
       const [result] = await this.db.pool.query(
-        "UPDATE floors SET block_id = ?, name = ?, description = ?, display_order = ?, update_at = CURRENT_TIMESTAMP WHERE id = ?",
+        "UPDATE floors SET block_id = ?, name = ?, description = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
         [block_id, name, description,display_order, id]
       );
 

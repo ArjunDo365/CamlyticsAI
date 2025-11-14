@@ -41,8 +41,6 @@ class LocationService {
       JOIN blocks b ON f.block_id = b.id
       ORDER BY l.display_order DESC
     `);
-
-    console.log("getalllocation", rows);
     return successResponse(rows, "Locations fetched successfully");
   } catch (error) {
     return errorResponse(error, "Failed to fetch locations");
@@ -84,7 +82,7 @@ class LocationService {
       const { id, floor_id, name, description,display_order } = data;
 
       const [result] = await this.db.pool.query(
-        "UPDATE locations SET floor_id = ?, name = ?, description = ?, display_order = ?, update_at = CURRENT_TIMESTAMP WHERE id = ?",
+        "UPDATE locations SET floor_id = ?, name = ?, description = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
         [floor_id, name, description,display_order, id]
       );
 
