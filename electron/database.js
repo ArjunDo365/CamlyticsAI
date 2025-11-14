@@ -100,7 +100,7 @@ class Database {
         manufacturer VARCHAR(100),
         vendor VARCHAR(255),
         install_date DATE,
-        last_working_on DATE,
+        last_working_on TIMESTAMP,
         is_working ENUM('active', 'inactive') DEFAULT 'active',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -122,14 +122,23 @@ class Database {
         manufacturer VARCHAR(100),
         vendor VARCHAR(255),
         install_date DATE,
-        last_working_on DATE,
-        is_working ENUM('active', 'inactive') DEFAULT 'active',
+        last_working_on TIMESTAMP,
+        is_working ENUM('active', 'inactive') DEFAULT 'inactive',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
         FOREIGN KEY (nvr_id) REFERENCES nvrs(id) ON DELETE CASCADE
       )
     `;
+
+    // ----------------pinginterval------------------------
+    const pinginterval = `
+     CREATE TABLE IF NOT EXISTS pinginterval (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(100) UNIQUE NOT NULL,
+        value INT NOT NULL
+      )`;
+
     // ----------------------------------------------------
 
     const connection = await this.pool.getConnection();
@@ -142,6 +151,7 @@ class Database {
       await connection.query(createLocations);
       await connection.query(createNvrs);
       await connection.query(createCameras);
+      await connection.query(pinginterval);
 
       // Default roles
       await connection.query(`
@@ -163,9 +173,22 @@ class Database {
         );
         console.log("✅ Default admin user created");
       }
-    } finally {
-      connection.release();
-    }
+
+      const [rows] = await connection.query(
+      "SELECT * FROM pinginterval WHERE name = 'ping_interval'"
+    );
+
+   if (rows.length === 0) {
+  const defaultValue = 30; // 10 minutes
+  await connection.query(
+    "INSERT INTO pinginterval (name, value) VALUES ('ping_interval', ?)",
+    [defaultValue]
+  );
+  console.log(`✅ Default ping interval record created (${defaultValue}s)`);
+}
+} finally {
+  connection.release();
+}
   }
 
   // Generic query runner

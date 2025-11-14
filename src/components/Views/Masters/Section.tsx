@@ -11,7 +11,7 @@ const Section = () => {
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
-    floors_id: 0,
+    floor_id: 0,
     description: "",
     display_order: 0,
   });
@@ -23,7 +23,7 @@ const Section = () => {
   const resetForm = () => {
     setFormData({
       name: "",
-      floors_id: 0,
+      floor_id: 0,
       description: "",
       display_order: 0,
     });
@@ -31,6 +31,7 @@ const Section = () => {
   };
 
   const loadData = async () => {
+    debugger
     setLoading(true);
     try {
       const [sectionData, floorData, blockData] = await Promise.all([
@@ -58,7 +59,7 @@ const Section = () => {
     setEditingSection(section);
     setFormData({
       name: section.name,
-      floors_id: section.floors_id,
+      floor_id: section.floor_id,
       description: "",
       display_order:0
     });
@@ -183,7 +184,7 @@ const Section = () => {
                         ? 'bg-purple-100 text-purple-800'
                         : 'bg-green-100 text-green-800'
                     }`}> */}
-                    {section.floors_id}
+                    {section.floor_id}
                     {/* </span> */}
                   </td>
                   {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -246,11 +247,11 @@ const Section = () => {
                   Floor
                 </label>
                 <select
-                  value={formData.floors_id}
+                  value={formData.floor_id}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      floors_id: parseInt(e.target.value),
+                      floor_id: parseInt(e.target.value),
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"

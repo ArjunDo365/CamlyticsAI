@@ -37,7 +37,7 @@ export interface AuthState {
 export interface Section {
   id: number;
   name: string;
-  floors_id: number;
+  floor_id: number;
   description: string;
   display_order: number;
 }

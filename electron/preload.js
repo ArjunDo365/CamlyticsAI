@@ -56,4 +56,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateCamera: (id,data) => ipcRenderer.invoke('cameras:update', {id,data}),
   deleteCamera: (id) => ipcRenderer.invoke('cameras:delete', id),
 
+  //ping
+  manualPingTrigger: () => ipcRenderer.invoke('ping:manual'),
+  updatePingInterval: (data) => ipcRenderer.invoke('ping:updateInterval', data),
+
 });

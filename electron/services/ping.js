@@ -1,57 +1,123 @@
-const { Database } = require("lucide-react");
-const ping = require('ping')
+const ping = require('ping');
 
-const db = new Database();
+class PingService {
+  constructor(database) {
+    this.db = database;
+    this.cameraInterval = null;
+    this.nvrInterval = null;
+  }
 
-async function cctvCameraPing (){
-    const [camera] = await db.pool.query(`select * from cameras`);
-    for(const cam of camera){
-        const cameraPing = await ping.promise.probe(cam.ip_address,{timeout:3})
 
-        if(cameraPing.alive){
-            console.log(`Camera ${cam.id} (${cam.ip_address}) is not reachable`);
-            if(cam.is_working == 'active'){
-                await db.pool.query(`UPDATE cameras SET is_working='inactive', updated_at=CURRENT_TIMESTAMP WHERE id=?`,[cam.id]);
-                console.log(`Camera ${cam.id} marked as inactive`);
-            }else{
-                console.log(`Camera ${cam.id} (${cam.ip_address}) is online`);
-                if(cam.is_working=='incative'){
-                    await db.pool.query(`UPDATE cameras SET is_working='active',updated_at=CURRENT_TIMESTAMP WHERE id=?`,[cam.id]);
-                    console.log(`Camera ${cam.id} marked as active`);
-                }
+  async getPingInterval() {
+    const [rows] = await this.db.pool.query(
+      "SELECT value FROM pinginterval WHERE name = 'ping_interval' LIMIT 1"
+    );
 
-            }
+    if (rows.length > 0) return rows[0].value * 1000;
+    return 600 * 1000;
+  }
+
+  async updatePingInterval(data) {
+    const {time} = data;
+    await this.db.pool.query(
+      "UPDATE pinginterval SET value = ? WHERE name = 'ping_interval'",
+      [time]
+    );
+    console.log(`Updated ping interval to ${time} seconds`);
+    await this.startPingScheduler(); // restart scheduler dynamically
+  }
+
+  async cctvCameraPing() {
+    const [cameras] = await this.db.pool.query(`SELECT * FROM cameras`);
+    if (cameras.length === 0) {
+  console.log('No camera found');
+} else {
+  console.log(`${cameras.length} cameras found`);
+}
+    
+    for (const cam of cameras) {
+      const result = await ping.promise.probe(cam.ip_address, { timeout: 3 });
+
+      if (!result.alive) {
+        console.log(`Camera ${cam.id} (${cam.ip_address}) is unreachable`);
+        if (cam.is_working === 'active') {
+          await this.db.pool.query(
+            `UPDATE cameras SET is_working='inactive', updated_at=CURRENT_TIMESTAMP WHERE id=?`,
+            [cam.id]
+          );
+          console.log(`Camera ${cam.id} marked inactive`);
         }
+      } else {
+        console.log(`Camera ${cam.id} (${cam.ip_address}) is online`);
+        if (cam.is_working === 'inactive') {
+          await this.db.pool.query(
+            `UPDATE cameras SET is_working='active', last_working_on=CURRENT_TIMESTAMP WHERE id=?`,
+            [cam.id]
+          );
+          console.log(`Camera ${cam.id} marked active`);
+        }
+      }
     }
-         
+  }
+
+
+  async nvrsPing() {
+    const [nvrs] = await this.db.pool.query(`SELECT * FROM nvrs`);
+if (nvrs.length === 0) {
+  console.log('No NVR found');
+} else {
+  console.log(`${nvrs.length} cameras found`);
+}
+    for (const nvr of nvrs) {
+      const result = await ping.promise.probe(nvr.ip_address, { timeout: 3 });
+
+      if (!result.alive) {
+        console.log(`NVR ${nvr.id} (${nvr.ip_address}) unreachable`);
+        if (nvr.is_working === 'active') {
+          await this.db.pool.query(
+            `UPDATE nvrs SET is_working='inactive', updated_at=CURRENT_TIMESTAMP WHERE id=?`,
+            [nvr.id]
+          );
+          console.log(`NVR ${nvr.id} marked inactive`);
+        }
+      } else {
+        console.log(`NVR ${nvr.id} (${nvr.ip_address}) online`);
+        if (nvr.is_working === 'inactive') {
+          await this.db.pool.query(
+            `UPDATE nvrs SET is_working='active', last_working_on=CURRENT_TIMESTAMP WHERE id=?`,
+            [nvr.id]
+          );
+          console.log(`NVR ${nvr.id} marked active`);
+        }
+      }
+    }
+  }
+
+  async startPingScheduler() {
+    const intervalTime = await this.getPingInterval();
+
+    console.log(`Ping interval: ${intervalTime / 1000} seconds`);
+
+    // clear existing timers
+    if (this.cameraInterval) clearInterval(this.cameraInterval);
+    if (this.nvrInterval) clearInterval(this.nvrInterval);
+
+    // run immediately once
+    await this.cctvCameraPing();
+    await this.nvrsPing();
+
+    // schedule repeated
+    this.cameraInterval = setInterval(() => this.cctvCameraPing(), intervalTime);
+    this.nvrInterval = setInterval(() => this.nvrsPing(), intervalTime);
+  }
+
+  // 🧭 Manual trigger from UI (Ping Now)
+  async manualPingTrigger() {
+    console.log("⚡ Manual ping triggered");
+    await this.cctvCameraPing();
+    await this.nvrsPing();
+    await this.startPingScheduler(); // reset timer from now
+  }
 }
 
-async function nvrsPing (){
-    const [nvrs] = await db.pool.query(`select * from nvrs`);
-    for(const nvr of nvrs){
-        const nvrsPing = await ping.promise.probe(nvr.ip_address,{timeout:3})
-
-        if(nvrsPing.alive){
-            console.log(`nvr ${nvr.id} (${nvr.ip_address}) is not reachable`);
-            if(nvr.is_working == 'active'){
-                await db.pool.query(`UPDATE nvrs SET is_working='inactive', updated_at=CURRENT_TIMESTAMP WHERE id=?`,[nvr.id]);
-                console.log(`nvr ${nvr.id} marked as inactive`);
-            }else{
-                console.log(`Camera ${nvr.id} (${nvr.ip_address}) is online`);
-                if(nvr.is_working=='incative'){
-                    await db.pool.query(`UPDATE nvrs SET is_working='active',updated_at=CURRENT_TIMESTAMP WHERE id=?`,[nvr.id]);
-                    console.log(`nvr ${nvr.id} marked as active`);
-                }
-
-            }
-        }
-    }
-         
-}
-
-cctvCameraPing();
-nvrsPing();
-
-// Schedule to run every 5 minutes
-setInterval(cctvCameraPing, 5 * 60 * 1000);
-setInterval(nvrsPing, 5 * 60 * 1000);
+module.exports = PingService;

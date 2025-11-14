@@ -28,6 +28,7 @@ class FloorsService {
     const [rows] = await this.db.pool.query(`
       SELECT
         f.id,
+        f.display_order,
         f.name,
         f.description,
         f.block_id,
@@ -48,6 +49,7 @@ class FloorsService {
       `
       SELECT
         f.id,
+        f.display_order,
         f.name,
         f.description,
         f.block_id,

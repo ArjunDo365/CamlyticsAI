@@ -8,11 +8,11 @@ class LocationService {
 
   async createLocation(data) {
     try {
-      const { floors_id, name, description,display_order } = data;
+      const { floor_id, name, description,display_order } = data;
 
       const [result] = await this.db.pool.query(
-        "INSERT INTO location (floors_id, name, description,display_order) VALUES (?, ?, ?, ?)",
-        [floors_id, name, description,display_order]
+        "INSERT INTO locations (floor_id, name, description,display_order) VALUES (?, ?, ?, ?)",
+        [floor_id, name, description,display_order]
       );
 
       return successResponse(
@@ -25,27 +25,30 @@ class LocationService {
   }
 
   async getAllLocation() {
-    try {
-      const [rows] = await this.db.pool.query(`
-        SELECT
-          l.id,
-          l.name,
-          l.discription,
-          l.floor_id,
-          l.display_order,
-          f.name as floor_name,
-          f.block_id,
-          b.name as block_name
-          from location l 
-          join floors f on l.floor_id = id,
-          join blocks b on f.block_id = id  
-          ORDER BY l.id DESC
-        `);
-      return successResponse(rows, "Locations fetched successfully");
-    } catch (error) {
-      return errorResponse(error, "Failed to fetch locations");
-    }
+  try {
+    const [rows] = await this.db.pool.query(`
+      SELECT
+        l.id,
+        l.name,
+        l.description,
+        l.floor_id,
+        l.display_order,
+        f.name AS floor_name,
+        f.block_id,
+        b.name AS block_name
+      FROM locations l
+      JOIN floors f ON l.floor_id = f.id
+      JOIN blocks b ON f.block_id = b.id
+      ORDER BY l.display_order DESC
+    `);
+
+    console.log("getalllocation", rows);
+    return successResponse(rows, "Locations fetched successfully");
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch locations");
   }
+}
+
 
   async getByIdLocation(id) {
     try {
@@ -53,13 +56,13 @@ class LocationService {
         `SELECT
           l.id,
           l.name,
-          l.discription,
+          l.description,
           l.display_order,
           l.floor_id,
           f.name as floor_name,
           f.block_id,
           b.name as block_name
-          from location l 
+          from locations l 
           join floors f on l.floor_id = id,
           join blocks b on f.block_id = id  
           ORDER BY l.id DESC
@@ -78,11 +81,11 @@ class LocationService {
 
   async updateLocation(data) {
     try {
-      const { id, floors_id, name, description,display_order } = data;
+      const { id, floor_id, name, description,display_order } = data;
 
       const [result] = await this.db.pool.query(
-        "UPDATE location SET floors_id = ?, name = ?, description = ?, display_order = ?, update_at = CURRENT_TIMESTAMP WHERE id = ?",
-        [floors_id, name, description,display_order, id]
+        "UPDATE locations SET floor_id = ?, name = ?, description = ?, display_order = ?, update_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [floor_id, name, description,display_order, id]
       );
 
       if (result.affectedRows === 0)
@@ -98,7 +101,7 @@ class LocationService {
   async deleteLocation(id) {
     try {
       const [result] = await this.db.pool.query(
-        "DELETE FROM location WHERE id = ?",
+        "DELETE FROM locations WHERE id = ?",
         [id]
       );
 

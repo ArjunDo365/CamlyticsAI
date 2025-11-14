@@ -60,6 +60,7 @@ const NvrService = require('./services/nvr');
 const CameraService = require('./services/camera');
 const LocationService = require('./services/location');
 const FloorsService = require('./services/floors');
+const PingService = require('./services/ping');
 
 const db = new Database();
 const authService = new AuthService(db);
@@ -68,8 +69,9 @@ const floorsService = new FloorsService(db);
 const locationService = new LocationService(db);
 const nvrService = new NvrService(db);
 const cameraService = new CameraService(db)
+const pingService = new PingService(db);
 
-
+pingService.startPingScheduler();
 // ---------------------------
 // Auth handlers
 // ---------------------------
@@ -230,3 +232,11 @@ ipcMain.handle('camera:delete', async (event, id) => {
   return await cameraService.deleteCamera(id);
 });
 
+//ping
+ipcMain.handle('ping:manual', async () => {
+  return await pingService.manualPingTrigger();
+});
+
+ipcMain.handle('ping:updateInterval', async (event, data) => {
+  return await pingService.updatePingInterval(data);
+});
