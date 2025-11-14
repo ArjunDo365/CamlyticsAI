@@ -29,115 +29,161 @@ class Database {
     // -------------------- USER TABLES --------------------
     const createUserRoles = `
       CREATE TABLE IF NOT EXISTS user_roles (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL UNIQUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `;
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+
+  display_order INT DEFAULT NULL,
+  status TINYINT DEFAULT 1,
+  created_by INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by INT DEFAULT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)
+`;
 
     const createUsers = `
       CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_role_id INT NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_role_id) REFERENCES user_roles(id)
-      )
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_role_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+
+  display_order INT DEFAULT NULL,
+  status TINYINT DEFAULT 1,
+  created_by INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by INT DEFAULT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (user_role_id) REFERENCES user_roles(id)
+)
     `;
 
     // -------------------- BLOCK --------------------
     const createBlocks = `
       CREATE TABLE IF NOT EXISTS blocks (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL UNIQUE,
-        display_order INT UNIQUE,
-        description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  description TEXT,
+
+  display_order INT DEFAULT NULL,
+  status TINYINT DEFAULT 1,
+  created_by INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by INT DEFAULT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)
     `;
 
     // -------------------- FLOORS --------------------
     const createFloors = `
       CREATE TABLE IF NOT EXISTS floors (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        display_order INT UNIQUE,
-        block_id INT NOT NULL,
-        name VARCHAR(100) NOT NULL,
-        description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (block_id) REFERENCES blocks(id) ON DELETE CASCADE
-      )
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  block_id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+
+  display_order INT DEFAULT NULL,
+  status TINYINT DEFAULT 1,
+  created_by INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by INT DEFAULT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (block_id) REFERENCES blocks(id) ON DELETE CASCADE
+);
+
     `;
 
     // -------------------- LOCATIONS --------------------
     const createLocations = `
       CREATE TABLE IF NOT EXISTS locations (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        display_order INT UNIQUE,
-        floor_id INT NOT NULL,
-        name VARCHAR(100) NOT NULL,
-        description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE CASCADE
-      )
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  floor_id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+
+  display_order INT DEFAULT NULL,
+  status TINYINT DEFAULT 1,
+  created_by INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by INT DEFAULT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE CASCADE
+)
     `;
 
     // -------------------- NVR TABLE --------------------
     const createNvrs = `
       CREATE TABLE IF NOT EXISTS nvrs (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        location_id INT NOT NULL,
-        asset_no VARCHAR(100) NOT NULL,
-        serial_number VARCHAR(100),
-        model_name VARCHAR(100),
-        ip_address VARCHAR(45) NOT NULL,
-        manufacturer VARCHAR(100),
-        vendor VARCHAR(255),
-        install_date DATE,
-        last_working_on TIMESTAMP,
-        is_working ENUM('active', 'inactive') DEFAULT 'active',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
-      )
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  location_id INT NOT NULL,
+  asset_no VARCHAR(100) NOT NULL UNIQUE,
+  serial_number VARCHAR(100) UNIQUE,
+  model_name VARCHAR(100),
+  ip_address VARCHAR(45) NOT NULL,
+  manufacturer VARCHAR(100),
+  vendor VARCHAR(255),
+  install_date DATE,
+  last_working_on TIMESTAMP,
+  is_working BOOLEAN DEFAULT 0,
+
+  display_order INT DEFAULT NULL,
+  status TINYINT DEFAULT 1,
+  created_by INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by INT DEFAULT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
+)
     `;
 
     // -------------------- CAMERA TABLE --------------------
     const createCameras = `
       CREATE TABLE IF NOT EXISTS cameras (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        location_id INT NOT NULL,
-        nvr_id INT NOT NULL,
-        asset_no VARCHAR(100) NOT NULL,
-        serial_number VARCHAR(100),
-        model_name VARCHAR(100),
-        ip_address VARCHAR(45) NOT NULL,
-        port INT DEFAULT 80,
-        manufacturer VARCHAR(100),
-        vendor VARCHAR(255),
-        install_date DATE,
-        last_working_on TIMESTAMP,
-        is_working ENUM('active', 'inactive') DEFAULT 'inactive',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
-        FOREIGN KEY (nvr_id) REFERENCES nvrs(id) ON DELETE CASCADE
-      )
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  location_id INT NOT NULL,
+  nvr_id INT NOT NULL,
+  asset_no VARCHAR(100) NOT NULL UNIQUE,
+  serial_number VARCHAR(100) UNIQUE,
+  model_name VARCHAR(100),
+  ip_address VARCHAR(45) NOT NULL,
+  port INT DEFAULT 80,
+  manufacturer VARCHAR(100),
+  vendor VARCHAR(255),
+  install_date DATE,
+  last_working_on TIMESTAMP,
+  is_working BOOLEAN DEFAULT 0,
+
+  display_order INT DEFAULT NULL,
+  status TINYINT DEFAULT 1,
+  created_by INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by INT DEFAULT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
+  FOREIGN KEY (nvr_id) REFERENCES nvrs(id) ON DELETE CASCADE
+)
     `;
 
     // ----------------pinginterval------------------------
-    const pinginterval = `
-     CREATE TABLE IF NOT EXISTS pinginterval (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        name VARCHAR(100) UNIQUE NOT NULL,
-        value INT NOT NULL
-      )`;
+    const createAppSettingTable = `
+  CREATE TABLE IF NOT EXISTS appsetting (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    KeyName VARCHAR(255) UNIQUE NOT NULL,
+    KeyValue VARCHAR(255) NOT NULL,
+    display_order INT DEFAULT NULL,
+    status TINYINT DEFAULT 1,
+    created_by INT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by INT DEFAULT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  )
+`;
 
     // ----------------------------------------------------
 
@@ -151,7 +197,7 @@ class Database {
       await connection.query(createLocations);
       await connection.query(createNvrs);
       await connection.query(createCameras);
-      await connection.query(pinginterval);
+      await connection.query(createAppSettingTable);
 
       // Default roles
       await connection.query(`
@@ -175,13 +221,13 @@ class Database {
       }
 
       const [rows] = await connection.query(
-      "SELECT * FROM pinginterval WHERE name = 'ping_interval'"
+      "SELECT * FROM appsetting WHERE keyname = 'Health Check - Frequency in Milliseconds	1000'"
     );
 
    if (rows.length === 0) {
-  const defaultValue = 30; // 10 minutes
+  const defaultValue = 30;
   await connection.query(
-    "INSERT INTO pinginterval (name, value) VALUES ('ping_interval', ?)",
+    "INSERT INTO appsetting (keyname, keyvalue) VALUES ('Health Check - Frequency in Milliseconds	1000', ?)",
     [defaultValue]
   );
   console.log(`✅ Default ping interval record created (${defaultValue}s)`);
