@@ -8,6 +8,33 @@ class PingService {
   }
 
 
+  async nvrcamerasummery(){
+    try{
+      const [cameraNvrCount] = await this.db.pool.query(`
+          SELECT
+  (SELECT COUNT(*) FROM cameras) AS total_cameras,
+  (SELECT COUNT(*) FROM cameras WHERE is_working = 'active') AS active_cameras,
+  (SELECT COUNT(*) FROM cameras WHERE is_working = 'inactive') AS inactive_cameras,
+  (SELECT COUNT(*) FROM nvrs) AS total_nvrs,
+  (SELECT COUNT(*) FROM nvrs WHERE is_working = 'active') AS active_nvrs,
+  (SELECT COUNT(*) FROM nvrs WHERE is_working = 'inactive') AS inactive_nvrs;
+        `)
+
+        const result={
+          total_cameras : cameraNvrCount[0].total_cameras|| 0 ,
+          active_cameras: cameraNvrCount[0].active_cameras||0,
+          inactive_camera: cameraNvrCount[0].inactive_camera||0,
+          total_nvrs: cameraNvrCount[0].total_nvrs||0,
+          active_nvrs: cameraNvrCount[0].active_nvrs||0,
+          inactive_nvrs:cameraNvrCount[0].inactive_nvrs||0,
+          timestamp: new Date().toISOString(),
+        }
+      return successResponse(result, "nvrcamerasummery fetched successfully");
+    }catch(error){
+       return errorResponse(error, "Failed to fetch nvrcamerasummery");
+    }
+  }
+
   async getPingInterval() {
     const [rows] = await this.db.pool.query(
       "SELECT value FROM pinginterval WHERE name = 'ping_interval' LIMIT 1"

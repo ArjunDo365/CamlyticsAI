@@ -58,6 +58,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   //ping
   manualPingTrigger: () => ipcRenderer.invoke('ping:manual'),
+  nvrcamerasummery: () => ipcRenderer.invoke('ping:nvrcamerasummery'),
   updatePingInterval: (data) => ipcRenderer.invoke('ping:updateInterval', data),
 
 });
