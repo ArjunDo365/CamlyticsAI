@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Block, Floor } from "../../../types";
 import { Edit, Plus, Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
+import { CommonHelper } from "../../../helper/helper";
 
 const Floors = () => {
   const [showModal, setShowModal] = useState(false);
@@ -62,20 +64,28 @@ const Floors = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm("Are you sure you want to delete this floor?")) {
-      try {
-        const result = await window.electronAPI.deleteFloors(id);
-        if (result.success) {
+  const handleDelete = async (floor: Floor) => {
+    Swal.fire({
+      icon: "warning",
+      title: "Are you sure?",
+      text: "You want to Delete " + " " + floor.name + "!",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      padding: "2em",
+      customClass: { popup: "sweet-alerts" },
+    }).then(async (result) => {
+      if (result.value) {
+        let res: any;
+        res = await window.electronAPI.deleteFloors(floor.id);
+        console.log("resp from delete: ", res);
+        if (res.success) {
           await loadData();
+          CommonHelper.SuccessToaster(res.message);
         } else {
-          alert(result.error || "Delete failed");
+          CommonHelper.ErrorToaster(res.message);
         }
-      } catch (error) {
-        console.error("Error deleting floor:", error);
-        alert("An error occurred");
       }
-    }
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,17 +196,15 @@ const Floors = () => {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => handleEdit(floor)}
-                        className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
+                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1 rounded-full p-2"
                       >
-                        <Edit size={14} />
-                        Edit
+                        <Edit size={20} />
                       </button>
                       <button
-                        onClick={() => handleDelete(floor.id)}
-                        className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                        onClick={() => handleDelete(floor)}
+                        className="bg-red-600 hover:bg-red-700 flex items-center gap-1 rounded-full p-2"
                       >
-                        <Trash2 size={14} />
-                        Delete
+                        <Trash2 size={20} />
                       </button>
                     </div>
                   </td>
@@ -294,13 +302,13 @@ const Floors = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors"
                 >
                   {editingFloor ? "Update" : "Create"} Floor
                 </button>

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Block } from "../../../types";
 import { Edit, Plus, Trash2 } from "lucide-react";
-
+import Swal from "sweetalert2";
+import { CommonHelper } from "../../../helper/helper";
 
 const Blocks = () => {
   const [showModal, setShowModal] = useState(false);
@@ -11,18 +12,18 @@ const Blocks = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    display_order:0
+    display_order: 0,
   });
 
-    useEffect(() => {
-      loadData();
-    }, []);
-    
+  useEffect(() => {
+    loadData();
+  }, []);
+
   const resetForm = () => {
     setFormData({
       name: "",
       description: "",
-      display_order:1
+      display_order: 1,
     });
     setEditingBlock(null);
   };
@@ -46,28 +47,35 @@ const Blocks = () => {
   const handleEdit = (block: Block) => {
     setEditingBlock(block);
     setFormData({
-      name: block.name,      
+      name: block.name,
       description: block.description,
-      display_order:block.display_order
+      display_order: block.display_order,
     });
     setShowModal(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm("Are you sure you want to delete this block?")) {
-      try {
-        const result = await window.electronAPI.deleteBlock(id);
-        // console.log('result on delete block: ',result);
-        if (result.success) {
-          await loadData();
-        } else {
-          alert(result.error || "Delete failed");
-        }
-      } catch (error) {
-        console.error("Error deleting block:", error);
-        alert("An error occurred");
-      }
-    }
+  const handleDelete = async (block:Block) => {
+        Swal.fire({
+          icon: "warning",
+          title: "Are you sure?",
+          text: "You want to Delete " + " " + block.name + "!",
+          showCancelButton: true,
+          confirmButtonText: "Delete",
+          padding: "2em",
+          customClass: { popup: "sweet-alerts" },
+        }).then(async (result) => {
+          if (result.value) {
+            let res: any;
+            res = await window.electronAPI.deleteBlock(block.id);
+            console.log('resp from delete: ',res)
+            if (res.success) {
+              await loadData();
+              CommonHelper.SuccessToaster(res.message);
+            } else {
+              CommonHelper.ErrorToaster(res.message);
+            }
+          }
+        });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,8 +110,7 @@ const Blocks = () => {
     }
   };
 
-
-    if (loading) {
+  if (loading) {
     return (
       <div className="p-6">
         <div className="flex items-center justify-center h-64">
@@ -112,7 +119,6 @@ const Blocks = () => {
       </div>
     );
   }
-
 
   return (
     <div className="p-6">
@@ -184,17 +190,15 @@ const Blocks = () => {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => handleEdit(block)}
-                        className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
+                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1 rounded-full p-2"
                       >
-                        <Edit size={14} />
-                        Edit
+                        <Edit size={20} />
                       </button>
                       <button
-                        onClick={() => handleDelete(block.id)}
-                        className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                        onClick={() => handleDelete(block)}
+                        className="bg-red-600 hover:bg-red-700 flex items-center gap-1 rounded-full p-2"
                       >
-                        <Trash2 size={14} />
-                        Delete
+                        <Trash2 size={20} />
                       </button>
                     </div>
                   </td>
@@ -255,14 +259,13 @@ const Blocks = () => {
                 <input
                   type="number"
                   value={formData.display_order}
-                  onChange={(e) =>{
-                    const valueConvert=e.target.value?e.target.value:'0';
+                  onChange={(e) => {
+                    const valueConvert = e.target.value ? e.target.value : "0";
                     setFormData((prevData) => ({
                       ...prevData,
                       display_order: parseInt(valueConvert),
-                    }))
-                  }
-                  }
+                    }));
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                   required
                 />
@@ -271,13 +274,13 @@ const Blocks = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors"
                 >
                   {editingBlock ? "Update" : "Create"} Block
                 </button>

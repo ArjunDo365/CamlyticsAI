@@ -1,6 +1,8 @@
 import { Edit, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import type { Block, Floor, Section, User } from "../../../types/index";
+import Swal from "sweetalert2";
+import { CommonHelper } from "../../../helper/helper";
 
 const Section = () => {
   const [showModal, setShowModal] = useState(false);
@@ -31,7 +33,7 @@ const Section = () => {
   };
 
   const loadData = async () => {
-    debugger
+    // debugger
     setLoading(true);
     try {
       const [sectionData, floorData, blockData] = await Promise.all([
@@ -61,25 +63,33 @@ const Section = () => {
       name: section.name,
       floor_id: section.floor_id,
       description: "",
-      display_order:0
+      display_order: 0,
     });
     setShowModal(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm("Are you sure you want to delete this section?")) {
-      try {
-        const result = await window.electronAPI.deleteLocation(id);
-        if (result.success) {
+  const handleDelete = async (section: Section) => {
+    Swal.fire({
+      icon: "warning",
+      title: "Are you sure?",
+      text: "You want to Delete " + " " + section.name + "!",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      padding: "2em",
+      customClass: { popup: "sweet-alerts" },
+    }).then(async (result) => {
+      if (result.value) {
+        let res: any;
+        res = await window.electronAPI.deleteLocation(section.id);
+        console.log("resp from delete: ", res);
+        if (res.success) {
           await loadData();
+          CommonHelper.SuccessToaster(res.message);
         } else {
-          alert(result.error || "Delete failed");
+          CommonHelper.ErrorToaster(res.message);
         }
-      } catch (error) {
-        console.error("Error deleting section:", error);
-        alert("An error occurred");
       }
-    }
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,7 +100,10 @@ const Section = () => {
 
       let result;
       if (editingSection) {
-        result = await window.electronAPI.updateLocation(editingSection.id, formData);
+        result = await window.electronAPI.updateLocation(
+          editingSection.id,
+          formData
+        );
       } else {
         result = await window.electronAPI.createLocation(formData);
       }
@@ -100,7 +113,7 @@ const Section = () => {
         setShowModal(false);
         resetForm();
       } else {
-        alert(result.error || 'Operation failed');
+        alert(result.error || "Operation failed");
       }
     } catch (error) {
       console.error("Error saving section:", error);
@@ -108,8 +121,7 @@ const Section = () => {
     }
   };
 
-
-    if (loading) {
+  if (loading) {
     return (
       <div className="p-6">
         <div className="flex items-center justify-center h-64">
@@ -118,7 +130,6 @@ const Section = () => {
       </div>
     );
   }
-
 
   return (
     <div className="p-6">
@@ -194,17 +205,15 @@ const Section = () => {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => handleEdit(section)}
-                        className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
+                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1 rounded-full p-2"
                       >
-                        <Edit size={14} />
-                        Edit
+                        <Edit size={20} />
                       </button>
                       <button
-                        onClick={() => handleDelete(section.id)}
-                        className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                        onClick={() => handleDelete(section)}
+                        className="bg-red-600 hover:bg-red-700 flex items-center gap-1 rounded-full p-2"
                       >
-                        <Trash2 size={14} />
-                        Delete
+                        <Trash2 size={20} />
                       </button>
                     </div>
                   </td>
@@ -236,6 +245,22 @@ const Section = () => {
                     setFormData((prevData) => ({
                       ...prevData,
                       name: e.target.value,
+                    }))
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      description: e.target.value,
                     }))
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
@@ -311,13 +336,13 @@ const Section = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors"
                 >
                   {editingSection ? "Update" : "Create"} Section
                 </button>

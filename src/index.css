@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import './asset/css/sweetalert.css';
 @import 'animate.css';
 
 /* Custom scrollbar styles */
