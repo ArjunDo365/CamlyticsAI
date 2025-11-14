@@ -16,14 +16,12 @@ class NvrService {
         ip_address,
         manufacturer,
         vendor,
-        install_date,
-        last_working_on,
-        is_working,
+        install_date
       } = data;
 
       const [result] = await this.db.pool.query(
         `INSERT INTO nvrs 
-        (location_id, asset_no, serial_number, model_name, ip_address, manufacturer, vendor, install_date, last_working_on, is_working)
+        (location_id, asset_no, serial_number, model_name, ip_address, manufacturer, vendor, install_date)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           location_id,
@@ -34,8 +32,6 @@ class NvrService {
           manufacturer,
           vendor,
           install_date,
-          last_working_on,
-          is_working || "active",
         ]
       );
 
@@ -133,15 +129,13 @@ async getNvrById(id) {
         ip_address,
         manufacturer,
         vendor,
-        install_date,
-        last_working_on,
-        is_working,
+        install_date
       } = data;
 
       const [result] = await this.db.pool.query(
         `UPDATE nvrs 
          SET location_id=?, asset_no=?, serial_number=?, model_name=?, ip_address=?, manufacturer=?, vendor=?, 
-             install_date=?, last_working_on=?, is_working=?, updated_at=CURRENT_TIMESTAMP 
+             install_date=?, updated_at=CURRENT_TIMESTAMP 
          WHERE id=?`,
         [
           location_id,
@@ -152,8 +146,6 @@ async getNvrById(id) {
           manufacturer,
           vendor,
           install_date,
-          last_working_on,
-          is_working,
           id,
         ]
       );
