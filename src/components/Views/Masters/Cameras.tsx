@@ -3,6 +3,8 @@ import { Camera, Nvr, Section } from "../../../types";
 import Swal from "sweetalert2";
 import { CommonHelper } from "../../../helper/helper";
 import { Edit, Plus, Trash2 } from "lucide-react";
+import "flatpickr/dist/flatpickr.css";
+import Flatpickr from "react-flatpickr";
 
 const Cameras = () => {
   const [showModal, setShowModal] = useState(false);
@@ -357,28 +359,7 @@ const Cameras = () => {
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Location
-                  </label>
-                  <select
-                    value={formData.location_id}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        location_id: parseInt(e.target.value),
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
-                    required
-                  >
-                    {sections.map((section) => (
-                      <option key={section.id} value={section.id}>
-                        {section.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     NVR
@@ -433,6 +414,50 @@ const Cameras = () => {
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                     required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Location
+                  </label>
+                  <select
+                    value={formData.location_id}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        location_id: parseInt(e.target.value),
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
+                    required
+                  >
+                    <option value={0}>-- Select Location --</option>
+                    {sections.map((section) => (
+                      <option key={section.id} value={section.id}>
+                        {section.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Installed Date
+                  </label>
+                  <Flatpickr
+                    value={formData.install_date}
+                    options={{
+                      dateFormat: "d-m-Y",
+                      position: "auto left",
+                    }}
+                    className="form-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
+                    onChange={(date: Date[]) =>
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        install_date: date[0]
+                          ? date[0].toISOString().split("T")[0]
+                          : "",
+                      }))
+                    }
                   />
                 </div>
               </div>

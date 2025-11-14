@@ -23,7 +23,7 @@ class CameraService {
       const [result] = await this.db.pool.query(
         `INSERT INTO cameras 
         (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,)`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           location_id,
           nvr_id,

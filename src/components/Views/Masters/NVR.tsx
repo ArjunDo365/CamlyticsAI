@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Nvr } from "../../../types";
+import { Nvr, Section } from "../../../types";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
 import { CommonHelper } from "../../../helper/helper";
+import "flatpickr/dist/flatpickr.css";
+import Flatpickr from "react-flatpickr";
 
 const NVR = () => {
   const [showModal, setShowModal] = useState(false);
   const [nvrs, setNvrs] = useState<Nvr[]>([]);
+  const [floors, setFloors] = useState<Section[]>([]);
   const [editingNvr, setEditingNvr] = useState<Nvr | null>(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -41,11 +44,17 @@ const NVR = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const nvrData = await window.electronAPI.getAllNvrs();
+      const [nvrData, floorData] = await Promise.all([
+        window.electronAPI.getAllNvrs(),
+        window.electronAPI.getAllFloors(),
+      ]);
       // console.log("data from backend for blocks: ", blockData);
 
       if (nvrData.success) {
         setNvrs(nvrData.data);
+      }
+      if (floorData.success) {
+        setFloors(floorData.data);
       }
     } catch (error) {
       console.error("Error loading data:", error);
@@ -182,7 +191,7 @@ const NVR = () => {
                       <div className="flex-shrink-0 h-10 w-10">
                         <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                           <span className="text-white font-medium">
-                            {n.asset_no.charAt(0).toUpperCase()}
+                            {n?.asset_no?.charAt(0)?.toUpperCase()}
                           </span>
                         </div>
                       </div>
@@ -334,6 +343,50 @@ const NVR = () => {
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                     required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Location
+                  </label>
+                  <select
+                    value={formData.location_id}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        location_id: parseInt(e.target.value),
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
+                    required
+                  >
+                    <option value={0}>-- Select Floor --</option>
+                    {floors.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Installed Date
+                  </label>
+                  <Flatpickr
+                    value={formData.install_date}
+                    options={{
+                      dateFormat: "d-m-Y",
+                      position: "auto left",
+                    }}
+                    className="form-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
+                    onChange={(date: Date[]) =>
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        install_date: date[0]
+                          ? date[0].toISOString().split("T")[0]
+                          : "",
+                      }))
+                    }
                   />
                 </div>
               </div>
