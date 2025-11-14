@@ -67,8 +67,24 @@ export interface Nvr {
   manufacturer: string;
   vendor: string;
   install_date: string;
-  // last_working_on?:string;
-  // is_working?:string;
+  last_working_on?:string;
+  is_working?:string;
+}
+
+export interface Camera {
+  id: number|null;
+  location_id: number;
+  nvr_id:number;
+  asset_no: string;
+  serial_number: string;
+  model_name: string;
+  ip_address: string;
+  port:string;
+  manufacturer: string;
+  vendor: string;
+  install_date: string;
+  last_working_on?:string;
+  is_working?:string;
 }
 
 declare global {

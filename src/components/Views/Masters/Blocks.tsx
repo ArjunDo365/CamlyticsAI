@@ -54,28 +54,28 @@ const Blocks = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (block:Block) => {
-        Swal.fire({
-          icon: "warning",
-          title: "Are you sure?",
-          text: "You want to Delete " + " " + block.name + "!",
-          showCancelButton: true,
-          confirmButtonText: "Delete",
-          padding: "2em",
-          customClass: { popup: "sweet-alerts" },
-        }).then(async (result) => {
-          if (result.value) {
-            let res: any;
-            res = await window.electronAPI.deleteBlock(block.id);
-            console.log('resp from delete: ',res)
-            if (res.success) {
-              await loadData();
-              CommonHelper.SuccessToaster(res.message);
-            } else {
-              CommonHelper.ErrorToaster(res.message);
-            }
-          }
-        });
+  const handleDelete = async (block: Block) => {
+    Swal.fire({
+      icon: "warning",
+      title: "Are you sure?",
+      text: "You want to Delete " + " " + block.name + "!",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      padding: "2em",
+      customClass: { popup: "sweet-alerts" },
+    }).then(async (result) => {
+      if (result.value) {
+        let res: any;
+        res = await window.electronAPI.deleteBlock(block.id);
+        console.log("resp from delete: ", res);
+        if (res.success) {
+          await loadData();
+          CommonHelper.SuccessToaster(res.message);
+        } else {
+          CommonHelper.ErrorToaster(res.message);
+        }
+      }
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,10 +90,12 @@ const Blocks = () => {
           editingBlock.id,
           formData
         );
+        if (result.success) CommonHelper.SuccessToaster(result.message);
         // console.log('result on edit block submit',result);
       } else {
         // console.log('payload for block submit: ',formData);
         result = await window.electronAPI.createBlock(formData);
+        if (result.success) CommonHelper.SuccessToaster(result.message);
         // console.log('result on block submit',result);
       }
 
@@ -102,11 +104,13 @@ const Blocks = () => {
         setShowModal(false);
         resetForm();
       } else {
-        alert(result.error || "Operation failed");
+        CommonHelper.ErrorToaster(result.error || "Operation failed");
+        // alert(result.error || "Operation failed");
       }
     } catch (error) {
       console.error("Error saving block:", error);
-      alert("An error occurred");
+      CommonHelper.ErrorToaster("An error occurred");
+      // alert("An error occurred");
     }
   };
 

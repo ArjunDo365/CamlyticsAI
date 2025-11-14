@@ -62,8 +62,8 @@ const Section = () => {
     setFormData({
       name: section.name,
       floor_id: section.floor_id,
-      description: "",
-      display_order: 0,
+      description: section.description,
+      display_order: section.display_order,
     });
     setShowModal(true);
   };
@@ -104,8 +104,10 @@ const Section = () => {
           editingSection.id,
           formData
         );
+        if (result.success) CommonHelper.SuccessToaster(result.message);
       } else {
         result = await window.electronAPI.createLocation(formData);
+        if (result.success) CommonHelper.SuccessToaster(result.message);
       }
 
       if (result.success) {
@@ -113,11 +115,13 @@ const Section = () => {
         setShowModal(false);
         resetForm();
       } else {
-        alert(result.error || "Operation failed");
+        CommonHelper.ErrorToaster(result.error || "Operation failed");
+        // alert(result.error || "Operation failed");
       }
     } catch (error) {
       console.error("Error saving section:", error);
-      alert("An error occurred");
+      CommonHelper.ErrorToaster("An error occurred");
+      // alert("An error occurred");
     }
   };
 
@@ -196,6 +200,7 @@ const Section = () => {
                         : 'bg-green-100 text-green-800'
                     }`}> */}
                     {section.floor_id}
+                    {/* {floors?.find(f => f.id === section.floor_id)?.name || "Unknown"} */}
                     {/* </span> */}
                   </td>
                   {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -282,6 +287,7 @@ const Section = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                   required
                 >
+                  <option value={0}>-- Select Floor --</option>
                   {floors?.map((floor) => (
                     <option key={floor.id} value={floor.id}>
                       {floor.name}

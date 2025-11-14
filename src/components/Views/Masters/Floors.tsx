@@ -99,8 +99,10 @@ const Floors = () => {
           editingFloor.id,
           formData
         );
+        if (result.success) CommonHelper.SuccessToaster(result.message);
       } else {
         result = await window.electronAPI.createFloors(formData);
+        if (result.success) CommonHelper.SuccessToaster(result.message);
       }
 
       if (result.success) {
@@ -108,11 +110,13 @@ const Floors = () => {
         setShowModal(false);
         resetForm();
       } else {
-        alert(result.error || "Operation failed");
+        CommonHelper.ErrorToaster(result.error || "Operation failed");
+        // alert(result.error || "Operation failed");
       }
     } catch (error) {
       console.error("Error saving block:", error);
-      alert("An error occurred");
+      CommonHelper.ErrorToaster("An error occurred");
+      // alert("An error occurred");
     }
   };
 
