@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface User {
   id: number;
   name: string;
@@ -35,6 +37,8 @@ export interface AuthState {
 }
 
 export interface Section {
+  floor_name: ReactNode;
+  block_name: ReactNode;
   id: number;
   name: string;
   floor_id: number;
@@ -43,6 +47,7 @@ export interface Section {
 }
 
 export interface Floor {
+  block_name: ReactNode;
   id: number;
   name: string;
   block_id: number;
@@ -58,6 +63,9 @@ export interface Block {
 }
 
 export interface Nvr {
+  floor_name: ReactNode;
+  location_name: ReactNode;
+  block_name: ReactNode;
   id: number;
   location_id: number;
   asset_no: string;
@@ -72,6 +80,9 @@ export interface Nvr {
 }
 
 export interface Camera {
+  location_name: ReactNode;
+  floor_name: ReactNode;
+  block_name: ReactNode;
   id: number|null;
   location_id: number;
   nvr_id:number;
@@ -159,6 +170,9 @@ declare global {
 
       // Dashboard
       nvrcamerasummary: () => Promise<any>;
+      getCamerasAndNVRs: () => Promise<any>;
+      manualPingTrigger: () => Promise<any>;
+      downloadNotWorkingExcel: (data: any) => Promise<any>;
 
 
        //App Setting methods
@@ -166,5 +180,9 @@ declare global {
       getPingInterval: (id: number) => Promise<any>;
       updatePingInterval: (id: number, data: any) => Promise<any>;
     };
+
+
+
+
   }
 }

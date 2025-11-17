@@ -33,7 +33,7 @@ const Section = () => {
   };
 
   const loadData = async () => {
-    // debugger
+    
     setLoading(true);
     try {
       const [sectionData, floorData, blockData] = await Promise.all([
@@ -93,6 +93,7 @@ const Section = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     e.preventDefault();
 
     try {
@@ -193,13 +194,23 @@ const Section = () => {
                       </div>
                     </div>
                   </td>
+                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {/* <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      user.role_name === 'Admin' 
+                        ? 'bg-purple-100 text-purple-800'
+                        : 'bg-green-100 text-green-800'
+                    }`}> */}
+                    {section.floor_name}
+                    {/* {floors?.find(f => f.id === section.floor_id)?.name || "Unknown"} */}
+                    {/* </span> */}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {/* <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       user.role_name === 'Admin' 
                         ? 'bg-purple-100 text-purple-800'
                         : 'bg-green-100 text-green-800'
                     }`}> */}
-                    {section.floor_id}
+                    {section.block_name}
                     {/* {floors?.find(f => f.id === section.floor_id)?.name || "Unknown"} */}
                     {/* </span> */}
                   </td>

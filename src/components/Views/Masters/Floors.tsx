@@ -32,6 +32,7 @@ const Floors = () => {
   };
 
   const loadData = async () => {
+    
     try {
       const [floorData, blockData] = await Promise.all([
         window.electronAPI.getAllFloors(),
@@ -89,6 +90,7 @@ const Floors = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     e.preventDefault();
 
     try {
@@ -194,7 +196,7 @@ const Floors = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {floor.block_id}
+                    {floor.block_name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center gap-3">

@@ -48,9 +48,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   const masterItems = [
     ...(user?.role_name === "Admin"
       ? [
+              { id: "blocks", label: "Blocks", icon: Building2 },
+                   { id: "floors", label: "Floors", icon: AlignVerticalJustifyEnd },
           { id: "sections", label: "Sections", icon: Ratio },
-          { id: "floors", label: "Floors", icon: AlignVerticalJustifyEnd },
-          { id: "blocks", label: "Blocks", icon: Building2 },
+     
+      
           { id: "nvr", label: "NVR", icon: Router },
           { id: "cameras", label: "Cameras", icon: Cctv },
           { id: "employees", label: "Employees", icon: UserCheck },

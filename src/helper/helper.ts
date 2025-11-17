@@ -135,7 +135,7 @@ export abstract class CommonHelper {
     }
 
     public static ExceldownloadAsBlob(response: any, view: boolean = false, filename: string = '') {
-        debugger;
+        ;
         try {
             console.log('Response Headers:', response.headers); // Debugging
 

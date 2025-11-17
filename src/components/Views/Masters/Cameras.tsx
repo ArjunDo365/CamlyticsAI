@@ -47,6 +47,7 @@ const Cameras = () => {
   };
 
   const loadData = async () => {
+    
     try {
       setLoading(true);
       const [cameraData, nvrData, sectionData] = await Promise.all([
@@ -118,6 +119,7 @@ const Cameras = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     e.preventDefault();
 
     try {
@@ -195,13 +197,16 @@ const Cameras = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Camera Name
+                  Asset No
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  NVR Name
+                  Model Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  IP
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Location
+                </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Last Working on
                 </th>
                 {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Block Name
@@ -217,13 +222,13 @@ const Cameras = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                        {/* <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                           <span className="text-white font-medium">
-                            {n.asset_no.charAt(0).toUpperCase()}
+                            {n?.asset_no?.charAt(0)?.toUpperCase()}
                           </span>
-                        </div>
+                        </div> */}
                       </div>
-                      <div className="ml-4">
+                      <div className="">
                         <div className="text-sm font-medium text-gray-900">
                           {n.asset_no}
                         </div>
@@ -232,30 +237,33 @@ const Cameras = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{n.nvr_id}</div>
+                    <div className="text-sm text-gray-500">{n.model_name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{n.ip_address}</div>
+                    <div className="text-sm text-gray-500">{n.block_name} - {n.floor_name} - {n.location_name}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{n.last_working_on}</div>
                   </td>
                   {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {section.block}
                   </td> */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => handleEdit(n)}
-                        className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
-                      >
-                        <Edit size={20} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(n)}
-                        className="text-red-600 hover:text-red-900 flex items-center gap-1"
-                      >
-                        <Trash2 size={20} />
-                      </button>
-                    </div>
-                  </td>
+                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                     <div className="flex items-center gap-3">
+                                       <button
+                                         onClick={() => handleEdit(n)}
+                                         className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1 rounded-full p-2"
+                                       >
+                                         <Edit size={20} />
+                                       </button>
+                                       <button
+                                         onClick={() => handleDelete(n)}
+                                         className="bg-red-600 hover:bg-red-700 flex items-center gap-1 rounded-full p-2"
+                                       >
+                                         <Trash2 size={20} />
+                                       </button>
+                                     </div>
+                                   </td>
                 </tr>
               ))}
             </tbody>
@@ -375,7 +383,9 @@ const Cameras = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                     required
                   >
+                     <option value={0}>-- Select Floor --</option>
                     {nvrs.map((n) => (
+                      
                       <option key={n.id} value={n.id}>
                         {n.asset_no}
                       </option>
@@ -434,7 +444,7 @@ const Cameras = () => {
                     <option value={0}>-- Select Location --</option>
                     {sections.map((section) => (
                       <option key={section.id} value={section.id}>
-                        {section.name}
+                        {section.name} - {section.floor_name} - {section.block_name}
                       </option>
                     ))}
                   </select>
