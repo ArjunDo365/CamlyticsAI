@@ -51,9 +51,9 @@ async getCamerasAndNVRs() {
         c.is_working,
         c.location_id,
         l.name AS location_name,
-        f.id AS floor_id,
+        l.floor_id,
         f.name AS floor_name,
-        b.id AS block_id,
+        f.block_id,
         b.name AS block_name
       FROM cameras c
       JOIN locations l ON c.location_id = l.id
@@ -116,9 +116,9 @@ async getCamerasAndNVRs() {
         n.is_working,
         c.location_id,
         l.name AS location_name,
-        f.id AS floor_id,
+        l.floor_id,
         f.name AS floor_name,
-        b.id AS block_id,
+        f.block_id,
         b.name AS block_name
       FROM nvrs n
       JOIN locations l ON n.location_id = l.id
@@ -198,7 +198,7 @@ async getCamerasAndNVRs() {
           l.name AS location_name,
           l.floor_id,
           f.name as floor_name,
-          l.block_id,
+          f.block_id,
           b.name AS block_name,
           n.asset_no,
           n.serial_number,
@@ -246,12 +246,10 @@ async downloadNotWorkingExcel(type) {
     const sheet = workbook.addWorksheet("Not Working List");
 
     sheet.columns = [
-      { header: "Model Name", key: "model_name", width: 20 },
       { header: "Asset No", key: "asset_no", width: 20 },
+      { header: "Model Name", key: "model_name", width: 20 },
       { header: "IP Address", key: "ip_address", width: 20 },
       { header: "Last Working", key: "last_working_on", width: 25 },
-      { header: "Vendor", key: "vendor", width: 20 },
-      { header: "Status", key: "is_working", width: 10 },
       { header: "Location", key: "location_name", width: 20 },
       { header: "Floor", key: "floor_name", width: 15 },
       { header: "Block", key: "block_name", width: 15 }, 
@@ -342,13 +340,17 @@ async downloadNotWorkingExcel(type) {
         console.log(`Camera ${cam.id} (${cam.ip_address}) is unreachable`);
         if (cam.is_working === 1) {
           await this.db.pool.query(
-            `UPDATE cameras SET is_working=0, updated_at=CURRENT_TIMESTAMP WHERE id=?`,
+            `UPDATE cameras SET is_working=0 ,updated_at=CURRENT_TIMESTAMP WHERE id=?`,
             [cam.id]
           );
           console.log(`Camera ${cam.id} marked false`);
         }
       } else {
         console.log(`Camera ${cam.id} (${cam.ip_address}) is online`);
+        await this.db.pool.query(
+            `UPDATE cameras SET last_working_on=CURRENT_TIMESTAMP WHERE id=?`,
+            [cam.id]
+          );
         if (cam.is_working === 0) {
           await this.db.pool.query(
             `UPDATE cameras SET is_working=1, last_working_on=CURRENT_TIMESTAMP WHERE id=?`,
@@ -382,6 +384,10 @@ if (nvrs.length === 0) {
         }
       } else {
         console.log(`NVR ${nvr.id} (${nvr.ip_address}) online`);
+         await this.db.pool.query(
+            `UPDATE nvrs SET last_working_on=CURRENT_TIMESTAMP WHERE id=?`,
+            [nvr.id]
+          );
         if (nvr.is_working === 0) {
           await this.db.pool.query(
             `UPDATE nvrs SET is_working=1, last_working_on=CURRENT_TIMESTAMP WHERE id=?`,
