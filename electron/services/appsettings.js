@@ -41,18 +41,18 @@ class AppsettingService {
 
   async updatePingInterval(data) {
     try {
-      const { time } = data;
+      const { keyvalue } = data;
 
-      if (!time) {
+      if (!keyvalue) {
         return errorResponse(null, "Time value is required");
       }
 
       await this.db.pool.query(
         "UPDATE appsetting SET KeyValue = ? WHERE KeyName = 'Health Check - Frequency in Milliseconds'",
-        [time]
+        [keyvalue]
       );
 
-      console.log(`Updated ping interval to ${time} ms`);
+      console.log(`Updated ping interval to ${keyvalue} ms`);
 
       // If needed, restart your scheduler
       await this.startPingScheduler?.();
