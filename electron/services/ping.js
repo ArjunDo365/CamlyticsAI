@@ -72,7 +72,7 @@ async getCamerasAndNVRs() {
         n.is_working,
         n.location_id 
         l.name AS location_name,
-        f.id AS floor_id,
+        l.floor_id,
         f.name AS floor_name,
         b.id AS block_id,
         b.name AS block_name
