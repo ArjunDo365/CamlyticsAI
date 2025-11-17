@@ -6,8 +6,41 @@ class CameraService {
   }
 
   async createCamera(data) {
-    try {
-      const {
+  try {
+    const {
+      location_id,
+      nvr_id,
+      asset_no,
+      serial_number,
+      model_name,
+      ip_address,
+      port,
+      manufacturer,
+      vendor,
+      install_date,
+    } = data;
+
+    // ---------------------------
+    // Validate IP Address
+    // ---------------------------
+    const ipv4Regex =
+      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+
+    if (!ip_address || !ipv4Regex.test(ip_address)) {
+      return errorResponse(
+        null,
+        "Invalid IP Address. Example: 192.168.1.10"
+      );
+    }
+
+    // ---------------------------
+    // Insert Camera
+    // ---------------------------
+    const [result] = await this.db.pool.query(
+      `INSERT INTO cameras 
+      (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
         location_id,
         nvr_id,
         asset_no,
@@ -18,34 +51,19 @@ class CameraService {
         manufacturer,
         vendor,
         install_date,
-      } = data;
+      ]
+    );
 
-      const [result] = await this.db.pool.query(
-        `INSERT INTO cameras 
-        (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          location_id,
-          nvr_id,
-          asset_no,
-          serial_number,
-          model_name,
-          ip_address,
-          port ,
-          manufacturer,
-          vendor,
-          install_date,
-        ]
-      );
+    return successResponse(
+      { cameraId: result.insertId },
+      "Camera created successfully"
+    );
 
-      return successResponse(
-        { cameraId: result.insertId },
-        "Camera created successfully"
-      );
-    } catch (error) {
-      return errorResponse(error, "Failed to create camera");
-    }
+  } catch (error) {
+    return errorResponse(error, "Failed to create camera");
   }
+}
+
 
 
   async getAllCameras() {
@@ -148,6 +166,16 @@ async getCameraById(id) {
         install_date,
 
       } = data;
+
+      const ipv4Regex =
+      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+
+    if (!ip_address || !ipv4Regex.test(ip_address)) {
+      return errorResponse(
+        null,
+        "Invalid IP Address. Example: 192.168.1.10"
+      );
+    }
 
       const [result] = await this.db.pool.query(
         `UPDATE cameras 

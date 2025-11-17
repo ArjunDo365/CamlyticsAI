@@ -19,6 +19,16 @@ class NvrService {
         install_date
       } = data;
 
+      const ipv4Regex =
+      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+
+    if (!ip_address || !ipv4Regex.test(ip_address)) {
+      return errorResponse(
+        null,
+        "Invalid IP Address. Example: 192.168.1.10"
+      );
+    }
+
       const [result] = await this.db.pool.query(
         `INSERT INTO nvrs 
         (location_id, asset_no, serial_number, model_name, ip_address, manufacturer, vendor, install_date)
@@ -131,6 +141,16 @@ async getNvrById(id) {
         vendor,
         install_date
       } = data;
+
+      const ipv4Regex =
+      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+
+    if (!ip_address || !ipv4Regex.test(ip_address)) {
+      return errorResponse(
+        null,
+        "Invalid IP Address. Example: 192.168.1.10"
+      );
+    }
 
       const [result] = await this.db.pool.query(
         `UPDATE nvrs 
