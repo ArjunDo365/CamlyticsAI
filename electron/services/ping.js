@@ -74,7 +74,7 @@ async getCamerasAndNVRs() {
         l.name AS location_name,
         l.floor_id,
         f.name AS floor_name,
-        b.id AS block_id,
+        f.block_id,
         b.name AS block_name
       FROM nvrs n
       JOIN locations l ON n.location_id = l.id
