@@ -54,6 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           { id: "nvr", label: "NVR", icon: Router },
           { id: "cameras", label: "Cameras", icon: Cctv },
           { id: "employees", label: "Employees", icon: UserCheck },
+          { id: "appsetting", label: "App Setting", icon: Settings },
         ]
       : []),
   ];
@@ -77,6 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               Camlytics AI
+              <img src="" alt="" />
             </span>
           </div>
 
@@ -122,7 +124,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                         }`}
                       >
-                        Dashboard
+                        Device Health Check
                       </button>
                     </li>
                   </ul>

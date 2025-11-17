@@ -87,6 +87,13 @@ export interface Camera {
   is_working?:string;
 }
 
+export interface AppSetting {
+  id: number;
+  Keyname: string;
+  Keyvalue: string;
+  // display_order: number;
+}
+
 declare global {
   interface Window {
     electronAPI: {
@@ -152,6 +159,12 @@ declare global {
 
       // Dashboard
       nvrcamerasummary: () => Promise<any>;
+
+
+       //App Setting methods
+      listAppSettings: () => Promise<any>;
+      getPingInterval: (id: number) => Promise<any>;
+      updatePingInterval: (id: number, data: any) => Promise<any>;
     };
   }
 }

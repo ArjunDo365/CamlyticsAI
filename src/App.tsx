@@ -14,6 +14,7 @@ import Blocks from "./components/Views/Masters/Blocks";
 import NVR from "./components/Views/Masters/NVR";
 import Cameras from "./components/Views/Masters/Cameras";
 import Employees from "./components/Views/Masters/Employees";
+import AppSetting from "./components/Views/Masters/AppSetting";
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -55,6 +56,8 @@ const AppContent: React.FC = () => {
         return <Cameras />;
         case "employees":
         return <Employees />;
+         case "appsetting":
+        return <AppSetting />;
       default:
         return <Dashboard />;
     }

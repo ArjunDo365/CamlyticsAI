@@ -60,28 +60,28 @@ const Header: React.FC<HeaderProps> = ({ title, onToggleSidebar }) => {
 
         <div className="flex items-center gap-4">
           {/* Search */}
-          <div className="relative">
+          {/* <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
             <input
               type="text"
               placeholder="Search..."
               className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-          </div>
+          </div> */}
 
           {/* Theme Toggle */}
-          <button
+          {/* <button
             onClick={toggleTheme}
             className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title={`Switch to ${theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'} theme`}
           >
             {getThemeIcon()}
-          </button>
+          </button> */}
 
           {/* Notifications */}
-          <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+          {/* <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
             <Bell size={20} />
-          </button>
+          </button> */}
 
           {/* User Profile */}
           <div className="flex items-center gap-3">
