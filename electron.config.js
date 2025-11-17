@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  appId: 'com.yourcompany.arsnova-ocr',
-  productName: 'Arsnova OCR',
+  appId: 'com.yourcompany.Camlytics-ai',
+  productName: 'Camlytx Ai',
 
   directories: {
     output: 'dist-app',

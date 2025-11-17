@@ -1,8 +1,10 @@
 const ping = require('ping');
 const { successResponse, errorResponse } = require("../utils/responseHandler");
 const ExcelJS = require("exceljs");
+const os = require("os");
 const fs = require("fs");
 const path = require("path");
+const { app } = require("electron");
 
 class PingService {
   constructor(database,AppSettingService) {
@@ -257,23 +259,31 @@ async downloadNotWorkingExcel(type) {
 
     rows.forEach((row) => sheet.addRow(row));
 
-    // -------------------------
-    // FIX: Create temp directory
-    // -------------------------
-    const tempDir = path.join(process.cwd(), "temp");
+    // --------------------------
+    // WINDOWS: Save to C:/CamlytxAi/notworkingexcel/
+    // --------------------------
+    let saveDir;
 
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
+    if (os.platform() === "win32") {
+      saveDir = "C:/CamlytxAi/notworkingexcel";
+    } else {
+      // Linux/Mac → default Downloads folder
+      saveDir = app.getPath("downloads");
+    }
+
+    // Ensure directory exists
+    if (!fs.existsSync(saveDir)) {
+      fs.mkdirSync(saveDir, { recursive: true });
     }
 
     const fileName = `not_working_${type}_${Date.now()}.xlsx`;
-    const filePath = path.join(tempDir, fileName);
+    const filePath = path.join(saveDir, fileName);
 
     await workbook.xlsx.writeFile(filePath);
 
     return successResponse(
       { filePath, fileName },
-      "Excel file generated successfully"
+      `Excel saved to: ${filePath}`
     );
 
   } catch (error) {
@@ -281,7 +291,6 @@ async downloadNotWorkingExcel(type) {
     return errorResponse(error, "Failed to generate excel");
   }
 }
-
 
   async nvrcamerasummary() {
   try {
