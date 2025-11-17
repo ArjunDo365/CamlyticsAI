@@ -236,15 +236,15 @@ ipcMain.handle('cameras:delete', async (event, id) => {
 });
 
 //appsettings
-ipcMain.handle('appsetting:listAppSettings', async () => {
+ipcMain.handle('appsetting:listAppSettingsdata', async () => {
   return await appsettingService.listAppSettings();
 });
 
-ipcMain.handle('appsetting:getPingInterval', async () => {
+ipcMain.handle('appsetting:getPingIntervaldata', async () => {
   return await appsettingService.getPingInterval();
 });
 
-ipcMain.handle('appsetting:updatePingInterval', async () => {
+ipcMain.handle('appsetting:updatePingIntervaldata', async () => {
   return await appsettingService.updatePingInterval(data);
 });
 

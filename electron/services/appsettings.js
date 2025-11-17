@@ -1,4 +1,4 @@
-const { successResponse, errorResponse } = require("../utils/response-handler");
+const { successResponse } = require("../utils/responseHandler");
 
 class AppsettingService {
   constructor(database) {

@@ -57,9 +57,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteCamera: (id) => ipcRenderer.invoke('cameras:delete', id),
 
   //appsettings
-   listAppSettings: () => ipcRenderer.invoke('appsetting:listAppSettings'),
-   getPingInterval: () => ipcRenderer.invoke('appsetting:getPingInterval'),
-   updatePingInterval: (data) => ipcRenderer.invoke('appsetting:updatePingInterval', data),
+   listAppSettings: () => ipcRenderer.invoke('appsetting:listAppSettingsdata'),
+   getPingInterval: () => ipcRenderer.invoke('appsetting:getPingIntervaldata'),
+   updatePingInterval: (data) => ipcRenderer.invoke('appsetting:updatePingIntervaldata', data),
 
   //ping
   manualPingTrigger: () => ipcRenderer.invoke('ping:manual'),
