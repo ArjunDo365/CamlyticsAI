@@ -282,7 +282,6 @@ ipcMain.handle('ping:updatePingIntervaldata', async (event, data) => {
 
 ipcMain.handle('ping:getCamerasAndNVRsdata', async () => {
   return await pingService.getCamerasAndNVRs();
-
 });
 
 ipcMain.handle("ping:downloadNotWorkingExcel", async (event, type) => {

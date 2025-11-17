@@ -257,8 +257,17 @@ async downloadNotWorkingExcel(type) {
 
     rows.forEach((row) => sheet.addRow(row));
 
+    // -------------------------
+    // FIX: Create temp directory
+    // -------------------------
+    const tempDir = path.join(process.cwd(), "temp");
+
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+
     const fileName = `not_working_${type}_${Date.now()}.xlsx`;
-    const filePath = path.join(__dirname, "../temp", fileName);
+    const filePath = path.join(tempDir, fileName);
 
     await workbook.xlsx.writeFile(filePath);
 
@@ -268,6 +277,7 @@ async downloadNotWorkingExcel(type) {
     );
 
   } catch (error) {
+    console.error("Excel Generation Error:", error);
     return errorResponse(error, "Failed to generate excel");
   }
 }
@@ -405,11 +415,10 @@ if (nvrs.length === 0) {
 
     console.log(`Ping interval: ${intervalTime / 1000} seconds`);
 
-    // Clear existing intervals
+
     if (this.cameraInterval) clearInterval(this.cameraInterval);
     if (this.nvrInterval) clearInterval(this.nvrInterval);
 
-    // Run immediately
     await this.cctvCameraPing();
     await this.nvrsPing();
 
@@ -429,7 +438,6 @@ if (nvrs.length === 0) {
 }
 
 
-// 🧭 Manual UI Trigger - “Ping Now”
 async manualPingTrigger() {
   try {
     console.log("⚡ Manual ping triggered");
