@@ -59,12 +59,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   //appsettings
    listAppSettings: () => ipcRenderer.invoke('appsetting:listAppSettingsdata'),
    getPingInterval: () => ipcRenderer.invoke('appsetting:getPingIntervaldata'),
-   updatePingInterval: (data) => ipcRenderer.invoke('appsetting:updatePingIntervaldata', data),
 
   //ping
   manualPingTrigger: () => ipcRenderer.invoke('ping:manual'),
   nvrcamerasummary: () => ipcRenderer.invoke('ping:nvrcameracount'),
   notworkinglist: () => ipcRenderer.invoke('ping:notworkingdata'),
-  updatePingInterval: (data) => ipcRenderer.invoke('ping:updateInterval', data),
+  updatePingInterval: (data) => ipcRenderer.invoke('ping:updatePingIntervaldata', data),
+  getCamerasAndNVRs: () => ipcRenderer.invoke('ping:getCamerasAndNVRsdata'),
+  downloadNotWorkingExcel: (type) => ipcRenderer.invoke("ping:downloadNotWorkingExcel", type),
+
 
 });

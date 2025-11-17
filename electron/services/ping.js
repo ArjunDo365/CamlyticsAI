@@ -1,12 +1,147 @@
 const ping = require('ping');
 const { successResponse, errorResponse } = require("../utils/responseHandler");
+const ExcelJS = require("exceljs");
+const fs = require("fs");
+const path = require("path");
+
 class PingService {
-  constructor(database,AppsettingService) {
+  constructor(database,AppSettingService) {
     this.db = database;
-    this.appsettingService = AppsettingService;
+    this.appsettingservice = AppSettingService;
     this.cameraInterval = null;
     this.nvrInterval = null;
   }
+
+    async updatePingInterval(data) {
+      try {
+        const{keyname,keyvalue} = data
+
+        console.log('datavalue',keyvalue)
+        if (!keyvalue) {
+          return errorResponse(null, "Time value is required");
+        }
+
+        await this.db.pool.query(
+          "UPDATE appsetting SET keyvalue = ? WHERE keyname = 'Health Check - Frequency in Milliseconds'",
+          [keyvalue]
+        );
+
+        console.log(`Updated ping interval to ${keyvalue} ms`);
+
+        // If needed, restart your scheduler
+        await this.startPingScheduler?.();
+
+        return successResponse( "Ping interval updated successfully");
+      } catch (error) {
+        return errorResponse(error, "Failed to update ping interval");
+      }
+    }
+
+
+async getCamerasAndNVRs() {
+  try {
+    // ---------------- CAMERAS WITH JOINS ----------------
+    const [cameras] = await this.db.pool.query(`
+      SELECT 
+        c.id, 
+        c.asset_no, 
+        c.model_name, 
+        c.ip_address, 
+        c.last_working_on, 
+        c.is_working,
+        c.location_id,
+        l.name AS location_name,
+        f.id AS floor_id,
+        f.name AS floor_name,
+        b.id AS block_id,
+        b.name AS block_name
+      FROM cameras c
+      JOIN locations l ON c.location_id = l.id
+      JOIN floors f ON l.floor_id = f.id
+      JOIN blocks b ON f.block_id = b.id
+    `);
+
+    // ---------------- NVRs WITH JOINS ----------------
+    const [nvrs] = await this.db.pool.query(`
+      SELECT 
+        n.id, 
+        n.asset_no, 
+        n.model_name, 
+        n.ip_address, 
+        n.last_working_on, 
+        n.is_working,
+        c.location_id 
+        l.name AS location_name,
+        f.id AS floor_id,
+        f.name AS floor_name,
+        b.id AS block_id,
+        b.name AS block_name
+      FROM nvrs n
+      JOIN locations l ON n.location_id = l.id
+      JOIN floors f ON l.floor_id = f.id
+      JOIN blocks b ON f.block_id = b.id
+    `);
+
+    // ---------------- LAST 10 CAMERAS ----------------
+    const [last10Cameras] = await this.db.pool.query(`
+      SELECT 
+        c.id, 
+        c.asset_no, 
+        c.model_name, 
+        c.ip_address, 
+        c.last_working_on, 
+        c.is_working,
+        c.location_id,
+        l.name AS location_name,
+        f.id AS floor_id,
+        f.name AS floor_name,
+        b.id AS block_id,
+        b.name AS block_name
+      FROM cameras c
+      JOIN locations l ON c.location_id = l.id
+      JOIN floors f ON l.floor_id = f.id
+      JOIN blocks b ON f.block_id = b.id
+      ORDER BY c.id DESC
+      LIMIT 10
+    `);
+
+    // ---------------- LAST 10 NVRs ----------------
+    const [last10NVRs] = await this.db.pool.query(`
+      SELECT 
+        n.id, 
+        n.asset_no, 
+        n.model_name, 
+        n.ip_address, 
+        n.last_working_on, 
+        n.is_working,
+        c.location_id,
+        l.name AS location_name,
+        f.id AS floor_id,
+        f.name AS floor_name,
+        b.id AS block_id,
+        b.name AS block_name
+      FROM nvrs n
+      JOIN locations l ON n.location_id = l.id
+      JOIN floors f ON l.floor_id = f.id
+      JOIN blocks b ON f.block_id = b.id
+      ORDER BY n.id DESC
+      LIMIT 10
+    `);
+
+    return successResponse(
+      {
+        cameras,
+        nvrs,
+        last10Cameras,
+        last10NVRs,
+      },
+      "Cameras and NVRs fetched successfully"
+    );
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch data");
+  }
+}
+
 
 
   async notworkinglist(data) {
@@ -26,7 +161,9 @@ class PingService {
           c.id,
           c.location_id,
           l.name AS location_name,
-          l.block_id,
+          l.floor_id,
+          f.name as floor_name,
+          f.block_id,
           b.name AS block_name,
           c.nvr_id,
           c.asset_no,
@@ -42,7 +179,8 @@ class PingService {
           c.status
         FROM cameras c
         JOIN locations l ON c.location_id = l.id
-        JOIN blocks b ON l.block_id = b.id
+        join floors f on l.floor_id = f.id
+        JOIN blocks b ON f.block_id = b.id
         WHERE c.is_working = 0
       `);
 
@@ -58,6 +196,8 @@ class PingService {
           n.id,
           n.location_id,
           l.name AS location_name,
+          l.floor_id,
+          f.name as floor_name,
           l.block_id,
           b.name AS block_name,
           n.asset_no,
@@ -73,7 +213,8 @@ class PingService {
           n.status
         FROM nvrs n
         JOIN locations l ON n.location_id = l.id
-        JOIN blocks b ON l.block_id = b.id
+        join floors f on l.floor_id = f.id
+        JOIN blocks b ON f.block_id = b.id
         WHERE n.is_working = 0
       `);
 
@@ -84,6 +225,52 @@ class PingService {
 
   } catch (error) {
     return errorResponse(error, "Failed to fetch data");
+  }
+}
+
+
+
+async downloadNotWorkingExcel(type) {
+  try {
+    if (!type) return errorResponse(null, "Type is required");
+
+    const dataResponse = await this.notworkinglist({ type });
+
+    if (!dataResponse.success) {
+      return errorResponse(null, "Failed to fetch data");
+    }
+
+    const rows = dataResponse.data;
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Not Working List");
+
+    sheet.columns = [
+      { header: "Model Name", key: "model_name", width: 20 },
+      { header: "Asset No", key: "asset_no", width: 20 },
+      { header: "IP Address", key: "ip_address", width: 20 },
+      { header: "Last Working", key: "last_working_on", width: 25 },
+      { header: "Vendor", key: "vendor", width: 20 },
+      { header: "Status", key: "is_working", width: 10 },
+      { header: "Location", key: "location_name", width: 20 },
+      { header: "Floor", key: "floor_name", width: 15 },
+      { header: "Block", key: "block_name", width: 15 }, 
+    ];
+
+    rows.forEach((row) => sheet.addRow(row));
+
+    const fileName = `not_working_${type}_${Date.now()}.xlsx`;
+    const filePath = path.join(__dirname, "../temp", fileName);
+
+    await workbook.xlsx.writeFile(filePath);
+
+    return successResponse(
+      { filePath, fileName },
+      "Excel file generated successfully"
+    );
+
+  } catch (error) {
+    return errorResponse(error, "Failed to generate excel");
   }
 }
 
@@ -207,7 +394,7 @@ if (nvrs.length === 0) {
   }
 
   async startPingScheduler() {
-     const intervalTime = await this.appsettingService.getPingInterval();
+     const intervalTime = await this.appsettingservice.getPingInterval();
 
     console.log(`Ping interval: ${intervalTime / 1000} seconds`);
 

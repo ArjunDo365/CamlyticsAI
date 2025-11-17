@@ -174,8 +174,8 @@ class Database {
     const createAppSettingTable = `
   CREATE TABLE IF NOT EXISTS appsetting (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    Keyname VARCHAR(255) UNIQUE NOT NULL,
-    Keyvalue VARCHAR(255) NOT NULL,
+    keyname VARCHAR(255) UNIQUE NOT NULL,
+    keyvalue VARCHAR(255) NOT NULL,
     display_order INT DEFAULT NULL,
     status TINYINT DEFAULT 1,
     created_by INT DEFAULT NULL,

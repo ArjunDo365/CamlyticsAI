@@ -71,7 +71,7 @@ const cameraService = new CameraService(db);
 
 // Create both services WITHOUT linking yet
 const appsettingService = new AppsettingService(db);
-const pingService = new PingService(db);
+const pingService = new PingService(db,appsettingService);
 
 // Start Ping Scheduler
 pingService.startPingScheduler();
@@ -254,9 +254,7 @@ ipcMain.handle('appsetting:getPingIntervaldata', async () => {
   return await appsettingService.getPingInterval();
 });
 
-ipcMain.handle('appsetting:updatePingIntervaldata', async (event, data) => {
-  return await appsettingService.updatePingInterval(data);
-});
+
 
 
 // -----------------------------------------------------
@@ -277,3 +275,17 @@ ipcMain.handle('ping:nvrcameracount', async () => {
 ipcMain.handle('ping:notworkingdata', async () => {
   return await pingService.notworkinglist();
 });
+
+ipcMain.handle('ping:updatePingIntervaldata', async (event, data) => {
+  return await pingService.updatePingInterval(data);
+});
+
+ipcMain.handle('ping:getCamerasAndNVRsdata', async () => {
+  return await pingService.getCamerasAndNVRs();
+
+});
+
+ipcMain.handle("ping:downloadNotWorkingExcel", async (event, type) => {
+  return await pingService.downloadNotWorkingExcel(type);
+});
+

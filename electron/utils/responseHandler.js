@@ -10,7 +10,7 @@ function errorResponse(error, message = "Something went wrong") {
   return {
     success: false,
     message,
-    error: typeof error === "string" ? error : error.message || error,
+    error: error?.message || error || "Unknown error",
   };
 }
 
