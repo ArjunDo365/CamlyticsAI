@@ -91,7 +91,7 @@ class Database {
   updated_by INT DEFAULT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-  FOREIGN KEY (block_id) REFERENCES blocks(id) ON DELETE CASCADE
+  FOREIGN KEY (block_id) REFERENCES blocks(id) ON DELETE RESTRICT
 );
 
     `;
@@ -111,7 +111,7 @@ class Database {
   updated_by INT DEFAULT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-  FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE CASCADE
+  FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE RESTRICT
 )
     `;
 
@@ -137,7 +137,7 @@ class Database {
   updated_by INT DEFAULT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-  FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
+  FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE RESTRICT
 )
     `;
 
@@ -165,8 +165,8 @@ class Database {
   updated_by INT DEFAULT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-  FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
-  FOREIGN KEY (nvr_id) REFERENCES nvrs(id) ON DELETE CASCADE
+  FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE RESTRICT,
+  FOREIGN KEY (nvr_id) REFERENCES nvrs(id) ON DELETE RESTRICT
 )
     `;
 
@@ -174,8 +174,8 @@ class Database {
     const createAppSettingTable = `
   CREATE TABLE IF NOT EXISTS appsetting (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    KeyName VARCHAR(255) UNIQUE NOT NULL,
-    KeyValue VARCHAR(255) NOT NULL,
+    Keyname VARCHAR(255) UNIQUE NOT NULL,
+    Keyvalue VARCHAR(255) NOT NULL,
     display_order INT DEFAULT NULL,
     status TINYINT DEFAULT 1,
     created_by INT DEFAULT NULL,
@@ -220,18 +220,22 @@ class Database {
         console.log("✅ Default admin user created");
       }
 
-      const [rows] = await connection.query(
-      "SELECT * FROM appsetting WHERE keyname = 'Health Check - Frequency in Milliseconds	1000'"
-    );
+      const keyName = "Health Check - Frequency in Milliseconds";
 
-   if (rows.length === 0) {
-  const defaultValue = 30;
+const [rows] = await connection.query(
+  "SELECT * FROM appsetting WHERE KeyName = ?",
+  [keyName]
+);
+
+if (rows.length === 0) {
+  const defaultValue = 30; // seconds
   await connection.query(
-    "INSERT INTO appsetting (keyname, keyvalue) VALUES ('Health Check - Frequency in Milliseconds	1000', ?)",
-    [defaultValue]
+    "INSERT INTO appsetting (KeyName, KeyValue) VALUES (?, ?)",
+    [keyName, defaultValue]
   );
   console.log(`✅ Default ping interval record created (${defaultValue}s)`);
 }
+
 } finally {
   connection.release();
 }

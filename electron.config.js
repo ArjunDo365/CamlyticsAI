@@ -10,13 +10,26 @@ module.exports = {
   },
 
   files: [
-    'dist/**/*',           // Vite build
-    'electron/**/*',       // Electron main & preload
-    'package.json',
-    'node_modules/**/!(concurrently|vite|eslint|typescript|tailwindcss)'
-  ],
+  {
+    from: "dist",
+    to: "dist",
+    filter: ["**/*"]
+  },
+  {
+    from: "electron",
+    to: "electron",
+    filter: ["**/*"]
+  },
+  "package.json",
+  "!node_modules/*/{test,__tests__}/**"
+],
 
-  extraResources: [],
+  extraResources: [
+     {
+    from: "./.env",
+    to: ".env"
+  }
+  ],
 
   asar: true,
 
@@ -38,7 +51,8 @@ module.exports = {
   },
 
   // Icons must exist: icon.ico (win), icon.icns (mac), icon.png (linux)
-  icon: path.join(__dirname, 'assets', 'icon'),
+  icon: path.join(__dirname, 'assets', 'icon.png'),
+
 
   publish: [],
 

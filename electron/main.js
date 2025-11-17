@@ -18,7 +18,7 @@ function createWindow() {
     },
     titleBarStyle: 'hiddenInset',
     show: false,
-    autoHideMenuBar: true, // ✅ hides the menu bar but Alt key shows it temporarily
+    autoHideMenuBar: true,
   });
 
   if (isDev) {
@@ -26,12 +26,9 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
-
   }
 
   mainWindow.once('ready-to-show', () => mainWindow.show());
-
-  // Completely remove menu (optional, no Alt key)
   mainWindow.setMenu(null);
 
   mainWindow.on('closed', () => {
@@ -39,9 +36,7 @@ function createWindow() {
   });
 }
 
-
 app.whenReady().then(createWindow);
-
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
@@ -51,9 +46,10 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
-// ---------------------------
-// Database and API handlers
-// ---------------------------
+
+// -----------------------------------------------------
+//  SERVICES & DATABASE (NO MORE CIRCULAR DEPENDENCIES)
+// -----------------------------------------------------
 const Database = require('./database');
 const AuthService = require('./services/auth');
 const BlockService = require('./services/block');
@@ -65,21 +61,25 @@ const PingService = require('./services/ping');
 const AppsettingService = require('./services/appsettings');
 
 const db = new Database();
+
 const authService = new AuthService(db);
 const blockService = new BlockService(db);
 const floorsService = new FloorsService(db);
 const locationService = new LocationService(db);
 const nvrService = new NvrService(db);
-const cameraService = new CameraService(db)
-const appsettingService =  new AppsettingService(db,pingService)
-const pingService = new PingService(db,appsettingService);
+const cameraService = new CameraService(db);
 
-appsettingService.pingService = pingService;
+// Create both services WITHOUT linking yet
+const appsettingService = new AppsettingService(db);
+const pingService = new PingService(db);
 
+// Start Ping Scheduler
 pingService.startPingScheduler();
-// ---------------------------
-// Auth handlers
-// ---------------------------
+
+
+// -----------------------------------------------------
+//  AUTH
+// -----------------------------------------------------
 ipcMain.handle('auth:login', (event, { email, password }) =>
   authService.login(email, password)
 );
@@ -92,9 +92,10 @@ ipcMain.handle('auth:verify-token', (event, token) =>
   authService.verifyToken(token)
 );
 
-// ---------------------------
-// User handlers
-// ---------------------------
+
+// -----------------------------------------------------
+//  USERS
+// -----------------------------------------------------
 ipcMain.handle('users:getAll', () => authService.getAllUsers());
 ipcMain.handle('users:create', (event, userData) =>
   authService.createUser(userData)
@@ -102,11 +103,14 @@ ipcMain.handle('users:create', (event, userData) =>
 ipcMain.handle('users:update', (event, { id, userData }) =>
   authService.updateUser(id, userData)
 );
-ipcMain.handle('users:delete', (event, id) => authService.deleteUser(id));
+ipcMain.handle('users:delete', (event, id) =>
+  authService.deleteUser(id)
+);
 
-// ---------------------------
-// Role handlers
-// ---------------------------
+
+// -----------------------------------------------------
+//  ROLES
+// -----------------------------------------------------
 ipcMain.handle('roles:getAll', () => authService.getAllRoles());
 ipcMain.handle('roles:create', (event, roleData) =>
   authService.createRole(roleData)
@@ -114,35 +118,28 @@ ipcMain.handle('roles:create', (event, roleData) =>
 ipcMain.handle('roles:update', (event, { id, roleData }) =>
   authService.updateRole(id, roleData)
 );
-ipcMain.handle('roles:delete', (event, id) => authService.deleteRole(id));
-
-// ---------------------------
-// Dialog handler
-// ---------------------------
-// ipcMain.handle('dialog:showOpenDialog', async () => {
-//   const result = await dialog.showOpenDialog(mainWindow, {
-//     properties: ['openFile'],
-//     filters: [{ name: 'PDF Files', extensions: ['pdf'] }],
-//   });
-//   return result;
-// });
+ipcMain.handle('roles:delete', (event, id) =>
+  authService.deleteRole(id)
+);
 
 
-//block
-ipcMain.handle('block:create',async(event,data)=>{
-  return await blockService.createBlock({...data});
-}) 
+// -----------------------------------------------------
+//  BLOCKS
+// -----------------------------------------------------
+ipcMain.handle('block:create', async (event, data) => {
+  return await blockService.createBlock({ ...data });
+});
 
 ipcMain.handle('block:readAll', async () => {
   return await blockService.getAllBlocks();
 });
 
-ipcMain.handle('block:readById', async (event,id) => {
+ipcMain.handle('block:readById', async (event, id) => {
   return await blockService.getAllBlocks(id);
 });
 
-ipcMain.handle('block:update', async (event,{id,data}) => {
-  return await blockService.updateBlock({id,...data});
+ipcMain.handle('block:update', async (event, { id, data }) => {
+  return await blockService.updateBlock({ id, ...data });
 });
 
 ipcMain.handle('block:delete', async (event, id) => {
@@ -150,21 +147,23 @@ ipcMain.handle('block:delete', async (event, id) => {
 });
 
 
-//floors
-ipcMain.handle('floors:create',async(event,data)=>{
+// -----------------------------------------------------
+//  FLOORS
+// -----------------------------------------------------
+ipcMain.handle('floors:create', async (event, data) => {
   return await floorsService.createFloors(data);
-}) 
+});
 
 ipcMain.handle('floors:readAll', async () => {
   return await floorsService.getAllFloors();
 });
 
-ipcMain.handle('floors:readById', async (event,id) => {
+ipcMain.handle('floors:readById', async (event, id) => {
   return await floorsService.getByIdFloors(id);
 });
 
-ipcMain.handle('floors:update', async (event,{id,data}) => {
-  return await floorsService.updateFloors({id,...data});
+ipcMain.handle('floors:update', async (event, { id, data }) => {
+  return await floorsService.updateFloors({ id, ...data });
 });
 
 ipcMain.handle('floors:delete', async (event, id) => {
@@ -172,7 +171,9 @@ ipcMain.handle('floors:delete', async (event, id) => {
 });
 
 
-//location
+// -----------------------------------------------------
+//  LOCATION
+// -----------------------------------------------------
 ipcMain.handle('location:create', async (event, data) => {
   return await locationService.createLocation(data);
 });
@@ -185,8 +186,8 @@ ipcMain.handle('location:readById', async (event, id) => {
   return await locationService.getByIdLocation(id);
 });
 
-ipcMain.handle('location:update', async (event,{id,data}) => {
-  return await locationService.updateLocation({id,...data});
+ipcMain.handle('location:update', async (event, { id, data }) => {
+  return await locationService.updateLocation({ id, ...data });
 });
 
 ipcMain.handle('location:delete', async (event, id) => {
@@ -194,7 +195,9 @@ ipcMain.handle('location:delete', async (event, id) => {
 });
 
 
-//nvrs
+// -----------------------------------------------------
+//  NVRS
+// -----------------------------------------------------
 ipcMain.handle('nvrs:create', async (event, data) => {
   return await nvrService.createNvr(data);
 });
@@ -207,8 +210,8 @@ ipcMain.handle('nvrs:readById', async (event, id) => {
   return await nvrService.getNvrById(id);
 });
 
-ipcMain.handle('nvrs:update', async (event,{id,data}) => {
-  return await nvrService.updateNvr({id,...data});
+ipcMain.handle('nvrs:update', async (event, { id, data }) => {
+  return await nvrService.updateNvr({ id, ...data });
 });
 
 ipcMain.handle('nvrs:delete', async (event, id) => {
@@ -216,7 +219,9 @@ ipcMain.handle('nvrs:delete', async (event, id) => {
 });
 
 
-//cameras
+// -----------------------------------------------------
+//  CAMERAS
+// -----------------------------------------------------
 ipcMain.handle('cameras:create', async (event, data) => {
   return await cameraService.createCamera(data);
 });
@@ -229,15 +234,18 @@ ipcMain.handle('cameras:readById', async (event, id) => {
   return await cameraService.getCameraById(id);
 });
 
-ipcMain.handle('cameras:update', async (event,{id,data}) => {
-  return await cameraService.updateCamera({id,...data});
+ipcMain.handle('cameras:update', async (event, { id, data }) => {
+  return await cameraService.updateCamera({ id, ...data });
 });
 
 ipcMain.handle('cameras:delete', async (event, id) => {
   return await cameraService.deleteCamera(id);
 });
 
-//appsettings
+
+// -----------------------------------------------------
+//  APP SETTINGS
+// -----------------------------------------------------
 ipcMain.handle('appsetting:listAppSettingsdata', async () => {
   return await appsettingService.listAppSettings();
 });
@@ -246,11 +254,14 @@ ipcMain.handle('appsetting:getPingIntervaldata', async () => {
   return await appsettingService.getPingInterval();
 });
 
-ipcMain.handle('appsetting:updatePingIntervaldata', async (event,data) => {
+ipcMain.handle('appsetting:updatePingIntervaldata', async (event, data) => {
   return await appsettingService.updatePingInterval(data);
 });
 
-//ping
+
+// -----------------------------------------------------
+//  PING
+// -----------------------------------------------------
 ipcMain.handle('ping:manual', async () => {
   return await pingService.manualPingTrigger();
 });
