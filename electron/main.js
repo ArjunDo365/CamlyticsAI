@@ -71,8 +71,9 @@ const floorsService = new FloorsService(db);
 const locationService = new LocationService(db);
 const nvrService = new NvrService(db);
 const cameraService = new CameraService(db)
-const pingService = new PingService(db);
 const appsettingService =  new AppsettingService(db)
+const pingService = new PingService(db,appsettingService);
+
 
 pingService.startPingScheduler();
 // ---------------------------
