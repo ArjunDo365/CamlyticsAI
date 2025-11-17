@@ -26,6 +26,7 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+
   }
 
   mainWindow.once('ready-to-show', () => mainWindow.show());
@@ -61,6 +62,7 @@ const CameraService = require('./services/camera');
 const LocationService = require('./services/location');
 const FloorsService = require('./services/floors');
 const PingService = require('./services/ping');
+const AppsettingService = require('./services/appsettings');
 
 const db = new Database();
 const authService = new AuthService(db);
@@ -70,6 +72,7 @@ const locationService = new LocationService(db);
 const nvrService = new NvrService(db);
 const cameraService = new CameraService(db)
 const pingService = new PingService(db);
+const appsettingService =  new AppsettingService(db)
 
 pingService.startPingScheduler();
 // ---------------------------
@@ -114,13 +117,13 @@ ipcMain.handle('roles:delete', (event, id) => authService.deleteRole(id));
 // ---------------------------
 // Dialog handler
 // ---------------------------
-ipcMain.handle('dialog:showOpenDialog', async () => {
-  const result = await dialog.showOpenDialog(mainWindow, {
-    properties: ['openFile'],
-    filters: [{ name: 'PDF Files', extensions: ['pdf'] }],
-  });
-  return result;
-});
+// ipcMain.handle('dialog:showOpenDialog', async () => {
+//   const result = await dialog.showOpenDialog(mainWindow, {
+//     properties: ['openFile'],
+//     filters: [{ name: 'PDF Files', extensions: ['pdf'] }],
+//   });
+//   return result;
+// });
 
 
 //block
@@ -230,6 +233,19 @@ ipcMain.handle('cameras:update', async (event,{id,data}) => {
 
 ipcMain.handle('cameras:delete', async (event, id) => {
   return await cameraService.deleteCamera(id);
+});
+
+//appsettings
+ipcMain.handle('appsetting:listAppSettings', async () => {
+  return await appsettingService.listAppSettings();
+});
+
+ipcMain.handle('appsetting:getPingInterval', async () => {
+  return await appsettingService.getPingInterval();
+});
+
+ipcMain.handle('appsetting:updatePingInterval', async () => {
+  return await appsettingService.updatePingInterval(data);
 });
 
 //ping

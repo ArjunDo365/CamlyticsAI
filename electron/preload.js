@@ -18,8 +18,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateRole: (id, roleData) => ipcRenderer.invoke('roles:update', { id, roleData }),
   deleteRole: (id) => ipcRenderer.invoke('roles:delete', id),
   
-  // Dialog methods
-  showOpenDialog: () => ipcRenderer.invoke('dialog:showOpenDialog'),
+  // // Dialog methods
+  // showOpenDialog: () => ipcRenderer.invoke('dialog:showOpenDialog'),
 
   //block
   createBlock: (data) => ipcRenderer.invoke('block:create', data),
@@ -56,9 +56,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateCamera: (id,data) => ipcRenderer.invoke('cameras:update', {id,data}),
   deleteCamera: (id) => ipcRenderer.invoke('cameras:delete', id),
 
+  //appsettings
+   listAppSettings: () => ipcRenderer.invoke('appsetting:listAppSettings'),
+   getPingInterval: () => ipcRenderer.invoke('appsetting:getPingInterval'),
+   updatePingInterval: (data) => ipcRenderer.invoke('appsetting:updatePingInterval', data),
+
   //ping
   manualPingTrigger: () => ipcRenderer.invoke('ping:manual'),
   nvrcamerasummary: () => ipcRenderer.invoke('ping:nvrcameracount'),
+  notworkinglist: () => ipcRenderer.invoke('ping:notworkingdata'),
   updatePingInterval: (data) => ipcRenderer.invoke('ping:updateInterval', data),
 
 });
