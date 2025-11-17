@@ -1,8 +1,9 @@
 const { successResponse } = require("../utils/responseHandler");
 
 class AppsettingService {
-  constructor(database) {
+  constructor(database,pingService) {
     this.db = database;
+    this.pingService = pingService;
   }
 
   async listAppSettings() {
@@ -55,7 +56,7 @@ class AppsettingService {
       console.log(`Updated ping interval to ${keyvalue} ms`);
 
       // If needed, restart your scheduler
-      await this.startPingScheduler?.();
+      await this.pingService?.startPingScheduler?.();
 
       return successResponse(null, "Ping interval updated successfully");
     } catch (error) {
