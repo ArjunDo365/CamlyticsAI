@@ -70,7 +70,7 @@ async getCamerasAndNVRs() {
         n.ip_address, 
         n.last_working_on, 
         n.is_working,
-        c.location_id 
+        n.location_id 
         l.name AS location_name,
         f.id AS floor_id,
         f.name AS floor_name,
@@ -93,9 +93,9 @@ async getCamerasAndNVRs() {
         c.is_working,
         c.location_id,
         l.name AS location_name,
-        f.id AS floor_id,
+        l.floor_id,
         f.name AS floor_name,
-        b.id AS block_id,
+        f.block_id,
         b.name AS block_name
       FROM cameras c
       JOIN locations l ON c.location_id = l.id
@@ -114,7 +114,7 @@ async getCamerasAndNVRs() {
         n.ip_address, 
         n.last_working_on, 
         n.is_working,
-        c.location_id,
+        n.location_id,
         l.name AS location_name,
         l.floor_id,
         f.name AS floor_name,
