@@ -245,7 +245,7 @@ ipcMain.handle('appsetting:getPingIntervaldata', async () => {
   return await appsettingService.getPingInterval();
 });
 
-ipcMain.handle('appsetting:updatePingIntervaldata', async () => {
+ipcMain.handle('appsetting:updatePingIntervaldata', async (event,data) => {
   return await appsettingService.updatePingInterval(data);
 });
 
