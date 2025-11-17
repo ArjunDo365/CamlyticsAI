@@ -89,8 +89,8 @@ export interface Camera {
 
 export interface AppSetting {
   id: number;
-  Keyname: string;
-  Keyvalue: string;
+  keyname: string;
+  keyvalue: string;
   // display_order: number;
 }
 

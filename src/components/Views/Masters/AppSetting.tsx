@@ -10,8 +10,8 @@ const AppSettings = () => {
   const [editingAppSetting, setEditingAppSetting] = useState<AppSetting | null>(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    Keyname: "",
-    Keyvalue: "",
+    keyname: "",
+    keyvalue: "",
   });
 
   useEffect(() => {
@@ -20,8 +20,8 @@ const AppSettings = () => {
 
   const resetForm = () => {
     setFormData({
-      Keyname: "",
-      Keyvalue: "",
+      keyname: "",
+      keyvalue: "",
     });
     setEditingAppSetting(null);
   };
@@ -46,8 +46,8 @@ const AppSettings = () => {
   const handleEdit = (AppSetting: AppSetting) => {
     setEditingAppSetting(AppSetting);
     setFormData({
-      Keyname: AppSetting.Keyname,
-      Keyvalue: AppSetting.Keyvalue,
+      keyname: AppSetting.keyname,
+      keyvalue: AppSetting.keyvalue,
     });
     setShowModal(true);
   };
@@ -147,13 +147,13 @@ const AppSettings = () => {
                       <div className="flex-shrink-0 h-10 w-10">
                         <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                           <span className="text-white font-medium">
-                            {AppSetting.Keyname.charAt(0).toUpperCase()}
+                            {AppSetting.keyname.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                          {AppSetting.Keyname}
+                          {AppSetting.keyname}
                         </div>
                         {/* <div className="text-sm text-gray-500">{user.email}</div> */}
                       </div>
@@ -161,7 +161,7 @@ const AppSettings = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">
-                      {AppSetting.Keyvalue}
+                      {AppSetting.keyvalue}
                     </div>
                   </td>
                   {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -201,11 +201,11 @@ const AppSettings = () => {
                 </label>
                 <input
                   type="text"
-                  value={formData.Keyname}
+                  value={formData.keyname}
                   onChange={(e) =>
                     setFormData((prevData) => ({
                       ...prevData,
-                      Keyname: e.target.value,
+                      keyname: e.target.value,
                     }))
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
@@ -219,11 +219,11 @@ const AppSettings = () => {
                 </label>
                 <input
                  type="text"
-                  value={formData.Keyvalue}
+                  value={formData.keyvalue}
                   onChange={(e) =>
                     setFormData((prevData) => ({
                       ...prevData,
-                      Keyvalue: e.target.value,
+                      keyvalue: e.target.value,
                     }))
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
