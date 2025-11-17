@@ -207,10 +207,10 @@ const DashboardNew = () => {
                   {/* Button Row */}
                   <div className="flex justify-end mb-3">
                     <button
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition"
+                      className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
                       onClick={() => InactiveList("nvrs")}
                     >
-                      Inactive List
+                      Inactive Download
                     </button>
                   </div>
 
@@ -248,10 +248,10 @@ const DashboardNew = () => {
                   {/* Button Row */}
                   <div className="flex justify-end mb-3">
                     <button
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition"
+                      className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
                       onClick={() => InactiveList("cameras")}
                     >
-                      Inactive List
+                      Inactive Dounload
                     </button>
                   </div>
                   <ReactApexChart
