@@ -70,7 +70,7 @@ async getCamerasAndNVRs() {
         n.ip_address, 
         n.last_working_on, 
         n.is_working,
-        n.location_id 
+        n.location_id,
         l.name AS location_name,
         l.floor_id,
         f.name AS floor_name,
@@ -137,11 +137,11 @@ async getCamerasAndNVRs() {
       },
       "Cameras and NVRs fetched successfully"
     );
+
   } catch (error) {
     return errorResponse(error, "Failed to fetch data");
   }
 }
-
 
 
   async notworkinglist(data) {
@@ -400,30 +400,57 @@ if (nvrs.length === 0) {
   }
 
   async startPingScheduler() {
-     const intervalTime = await this.appsettingservice.getPingInterval();
+  try {
+    const intervalTime = await this.appsettingservice.getPingInterval();
 
     console.log(`Ping interval: ${intervalTime / 1000} seconds`);
 
-    // clear existing timers
+    // Clear existing intervals
     if (this.cameraInterval) clearInterval(this.cameraInterval);
     if (this.nvrInterval) clearInterval(this.nvrInterval);
 
-    // run immediately once
+    // Run immediately
     await this.cctvCameraPing();
     await this.nvrsPing();
 
-    // schedule repeated
+    // Schedule repeated ping
     this.cameraInterval = setInterval(() => this.cctvCameraPing(), intervalTime);
     this.nvrInterval = setInterval(() => this.nvrsPing(), intervalTime);
-  }
 
-  // 🧭 Manual trigger from UI (Ping Now)
-  async manualPingTrigger() {
+    return successResponse(
+      { interval: intervalTime },
+      "Ping scheduler started successfully"
+    );
+
+  } catch (error) {
+    console.error("Error starting ping scheduler:", error);
+    return errorResponse(error, "Failed to start ping scheduler");
+  }
+}
+
+
+// 🧭 Manual UI Trigger - “Ping Now”
+async manualPingTrigger() {
+  try {
     console.log("⚡ Manual ping triggered");
+
     await this.cctvCameraPing();
     await this.nvrsPing();
-    await this.startPingScheduler(); // reset timer from now
+
+    // Restart scheduler after manual run
+    await this.startPingScheduler();
+
+    return successResponse(
+      null,
+      "Manual ping executed and scheduler restarted successfully"
+    );
+
+  } catch (error) {
+    console.error("Manual ping error:", error);
+    return errorResponse(error, "Manual ping failed");
   }
+}
+
 }
 
 module.exports = PingService;
