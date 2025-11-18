@@ -17,7 +17,10 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "dist": "npm run build && electron-builder -c electron.config.js --publish=never",
-    "pack": "electron-builder -c electron.config.js --dir"
+    "pack": "electron-builder -c electron.config.js --dir",
+    "dist:win": "electron-builder -c electron.config.js --win nsis",
+    "dist:linux": "electron-builder -c electron.config.js --linux AppImage",
+    "dist:mac": "electron-builder -c electron.config.js --mac dmg"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
@@ -33,6 +36,7 @@
     "canvas": "^3.2.0",
     "concurrently": "^9.1.0",
     "cross-env": "^7.0.3",
+    "dotenv": "^17.2.3",
     "exceljs": "^4.4.0",
     "flatpickr": "^4.6.13",
     "fontkit": "^2.0.4",

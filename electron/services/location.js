@@ -5,14 +5,13 @@ class LocationService {
     this.db = database;
   }
 
-
   async createLocation(data) {
     try {
-      const { floor_id, name, description,display_order } = data;
+      const { floor_id, name, description, display_order } = data;
 
       const [result] = await this.db.pool.query(
         "INSERT INTO locations (floor_id, name, description,display_order) VALUES (?, ?, ?, ?)",
-        [floor_id, name, description,display_order]
+        [floor_id, name, description, display_order]
       );
 
       return successResponse(
@@ -25,8 +24,8 @@ class LocationService {
   }
 
   async getAllLocation() {
-  try {
-    const [rows] = await this.db.pool.query(`
+    try {
+      const [rows] = await this.db.pool.query(`
       SELECT
         l.id,
         l.name,
@@ -41,12 +40,11 @@ class LocationService {
       JOIN blocks b ON f.block_id = b.id
       ORDER BY l.display_order DESC
     `);
-    return successResponse(rows, "Locations fetched successfully");
-  } catch (error) {
-    return errorResponse(error, "Failed to fetch locations");
+      return successResponse(rows, "Locations fetched successfully");
+    } catch (error) {
+      return errorResponse(error, "Failed to fetch locations");
+    }
   }
-}
-
 
   async getByIdLocation(id) {
     try {
@@ -79,11 +77,11 @@ class LocationService {
 
   async updateLocation(data) {
     try {
-      const { id, floor_id, name, description,display_order } = data;
+      const { id, floor_id, name, description, display_order } = data;
 
       const [result] = await this.db.pool.query(
         "UPDATE locations SET floor_id = ?, name = ?, description = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-        [floor_id, name, description,display_order, id]
+        [floor_id, name, description, display_order, id]
       );
 
       if (result.affectedRows === 0)
@@ -94,7 +92,6 @@ class LocationService {
       return errorResponse(error, "Failed to update location");
     }
   }
-
 
   async deleteLocation(id) {
     try {

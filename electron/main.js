@@ -1,5 +1,31 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
+const fs = require("fs");
+
+function getEnvPath() {
+  // Running inside packaged build (AppImage, EXE, DMG)
+  if (process.resourcesPath) {
+    const prodEnv = path.join(process.resourcesPath, ".env");
+
+    console.log("🔍 Searching for production .env at:", prodEnv);
+
+    if (fs.existsSync(prodEnv)) {
+      console.log("✅ Loaded .env from:", prodEnv);
+      return prodEnv;
+    } else {
+      console.log("❌ .env NOT found in production resources.");
+    }
+  }
+
+  // Dev mode fallback
+  const devEnv = path.join(process.cwd(), ".env");
+  console.log("🔍 Loaded DEV .env from:", devEnv);
+  return devEnv;
+}
+
+require("dotenv").config({ path: getEnvPath() });
+
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+
 
 const isDev = process.env.NODE_ENV === 'development';
 

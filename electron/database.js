@@ -68,7 +68,7 @@ class Database {
   description TEXT,
 
   display_order INT DEFAULT NULL,
-  status TINYINT DEFAULT 1,
+  status TINYINT(1) DEFAULT 1 COMMENT '1 = active, 0 = inactive',
   created_by INT DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_by INT DEFAULT NULL,
@@ -85,7 +85,7 @@ class Database {
   description TEXT,
 
   display_order INT DEFAULT NULL,
-  status TINYINT DEFAULT 1,
+  status TINYINT(1) DEFAULT 1 COMMENT '1 = active, 0 = inactive',
   created_by INT DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_by INT DEFAULT NULL,
@@ -105,7 +105,7 @@ class Database {
   description TEXT,
 
   display_order INT DEFAULT NULL,
-  status TINYINT DEFAULT 1,
+  status TINYINT(1) DEFAULT 1 COMMENT '1 = active, 0 = inactive',
   created_by INT DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_by INT DEFAULT NULL,
@@ -131,7 +131,7 @@ class Database {
   is_working BOOLEAN DEFAULT 0,
 
   display_order INT DEFAULT NULL,
-  status TINYINT DEFAULT 1,
+  status TINYINT(1) DEFAULT 1 COMMENT '1 = active, 0 = inactive',
   created_by INT DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_by INT DEFAULT NULL,
@@ -159,7 +159,7 @@ class Database {
   is_working BOOLEAN DEFAULT 0,
 
   display_order INT DEFAULT NULL,
-  status TINYINT DEFAULT 1,
+  status TINYINT(1) DEFAULT 1 COMMENT '1 = active, 0 = inactive',
   created_by INT DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_by INT DEFAULT NULL,
@@ -177,7 +177,7 @@ class Database {
     keyname VARCHAR(255) UNIQUE NOT NULL,
     keyvalue VARCHAR(255) NOT NULL,
     display_order INT DEFAULT NULL,
-    status TINYINT DEFAULT 1,
+    status TINYINT(1) DEFAULT 0 COMMENT '1 = active, 0 = inactive',
     created_by INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_by INT DEFAULT NULL,

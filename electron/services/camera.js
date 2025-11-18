@@ -18,6 +18,7 @@ class CameraService {
       manufacturer,
       vendor,
       install_date,
+      status,
     } = data;
 
     // ---------------------------
@@ -38,8 +39,8 @@ class CameraService {
     // ---------------------------
     const [result] = await this.db.pool.query(
       `INSERT INTO cameras 
-      (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date,status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         location_id,
         nvr_id,
@@ -51,6 +52,7 @@ class CameraService {
         manufacturer,
         vendor,
         install_date,
+        status,
       ]
     );
 
@@ -71,6 +73,7 @@ class CameraService {
     const [rows] = await this.db.pool.query(`
       SELECT 
         c.id,
+        c.status,
         c.asset_no,
         c.serial_number,
         c.model_name,
@@ -111,6 +114,7 @@ async getCameraById(id) {
     const [rows] = await this.db.pool.query(`
       SELECT 
         c.id,
+        c.status,
         c.asset_no,
         c.serial_number,
         c.model_name,
@@ -164,7 +168,7 @@ async getCameraById(id) {
         manufacturer,
         vendor,
         install_date,
-
+        status,
       } = data;
 
       const ipv4Regex =
@@ -180,7 +184,7 @@ async getCameraById(id) {
       const [result] = await this.db.pool.query(
         `UPDATE cameras 
          SET location_id=?, nvr_id=?, asset_no=?, serial_number=?, model_name=?, ip_address=?, port=?, manufacturer=?, vendor=?, 
-             install_date=?, updated_at=CURRENT_TIMESTAMP 
+             install_date=?, updated_at=CURRENT_TIMESTAMP ,status ?
          WHERE id=?`,
         [
           location_id,
@@ -193,6 +197,7 @@ async getCameraById(id) {
           manufacturer,
           vendor,
           install_date,
+          status,
           id,
         ]
       );

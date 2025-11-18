@@ -5,7 +5,6 @@ class NvrService {
     this.db = database;
   }
 
-
   async createNvr(data) {
     try {
       const {
@@ -16,22 +15,20 @@ class NvrService {
         ip_address,
         manufacturer,
         vendor,
-        install_date
+        install_date,
+        status,
       } = data;
 
       const ipv4Regex =
-      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
-    if (!ip_address || !ipv4Regex.test(ip_address)) {
-      return errorResponse(
-        null,
-        "Invalid IP Address. Example: 192.168.1.10"
-      );
-    }
+      if (!ip_address || !ipv4Regex.test(ip_address)) {
+        return errorResponse(null, "Invalid IP Address. Example: 192.168.1.10");
+      }
 
       const [result] = await this.db.pool.query(
         `INSERT INTO nvrs 
-        (location_id, asset_no, serial_number, model_name, ip_address, manufacturer, vendor, install_date)
+        (location_id, asset_no, serial_number, model_name, ip_address, manufacturer, vendor, install_date, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           location_id,
@@ -42,6 +39,7 @@ class NvrService {
           manufacturer,
           vendor,
           install_date,
+          status,
         ]
       );
 
@@ -54,12 +52,12 @@ class NvrService {
     }
   }
 
-
- async getAllNvrs() {
-  try {
-    const [rows] = await this.db.pool.query(`
+  async getAllNvrs() {
+    try {
+      const [rows] = await this.db.pool.query(`
       SELECT 
         n.id,
+        n.status,
         n.location_id,
         l.name AS location_name,
         f.id AS floor_id,
@@ -83,17 +81,19 @@ class NvrService {
       JOIN blocks b ON f.block_id = b.id
     `);
 
-    return successResponse(rows, "NVRs fetched successfully");
-  } catch (error) {
-    return errorResponse(error, "Failed to fetch NVRs");
+      return successResponse(rows, "NVRs fetched successfully");
+    } catch (error) {
+      return errorResponse(error, "Failed to fetch NVRs");
+    }
   }
-}
 
-async getNvrById(id) {
-  try {
-    const [rows] = await this.db.pool.query(`
+  async getNvrById(id) {
+    try {
+      const [rows] = await this.db.pool.query(
+        `
       SELECT 
         n.id,
+        n.status,
         n.location_id,
         l.name AS location_name,
         f.id AS floor_id,
@@ -116,17 +116,18 @@ async getNvrById(id) {
       JOIN floors f ON l.floor_id = f.id
       JOIN blocks b ON f.block_id = b.id
       WHERE n.id = ?
-    `, [id]);
+    `,
+        [id]
+      );
 
-    if (rows.length === 0)
-      return errorResponse("NVR not found", "No record found");
+      if (rows.length === 0)
+        return errorResponse("NVR not found", "No record found");
 
-    return successResponse(rows[0], "NVR fetched successfully");
-  } catch (error) {
-    return errorResponse(error, "Failed to fetch NVR");
+      return successResponse(rows[0], "NVR fetched successfully");
+    } catch (error) {
+      return errorResponse(error, "Failed to fetch NVR");
+    }
   }
-}
-
 
   async updateNvr(data) {
     try {
@@ -139,23 +140,21 @@ async getNvrById(id) {
         ip_address,
         manufacturer,
         vendor,
-        install_date
+        install_date,
+        status,
       } = data;
 
       const ipv4Regex =
-      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
-    if (!ip_address || !ipv4Regex.test(ip_address)) {
-      return errorResponse(
-        null,
-        "Invalid IP Address. Example: 192.168.1.10"
-      );
-    }
+      if (!ip_address || !ipv4Regex.test(ip_address)) {
+        return errorResponse(null, "Invalid IP Address. Example: 192.168.1.10");
+      }
 
       const [result] = await this.db.pool.query(
         `UPDATE nvrs 
          SET location_id=?, asset_no=?, serial_number=?, model_name=?, ip_address=?, manufacturer=?, vendor=?, 
-             install_date=?, updated_at=CURRENT_TIMESTAMP 
+             install_date=?, updated_at=CURRENT_TIMESTAMP ,status=?
          WHERE id=?`,
         [
           location_id,
@@ -166,6 +165,7 @@ async getNvrById(id) {
           manufacturer,
           vendor,
           install_date,
+          status,
           id,
         ]
       );
@@ -182,7 +182,10 @@ async getNvrById(id) {
 
   async deleteNvr(id) {
     try {
-      const [result] = await this.db.pool.query("DELETE FROM nvrs WHERE id = ?", [id]);
+      const [result] = await this.db.pool.query(
+        "DELETE FROM nvrs WHERE id = ?",
+        [id]
+      );
 
       if (result.affectedRows === 0) {
         return errorResponse("NVR not found", "Delete failed");

@@ -1,70 +1,70 @@
-const path = require('path');
+const path = require("path");
 
 module.exports = {
-  appId: 'com.yourcompany.Camlytics-ai',
-  productName: 'Camlytx Ai',
+  appId: "com.do365.camlytx.ai",
+  productName: "Camlytx AI",
 
   directories: {
-    output: 'dist-app',
-    buildResources: 'assets' // icons & extra resources
+    output: "dist-app",
+    buildResources: "assets"
   },
 
   files: [
-  {
-    from: "dist",
-    to: "dist",
-    filter: ["**/*"]
-  },
-  {
-    from: "electron",
-    to: "electron",
-    filter: ["**/*"]
-  },
-  "package.json",
-  "!node_modules/*/{test,__tests__}/**"
-],
+    {
+      from: "dist",
+      to: "dist",
+      filter: ["**/*"]
+    },
+    {
+      from: "electron",
+      to: "electron",
+      filter: ["**/*"]
+    },
+    "package.json",
+    "!node_modules/*/{test,__tests__}/**"
+  ],
 
   extraResources: [
-     {
-    from: "./.env",
-    to: ".env"
-  }
+    {
+      from: "./.env",
+      to: ".env"
+    }
   ],
 
   asar: true,
 
   mac: {
-    category: 'public.app-category.productivity',
-    target: ['dmg'],
-    defaultArch: 'universal'
+    category: "public.app-category.utilities",
+    target: ["dmg"],
+    hardenedRuntime: false,
+    icon: path.join(__dirname, "assets", "icon.icns")
   },
 
   win: {
-    target: ['nsis'],
-    defaultArch: 'x64'
+    target: ["nsis"],
+    icon: path.join(__dirname, "assets", "icon.ico"),
+    artifactName: "CamlytxAI_Setup_${version}.exe"
   },
 
   linux: {
-    target: ['AppImage'],
-    defaultArch: 'x64',
-    category: 'Utility'
+    target: ["AppImage"],
+    category: "Utility",
+    icon: path.join(__dirname, "assets", "icon.png")
   },
-
-  // Icons must exist: icon.ico (win), icon.icns (mac), icon.png (linux)
-  icon: path.join(__dirname, 'assets', 'icon.png'),
-
 
   publish: [],
 
   extraMetadata: {
-    description: 'A desktop application for extracting text from PDF files using OCR',
-    author: 'Your Name <youremail@example.com>'
+    description: "A desktop app for video analytics",
+    author: "Do365 Technologies Private Limited"
   },
 
   nsis: {
     oneClick: false,
     perMachine: true,
     allowElevation: true,
-    allowToChangeInstallationDirectory: true
+    allowToChangeInstallationDirectory: true,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true
   }
 };
