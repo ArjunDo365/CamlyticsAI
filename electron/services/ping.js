@@ -44,7 +44,8 @@ class PingService {
       // ---------------- CAMERAS WITH JOINS ----------------
       const [cameras] = await this.db.pool.query(`
       SELECT 
-        c.id, 
+        c.id,
+        c.status, 
         c.asset_no, 
         c.model_name, 
         c.ip_address, 
@@ -65,7 +66,8 @@ class PingService {
       // ---------------- NVRs WITH JOINS ----------------
       const [nvrs] = await this.db.pool.query(`
       SELECT 
-        n.id, 
+        n.id,
+        n.status, 
         n.asset_no, 
         n.model_name, 
         n.ip_address, 
@@ -86,7 +88,8 @@ class PingService {
       // ---------------- LAST 10 CAMERAS ----------------
       const [last10Cameras] = await this.db.pool.query(`
       SELECT 
-        c.id, 
+        c.id,
+        c.status,  
         c.asset_no, 
         c.model_name, 
         c.ip_address, 
@@ -109,7 +112,8 @@ class PingService {
       // ---------------- LAST 10 NVRs ----------------
       const [last10NVRs] = await this.db.pool.query(`
       SELECT 
-        n.id, 
+        n.id,
+        n.status,  
         n.asset_no, 
         n.model_name, 
         n.ip_address, 
@@ -158,6 +162,7 @@ class PingService {
         const [rows] = await this.db.pool.query(`
         SELECT 
           c.id,
+          c.status, 
           c.location_id,
           l.name AS location_name,
           l.floor_id,
@@ -193,6 +198,7 @@ class PingService {
         const [rows] = await this.db.pool.query(`
         SELECT 
           n.id,
+          n.status, 
           n.location_id,
           l.name AS location_name,
           l.floor_id,
