@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Tab } from "@headlessui/react";
 import { CommonHelper } from "../../helper/helper";
+import { DownloadIcon, HeartCrackIcon, HeartIcon } from "lucide-react";
 
 const DashboardNew = () => {
   const [showModal, setShowModal] = useState(false);
@@ -179,9 +180,11 @@ const DashboardNew = () => {
         </div>
         <div>
           <button
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-800 transition"
+            className="flex gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-800 transition"
             onClick={() => Manualping()}
           >
+            {/* <HeartIcon/> */}
+            <HeartCrackIcon/>
             Health Check
           </button>
         </div>
@@ -208,10 +211,12 @@ const DashboardNew = () => {
                 <>
                   {/* Button Row */}
                   <div className="flex justify-end mb-3">
+                     
                     <button
-                      className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
+                      className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
                       onClick={() => InactiveList("nvrs")}
                     >
+                      <DownloadIcon/>
                       Not Working Download
                     </button>
                   </div>
@@ -257,9 +262,10 @@ const DashboardNew = () => {
                   {/* Button Row */}
                   <div className="flex justify-end mb-3">
                     <button
-                      className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
+                      className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
                       onClick={() => InactiveList("cameras")}
                     >
+                      <DownloadIcon/>
                       Not Working Download
                     </button>
                   </div>

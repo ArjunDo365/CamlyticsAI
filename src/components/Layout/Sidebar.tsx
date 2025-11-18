@@ -75,12 +75,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="bg-white dark:bg-gray-900 h-full">
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-gray-700">
           <div className="main-logo flex items-center shrink-0">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
-              <span className="text-white font-bold text-lg">C</span>
+            <div className="w-20 h-10  rounded-lg flex items-center justify-center mr-1">
+              <span className="text-white font-bold text-lg"><img src="/src/asset/favicon.svg" alt="no" className="w-20 h-10 " /></span>
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               Camlytx AI
-              {/* <img src="/src/asset/CAMLYTIX FINAL.png" alt="" className="w-40 h-30 " /> */}
+              {/* <img src="/src/asset/favicon.svg" alt="no" className="w-40 h-30 " /> */}
             </span>
           </div>
 
