@@ -42,14 +42,14 @@ module.exports = {
 
   win: {
     target: ["nsis"],
-    icon: path.join(__dirname, "assets", "icon.ico"),
+    icon: path.join(__dirname, "assets", "ico", "256x256.ico"),
     artifactName: "CamlytxAI_Setup_${version}.exe",
   },
 
   linux: {
     target: ["deb", "AppImage"],
     category: "Utility",
-    icon: path.join(__dirname, "assets", "icons"),
+    icon: path.join(__dirname, "assets", "png"),
   },
 
   publish: [],
