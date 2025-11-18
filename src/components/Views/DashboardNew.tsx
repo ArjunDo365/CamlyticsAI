@@ -7,7 +7,9 @@ const DashboardNew = () => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [inactivelist, setInactivelist] = useState([]);
-  const [Dashboard, setDashboard] = useState([]);
+  // const [Dashboard, setDashboard] = useState([]);
+  const [Dashboard, setDashboard] = useState<any>({});
+
   const [cameraStatus, setCameraStatus] = useState<any>({
     series: [],
     options: {},
@@ -215,12 +217,19 @@ const DashboardNew = () => {
                   </div>
 
                   {/* Chart */}
-                  <ReactApexChart
-                    series={nvrStatus.series}
-                    options={nvrStatus.options}
-                    type="pie"
-                    height={380}
-                  />
+               {Number(Dashboard.total_nvrs) === 0 ? (
+  <div className="min-h-[325px] grid place-content-center text-gray-500 text-lg">
+    No NVR Data Available
+  </div>
+) : (
+  <ReactApexChart
+    series={nvrStatus.series}
+    options={nvrStatus.options}
+    type="pie"
+    height={380}
+  />
+)}
+
                 </>
               )}
             </div>
@@ -254,12 +263,20 @@ const DashboardNew = () => {
                       Not Working Download
                     </button>
                   </div>
-                  <ReactApexChart
-                    series={cameraStatus.series}
-                    options={cameraStatus.options}
-                    type="pie" // <<< CHANGE TO PIE
-                    height={380}
-                  />
+                  {/* CAMERA STATUS PIE CHART */}
+{Number(Dashboard.total_cameras) === 0 ? (
+  <div className="min-h-[325px] grid place-content-center text-gray-500 text-lg">
+    No Camera Data Available
+  </div>
+) : (
+  <ReactApexChart
+    series={cameraStatus.series}
+    options={cameraStatus.options}
+    type="pie"
+    height={380}
+  />
+)}
+
                 </>
               )}
             </div>
@@ -341,7 +358,7 @@ const DashboardNew = () => {
                       </thead>
 
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {Last10Cameras.map((data: any) => (
+                        {last10NVRs.map((data: any) => (             
                           <tr key={data.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
@@ -448,7 +465,7 @@ const DashboardNew = () => {
                       </thead>
 
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {last10NVRs.map((data: any) => (
+                        {Last10Cameras.map((data: any) => (
                           <tr key={data.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">

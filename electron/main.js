@@ -1,13 +1,13 @@
 const path = require('path');
 const fs = require("fs");
 
+/* ------------------------------------------
+   ENV HANDLING (DEV + PROD)
+------------------------------------------- */
 function getEnvPath() {
-  // Running inside packaged build (AppImage, EXE, DMG)
   if (process.resourcesPath) {
     const prodEnv = path.join(process.resourcesPath, ".env");
-
     console.log("🔍 Searching for production .env at:", prodEnv);
-
     if (fs.existsSync(prodEnv)) {
       console.log("✅ Loaded .env from:", prodEnv);
       return prodEnv;
@@ -15,8 +15,6 @@ function getEnvPath() {
       console.log("❌ .env NOT found in production resources.");
     }
   }
-
-  // Dev mode fallback
   const devEnv = path.join(process.cwd(), ".env");
   console.log("🔍 Loaded DEV .env from:", devEnv);
   return devEnv;
@@ -24,13 +22,21 @@ function getEnvPath() {
 
 require("dotenv").config({ path: getEnvPath() });
 
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+/* ------------------------------------------
+   ELECTRON IMPORTS
+------------------------------------------- */
+const { app, BrowserWindow, ipcMain, dialog, session } = require('electron');
 
-
+/* ------------------------------------------
+   DEV MODE CHECK
+------------------------------------------- */
 const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow;
 
+/* ------------------------------------------
+   CREATE WINDOW
+------------------------------------------- */
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -54,7 +60,10 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
 
-  mainWindow.once('ready-to-show', () => mainWindow.show());
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
+
   mainWindow.setMenu(null);
 
   mainWindow.on('closed', () => {
@@ -62,8 +71,41 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+/* ------------------------------------------
+   CLEAR CACHE COMPLETELY BEFORE LAUNCH
+------------------------------------------- */
+app.whenReady().then(async () => {
+  const ses = session.defaultSession;
 
+  console.log("🧹 Clearing Electron cache and storage...");
+
+  try {
+    await ses.clearCache();
+    await ses.clearStorageData({
+      storages: [
+        "appcache",
+        "cookies",
+        "filesystem",
+        "indexdb",
+        "localstorage",
+        "shadercache",
+        "websql",
+        "serviceworkers"
+      ],
+      quotas: ["temporary", "persistent", "syncable"]
+    });
+
+    console.log("🔥 Cache cleared successfully!");
+  } catch (err) {
+    console.error("Cache clear error:", err);
+  }
+
+  createWindow();
+});
+
+/* ------------------------------------------
+   APP EVENTS
+------------------------------------------- */
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
@@ -72,10 +114,9 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
-
-// -----------------------------------------------------
-//  SERVICES & DATABASE (NO MORE CIRCULAR DEPENDENCIES)
-// -----------------------------------------------------
+/* ------------------------------------------
+   DATABASE + SERVICES
+------------------------------------------- */
 const Database = require('./database');
 const AuthService = require('./services/auth');
 const BlockService = require('./services/block');
@@ -94,34 +135,29 @@ const floorsService = new FloorsService(db);
 const locationService = new LocationService(db);
 const nvrService = new NvrService(db);
 const cameraService = new CameraService(db);
-
-// Create both services WITHOUT linking yet
 const appsettingService = new AppsettingService(db);
-const pingService = new PingService(db,appsettingService);
+
+const pingService = new PingService(db, appsettingService);
 
 // Start Ping Scheduler
 pingService.startPingScheduler();
 
+/* ------------------------------------------
+   IPC HANDLERS
+------------------------------------------- */
 
-// -----------------------------------------------------
-//  AUTH
-// -----------------------------------------------------
+// AUTH
 ipcMain.handle('auth:login', (event, { email, password }) =>
   authService.login(email, password)
 );
-
 ipcMain.handle('auth:register', (event, userData) =>
   authService.register(userData)
 );
-
 ipcMain.handle('auth:verify-token', (event, token) =>
   authService.verifyToken(token)
 );
 
-
-// -----------------------------------------------------
-//  USERS
-// -----------------------------------------------------
+// USERS
 ipcMain.handle('users:getAll', () => authService.getAllUsers());
 ipcMain.handle('users:create', (event, userData) =>
   authService.createUser(userData)
@@ -133,10 +169,7 @@ ipcMain.handle('users:delete', (event, id) =>
   authService.deleteUser(id)
 );
 
-
-// -----------------------------------------------------
-//  ROLES
-// -----------------------------------------------------
+// ROLES
 ipcMain.handle('roles:getAll', () => authService.getAllRoles());
 ipcMain.handle('roles:create', (event, roleData) =>
   authService.createRole(roleData)
@@ -148,169 +181,114 @@ ipcMain.handle('roles:delete', (event, id) =>
   authService.deleteRole(id)
 );
 
+// BLOCKS
+ipcMain.handle('block:create', (event, data) =>
+  blockService.createBlock({ ...data })
+);
+ipcMain.handle('block:readAll', () => blockService.getAllBlocks());
+ipcMain.handle('block:readById', (event, id) =>
+  blockService.getAllBlocks(id)
+);
+ipcMain.handle('block:update', (event, { id, data }) =>
+  blockService.updateBlock({ id, ...data })
+);
+ipcMain.handle('block:delete', (event, id) =>
+  blockService.deleteBlock(id)
+);
 
-// -----------------------------------------------------
-//  BLOCKS
-// -----------------------------------------------------
-ipcMain.handle('block:create', async (event, data) => {
-  return await blockService.createBlock({ ...data });
-});
+// FLOORS
+ipcMain.handle('floors:create', (event, data) =>
+  floorsService.createFloors(data)
+);
+ipcMain.handle('floors:readAll', () => floorsService.getAllFloors());
+ipcMain.handle('floors:readById', (event, id) =>
+  floorsService.getByIdFloors(id)
+);
+ipcMain.handle('floors:update', (event, { id, data }) =>
+  floorsService.updateFloors({ id, ...data })
+);
+ipcMain.handle('floors:delete', (event, id) =>
+  floorsService.deleteFloors(id)
+);
 
-ipcMain.handle('block:readAll', async () => {
-  return await blockService.getAllBlocks();
-});
+// LOCATION
+ipcMain.handle('location:create', (event, data) =>
+  locationService.createLocation(data)
+);
+ipcMain.handle('location:readAll', () =>
+  locationService.getAllLocation()
+);
+ipcMain.handle('location:readById', (event, id) =>
+  locationService.getByIdLocation(id)
+);
+ipcMain.handle('location:update', (event, { id, data }) =>
+  locationService.updateLocation({ id, ...data })
+);
+ipcMain.handle('location:delete', (event, id) =>
+  locationService.deleteLocation(id)
+);
 
-ipcMain.handle('block:readById', async (event, id) => {
-  return await blockService.getAllBlocks(id);
-});
+// NVRS
+ipcMain.handle('nvrs:create', (event, data) =>
+  nvrService.createNvr(data)
+);
+ipcMain.handle('nvrs:readAll', () =>
+  nvrService.getAllNvrs()
+);
+ipcMain.handle('nvrs:readById', (event, id) =>
+  nvrService.getNvrById(id)
+);
+ipcMain.handle('nvrs:update', (event, { id, data }) =>
+  nvrService.updateNvr({ id, ...data })
+);
+ipcMain.handle('nvrs:delete', (event, id) =>
+  nvrService.deleteNvr(id)
+);
 
-ipcMain.handle('block:update', async (event, { id, data }) => {
-  return await blockService.updateBlock({ id, ...data });
-});
+// CAMERAS
+ipcMain.handle('cameras:create', (event, data) =>
+  cameraService.createCamera(data)
+);
+ipcMain.handle('cameras:readAll', () =>
+  cameraService.getAllCameras()
+);
+ipcMain.handle('cameras:readById', (event, id) =>
+  cameraService.getCameraById(id)
+);
+ipcMain.handle('cameras:update', (event, { id, data }) =>
+  cameraService.updateCamera({ id, ...data })
+);
+ipcMain.handle('cameras:delete', (event, id) =>
+  cameraService.deleteCamera(id)
+);
 
-ipcMain.handle('block:delete', async (event, id) => {
-  return await blockService.deleteBlock(id);
-});
+// APP SETTINGS
+ipcMain.handle('appsetting:listAppSettingsdata', () =>
+  appsettingService.listAppSettings()
+);
+ipcMain.handle('appsetting:getPingIntervaldata', () =>
+  appsettingService.getPingInterval()
+);
 
-
-// -----------------------------------------------------
-//  FLOORS
-// -----------------------------------------------------
-ipcMain.handle('floors:create', async (event, data) => {
-  return await floorsService.createFloors(data);
-});
-
-ipcMain.handle('floors:readAll', async () => {
-  return await floorsService.getAllFloors();
-});
-
-ipcMain.handle('floors:readById', async (event, id) => {
-  return await floorsService.getByIdFloors(id);
-});
-
-ipcMain.handle('floors:update', async (event, { id, data }) => {
-  return await floorsService.updateFloors({ id, ...data });
-});
-
-ipcMain.handle('floors:delete', async (event, id) => {
-  return await floorsService.deleteFloors(id);
-});
-
-
-// -----------------------------------------------------
-//  LOCATION
-// -----------------------------------------------------
-ipcMain.handle('location:create', async (event, data) => {
-  return await locationService.createLocation(data);
-});
-
-ipcMain.handle('location:readAll', async () => {
-  return await locationService.getAllLocation();
-});
-
-ipcMain.handle('location:readById', async (event, id) => {
-  return await locationService.getByIdLocation(id);
-});
-
-ipcMain.handle('location:update', async (event, { id, data }) => {
-  return await locationService.updateLocation({ id, ...data });
-});
-
-ipcMain.handle('location:delete', async (event, id) => {
-  return await locationService.deleteLocation(id);
-});
-
-
-// -----------------------------------------------------
-//  NVRS
-// -----------------------------------------------------
-ipcMain.handle('nvrs:create', async (event, data) => {
-  return await nvrService.createNvr(data);
-});
-
-ipcMain.handle('nvrs:readAll', async () => {
-  return await nvrService.getAllNvrs();
-});
-
-ipcMain.handle('nvrs:readById', async (event, id) => {
-  return await nvrService.getNvrById(id);
-});
-
-ipcMain.handle('nvrs:update', async (event, { id, data }) => {
-  return await nvrService.updateNvr({ id, ...data });
-});
-
-ipcMain.handle('nvrs:delete', async (event, id) => {
-  return await nvrService.deleteNvr(id);
-});
-
-
-// -----------------------------------------------------
-//  CAMERAS
-// -----------------------------------------------------
-ipcMain.handle('cameras:create', async (event, data) => {
-  return await cameraService.createCamera(data);
-});
-
-ipcMain.handle('cameras:readAll', async () => {
-  return await cameraService.getAllCameras();
-});
-
-ipcMain.handle('cameras:readById', async (event, id) => {
-  return await cameraService.getCameraById(id);
-});
-
-ipcMain.handle('cameras:update', async (event, { id, data }) => {
-  return await cameraService.updateCamera({ id, ...data });
-});
-
-ipcMain.handle('cameras:delete', async (event, id) => {
-  return await cameraService.deleteCamera(id);
-});
-
-
-// -----------------------------------------------------
-//  APP SETTINGS
-// -----------------------------------------------------
-ipcMain.handle('appsetting:listAppSettingsdata', async () => {
-  return await appsettingService.listAppSettings();
-});
-
-ipcMain.handle('appsetting:getPingIntervaldata', async () => {
-  return await appsettingService.getPingInterval();
-});
-
-
-
-
-// -----------------------------------------------------
-//  PING
-// -----------------------------------------------------
-ipcMain.handle('ping:manual', async () => {
-  return await pingService.manualPingTrigger();
-});
-
-ipcMain.handle('ping:updateInterval', async (event, data) => {
-  return await pingService.updatePingInterval(data);
-});
-
-ipcMain.handle('ping:nvrcameracount', async () => {
-  return await pingService.nvrcamerasummary();
-});
-
-ipcMain.handle('ping:notworkingdata', async () => {
-  return await pingService.notworkinglist();
-});
-
-ipcMain.handle('ping:updatePingIntervaldata', async (event, data) => {
-  return await pingService.updatePingInterval(data);
-});
-
-ipcMain.handle('ping:getCamerasAndNVRsdata', async () => {
-  return await pingService.getCamerasAndNVRs();
-});
-
-ipcMain.handle("ping:downloadNotWorkingExcel", async (event, type) => {
-  return await pingService.downloadNotWorkingExcel(type);
-});
-
+// PING
+ipcMain.handle('ping:manual', () =>
+  pingService.manualPingTrigger()
+);
+ipcMain.handle('ping:updateInterval', (event, data) =>
+  pingService.updatePingInterval(data)
+);
+ipcMain.handle('ping:nvrcameracount', () =>
+  pingService.nvrcamerasummary()
+);
+ipcMain.handle('ping:notworkingdata', () =>
+  pingService.notworkinglist()
+);
+ipcMain.handle('ping:updatePingIntervaldata', (event, data) =>
+  pingService.updatePingInterval(data)
+);
+ipcMain.handle('ping:getCamerasAndNVRsdata', () =>
+  pingService.getCamerasAndNVRs()
+);
+ipcMain.handle("ping:downloadNotWorkingExcel", (event, type) =>
+  pingService.downloadNotWorkingExcel(type)
+);
