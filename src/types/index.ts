@@ -77,6 +77,7 @@ export interface Nvr {
   install_date: string;
   last_working_on?:string;
   is_working?:string;
+  status?:number;
 }
 
 export interface Camera {
@@ -90,12 +91,13 @@ export interface Camera {
   serial_number: string;
   model_name: string;
   ip_address: string;
-  port:string;
+  port:number;
   manufacturer: string;
   vendor: string;
   install_date: string;
   last_working_on?:string;
   is_working?:string;
+  status:number
 }
 
 export interface AppSetting {

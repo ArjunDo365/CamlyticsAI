@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       
           { id: "nvr", label: "NVR", icon: Router },
           { id: "cameras", label: "Cameras", icon: Cctv },
-          { id: "employees", label: "Employees", icon: UserCheck },
+          // { id: "employees", label: "Employees", icon: UserCheck },
           { id: "appsetting", label: "App Setting", icon: Settings },
         ]
       : []),
@@ -134,13 +134,13 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
 
               {/* Section Header */}
-              <li className="py-3 px-3 flex items-center uppercase font-extrabold text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 -mx-4 mb-1 mt-4">
+              {/* <li className="py-3 px-3 flex items-center uppercase font-extrabold text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 -mx-4 mb-1 mt-4">
                 <Minus className="w-4 h-4 mr-2 hidden" />
                 <span>FILE MANAGEMENT</span>
-              </li>
+              </li> */}
 
               {/* Menu Items */}
-              {menuItems.map((item) => {
+              {/* {menuItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.id}>
@@ -163,7 +163,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                   </li>
                 );
-              })}
+              })} */}
 
               {user?.role_name === "Admin" && (
                 <>

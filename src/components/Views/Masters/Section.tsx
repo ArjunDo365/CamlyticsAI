@@ -33,7 +33,6 @@ const Section = () => {
   };
 
   const loadData = async () => {
-    
     setLoading(true);
     try {
       const [sectionData, floorData, blockData] = await Promise.all([
@@ -75,13 +74,14 @@ const Section = () => {
       text: "You want to Delete " + " " + section.name + "!",
       showCancelButton: true,
       confirmButtonText: "Delete",
+      confirmButtonColor:'red',
       padding: "2em",
       customClass: { popup: "sweet-alerts" },
     }).then(async (result) => {
       if (result.value) {
         let res: any;
         res = await window.electronAPI.deleteLocation(section.id);
-        console.log("resp from delete: ", res);
+        // console.log("resp from delete: ", res);
         if (res.success) {
           await loadData();
           CommonHelper.SuccessToaster(res.message);
@@ -93,11 +93,19 @@ const Section = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    
     e.preventDefault();
 
+    if (formData.floor_id === 0 || formData.display_order == 0) {
+      CommonHelper.ErrorToaster(
+        formData.floor_id === 0
+          ? "Please select a floor."
+          : "please enter the display order"
+      );
+      return;
+    }
+
     try {
-      console.log("payload for section api: ", editingSection?.id, formData);
+      // console.log("payload for section api: ", editingSection?.id, formData);
 
       let result;
       if (editingSection) {
@@ -194,7 +202,7 @@ const Section = () => {
                       </div>
                     </div>
                   </td>
-                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {/* <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       user.role_name === 'Admin' 
                         ? 'bg-purple-100 text-purple-800'
@@ -298,7 +306,9 @@ const Section = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                   required
                 >
-                  <option value={0}>-- Select Floor --</option>
+                  <option value={0} key={0}>
+                    -- Select Floor --
+                  </option>
                   {floors?.map((floor) => (
                     <option key={floor.id} value={floor.id}>
                       {floor.name}

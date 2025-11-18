@@ -5,6 +5,7 @@ import { CommonHelper } from "../../../helper/helper";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import "flatpickr/dist/flatpickr.css";
 import Flatpickr from "react-flatpickr";
+import moment from "moment";
 
 const Cameras = () => {
   const [showModal, setShowModal] = useState(false);
@@ -20,10 +21,15 @@ const Cameras = () => {
     serial_number: "",
     model_name: "",
     ip_address: "",
-    port: "",
+    port: 0,
     manufacturer: "",
     vendor: "",
-    install_date: "",
+    install_date: moment().format("DD-MM-YYYY"),
+    status: 0,
+  });
+  const [errors, setErrors] = useState({
+    ip_address: "",
+    port: "",
   });
 
   useEffect(() => {
@@ -38,16 +44,16 @@ const Cameras = () => {
       serial_number: "",
       model_name: "",
       ip_address: "",
-      port: "",
+      port: 0,
       manufacturer: "",
       vendor: "",
-      install_date: "",
+      install_date: moment().format("DD-MM-YYYY"),
+      status: 0,
     });
     setEditingCamera(null);
   };
 
   const loadData = async () => {
-    
     try {
       setLoading(true);
       const [cameraData, nvrData, sectionData] = await Promise.all([
@@ -86,6 +92,7 @@ const Cameras = () => {
       vendor: cam.vendor,
       install_date: cam.install_date,
       port: cam.port,
+      status: cam.status,
     });
     setShowModal(true);
   };
@@ -97,6 +104,7 @@ const Cameras = () => {
       text: "You want to Delete " + " " + cam.asset_no + "!",
       showCancelButton: true,
       confirmButtonText: "Delete",
+      confirmButtonColor: "red",
       padding: "2em",
       customClass: { popup: "sweet-alerts" },
     }).then(async (result) => {
@@ -107,7 +115,7 @@ const Cameras = () => {
           return;
         }
         res = await window.electronAPI.deleteCamera(cam.id);
-        console.log("resp from delete: ", res);
+        // console.log("resp from delete: ", res);
         if (res.success) {
           await loadData();
           CommonHelper.SuccessToaster(res.message);
@@ -118,10 +126,34 @@ const Cameras = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    
-    e.preventDefault();
+  const isValidIP = (ip: string) => {
+    const ipRegex =
+      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    return ipRegex.test(ip);
+  };
 
+  // Validate port number
+  const isValidPort = (port: string) => {
+    const portNumber = parseInt(port, 10);
+    return portNumber >= 1 && portNumber <= 65535;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.ip_address) {
+      CommonHelper.ErrorToaster("IP Address is required");
+      return;
+    } else if (!isValidIP(formData.ip_address)) {
+      CommonHelper.ErrorToaster("Invalid IP address format");
+      return;
+    }
+    if (!formData.port) {
+      CommonHelper.ErrorToaster("port is required");
+      return;
+    } else if (!isValidPort(formData.port.toString())) {
+      CommonHelper.ErrorToaster("Invalid port number");
+      return;
+    }
     try {
       // console.log("payload for block api: ", editingBlock?.id, formData);
       let result;
@@ -131,18 +163,18 @@ const Cameras = () => {
           CommonHelper.ErrorToaster("Invalid camera id");
           return;
         }
-        // console.log('payload for block update: ',formData);
+        console.log("payload for block update: ", formData);
         result = await window.electronAPI.updateCamera(
           editingCamera.id,
           formData
         );
         if (result.success) CommonHelper.SuccessToaster(result.message);
-        // console.log('result on edit block submit',result);
+        console.log("result on edit block submit", result);
       } else {
-        // console.log('payload for block submit: ',formData);
+        console.log("payload for block submit: ", formData);
         result = await window.electronAPI.createCamera(formData);
         if (result.success) CommonHelper.SuccessToaster(result.message);
-        // console.log('result on block submit',result);
+        console.log("result on block submit", result);
       }
 
       if (result && result.success) {
@@ -151,7 +183,7 @@ const Cameras = () => {
         resetForm();
       } else {
         CommonHelper.ErrorToaster(
-          (result && result.error) || "Operation failed"
+          (result && result.message) || "Operation failed"
         );
         // alert(result.error || "Operation failed");
       }
@@ -202,10 +234,10 @@ const Cameras = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Model Name
                 </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Location
                 </th>
-                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Last Working on
                 </th> */}
                 {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -220,27 +252,29 @@ const Cameras = () => {
               {cameras.map((n) => (
                 <tr key={n.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        {/* <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                    {/* <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10"> */}
+                    {/* <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                           <span className="text-white font-medium">
                             {n?.asset_no?.charAt(0)?.toUpperCase()}
                           </span>
                         </div> */}
-                      </div>
-                      <div className="">
-                        <div className="text-sm font-medium text-gray-900">
-                          {n.asset_no}
-                        </div>
-                        {/* <div className="text-sm text-gray-500">{user.email}</div> */}
-                      </div>
+                    {/* </div>
+                      <div className=""> */}
+                    <div className="text-sm font-medium text-gray-900">
+                      {n.asset_no}
                     </div>
+                    {/* <div className="text-sm text-gray-500">{user.email}</div> */}
+                    {/* </div>
+                    </div> */}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">{n.model_name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{n.block_name} - {n.floor_name} - {n.location_name}</div>
+                    <div className="text-sm text-gray-500">
+                      {n.block_name} - {n.floor_name} - {n.location_name}
+                    </div>
                   </td>
                   {/* <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">{n.last_working_on}</div>
@@ -248,22 +282,22 @@ const Cameras = () => {
                   {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {section.block}
                   </td> */}
-                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                     <div className="flex items-center gap-3">
-                                       <button
-                                         onClick={() => handleEdit(n)}
-                                         className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1 rounded-full p-2"
-                                       >
-                                         <Edit size={20} />
-                                       </button>
-                                       <button
-                                         onClick={() => handleDelete(n)}
-                                         className="bg-red-600 hover:bg-red-700 flex items-center gap-1 rounded-full p-2"
-                                       >
-                                         <Trash2 size={20} />
-                                       </button>
-                                     </div>
-                                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => handleEdit(n)}
+                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1 rounded-full p-2"
+                      >
+                        <Edit size={20} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(n)}
+                        className="bg-red-600 hover:bg-red-700 flex items-center gap-1 rounded-full p-2"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -273,8 +307,8 @@ const Cameras = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-[900px] w-full">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-100 p-4">
+          <div className="bg-white rounded-xl max-w-[900px] w-full relative z-60">
             <div className="p-3 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
                 {editingCamera ? "Edit Camera" : "Add Camera"}
@@ -383,9 +417,8 @@ const Cameras = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                     required
                   >
-                     <option value={0}>-- Select Floor --</option>
+                    <option value={0}>-- Select Floor --</option>
                     {nvrs.map((n) => (
-                      
                       <option key={n.id} value={n.id}>
                         {n.asset_no}
                       </option>
@@ -394,20 +427,36 @@ const Cameras = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    I.P Address
+                    IP Address
                   </label>
                   <input
                     type="text"
                     value={formData.ip_address}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setFormData((prevData) => ({
                         ...prevData,
                         ip_address: e.target.value,
-                      }))
-                    }
+                      }));
+                      if (!isValidIP(formData.ip_address)) {
+                        setErrors((prevErrors) => ({
+                          ...prevErrors,
+                          ip_address: "IP Address is invalid",
+                        }));
+                      } else {
+                        setErrors((prevErrors) => ({
+                          ...prevErrors,
+                          ip_address: "",
+                        }));
+                      }
+                    }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                     required
                   />
+                  {errors.ip_address && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.ip_address}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -416,15 +465,36 @@ const Cameras = () => {
                   <input
                     type="text"
                     value={formData.port}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        port: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => {
+                      let val = e.target.value;
+
+                      if (!isValidPort(val)) {
+                        setErrors((prevErrors) => ({
+                          ...prevErrors,
+                          port: "Port number must be between 1 and 65535",
+                        }));
+                        setFormData((prevData) => ({
+                          ...prevData,
+                          port: 0,
+                        }));
+                      } else {
+                        setErrors((prevErrors) => ({
+                          ...prevErrors,
+                          port: "",
+                        }));
+                        setFormData((prevData) => ({
+                          ...prevData,
+                          port: parseInt(val),
+                        }));
+                        console.log('checking on change value: ',parseInt(val))
+                      }
+                    }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                     required
                   />
+                  {errors.port && (
+                    <p className="text-red-500 text-sm mt-1">{errors.port}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -444,7 +514,8 @@ const Cameras = () => {
                     <option value={0}>-- Select Location --</option>
                     {sections.map((section) => (
                       <option key={section.id} value={section.id}>
-                        {section.name} - {section.floor_name} - {section.block_name}
+                        {section.name} - {section.floor_name} -{" "}
+                        {section.block_name}
                       </option>
                     ))}
                   </select>
@@ -464,24 +535,59 @@ const Cameras = () => {
                       setFormData((prevData) => ({
                         ...prevData,
                         install_date: date[0]
-                          ? date[0].toISOString().split("T")[0]
+                          ? moment(date[0]).format("DD-MM-YYYY")
                           : "",
                       }))
                     }
                   />
+                </div>
+                <div className="relative rounded-md bg-white">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Status
+                    </label>
+                  </div>
+                  <div>
+                    <label className="w-12 h-6 relative block">
+                      <input
+                        type="checkbox"
+                        className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                        id="custom_switch_checkbox1"
+                        checked={!!formData.status}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            status: e.target.checked ? 1 : 0,
+                          }))
+                        }
+                      />
+                      <span
+                        className="bg-[#ebedf2] 
+                      block h-full rounded-full 
+                      border-2 border-blue-300
+                      peer-checked:bg-blue-600 
+                      peer-checked:border-blue-600
+                      before:absolute before:left-1 
+                      before:bg-white before:peer-checked:bg-white 
+                      before:bottom-1 before:w-4 before:h-4 
+                      before:rounded-full peer-checked:before:left-7 
+                      before:transition-all before:duration-300"
+                      ></span>
+                    </label>
+                  </div>
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors"
                 >
                   {editingCamera ? "Update" : "Create"} Camera
                 </button>

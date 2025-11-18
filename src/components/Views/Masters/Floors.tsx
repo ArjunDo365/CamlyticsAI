@@ -13,7 +13,7 @@ const Floors = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    block_id: 1,
+    block_id: 0,
     display_order: 0,
   });
 
@@ -25,7 +25,7 @@ const Floors = () => {
     setFormData({
       name: "",
       description: "",
-      block_id: 1,
+      block_id: 0,
       display_order: 0,
     });
     setEditingFloor(null);
@@ -38,7 +38,7 @@ const Floors = () => {
         window.electronAPI.getAllFloors(),
         window.electronAPI.getAllBlocks(),
       ]);
-      console.log("data from backend for floor: ", floorData);
+      // console.log("data from backend for floor: ", floorData);
 
       if (floorData.success) {
         setFloors(floorData.data);
@@ -59,7 +59,7 @@ const Floors = () => {
     setFormData({
       name: floor.name,
       description: floor.description,
-      block_id: floor.block_id,
+      block_id: floor.block_id ?? 0,
       display_order: floor.display_order ?? 0,
     });
     setShowModal(true);
@@ -72,13 +72,14 @@ const Floors = () => {
       text: "You want to Delete " + " " + floor.name + "!",
       showCancelButton: true,
       confirmButtonText: "Delete",
+      confirmButtonColor:'red',
       padding: "2em",
       customClass: { popup: "sweet-alerts" },
     }).then(async (result) => {
       if (result.value) {
         let res: any;
         res = await window.electronAPI.deleteFloors(floor.id);
-        console.log("resp from delete: ", res);
+        // console.log("resp from delete: ", res);
         if (res.success) {
           await loadData();
           CommonHelper.SuccessToaster(res.message);
@@ -93,6 +94,14 @@ const Floors = () => {
     
     e.preventDefault();
 
+    if (formData.block_id === 0 || !formData.block_id) {
+    CommonHelper.ErrorToaster("Please select a block");
+    return;
+    }
+    if (!formData.display_order || formData.display_order <= 0) {
+      CommonHelper.ErrorToaster("please enter the display order");
+      return;
+    }
     try {
       // console.log("payload for block api: ", editingBlock?.id, formData);
       let result;

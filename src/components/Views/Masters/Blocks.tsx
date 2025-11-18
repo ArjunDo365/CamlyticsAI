@@ -23,7 +23,7 @@ const Blocks = () => {
     setFormData({
       name: "",
       description: "",
-      display_order: 1,
+      display_order: 0,
     });
     setEditingBlock(null);
   };
@@ -61,13 +61,14 @@ const Blocks = () => {
       text: "You want to Delete " + " " + block.name + "!",
       showCancelButton: true,
       confirmButtonText: "Delete",
+      confirmButtonColor:'red',
       padding: "2em",
       customClass: { popup: "sweet-alerts" },
     }).then(async (result) => {
       if (result.value) {
         let res: any;
         res = await window.electronAPI.deleteBlock(block.id);
-        console.log("resp from delete: ", res);
+        // console.log("resp from delete: ", res);
         if (res.success) {
           await loadData();
           CommonHelper.SuccessToaster(res.message);
@@ -80,6 +81,11 @@ const Blocks = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (formData.display_order <= 0) {
+      CommonHelper.ErrorToaster("please enter the display order");
+      return;
+    }
 
     try {
       // console.log("payload for block api: ", editingBlock?.id, formData);
