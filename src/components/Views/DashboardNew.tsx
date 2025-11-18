@@ -51,6 +51,8 @@ const DashboardNew = () => {
 
     if (Ping.success) {
       CommonHelper.SuccessToaster(Ping.message);
+      loadData();
+      dashboardCameraandNvr();
     }
     setLoading(false);
   };
@@ -213,13 +215,18 @@ const DashboardNew = () => {
                   {/* Button Row */}
                   <div className="flex justify-end mb-3">
                      
-                    <button
-                      className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
-                      onClick={() => InactiveList("nvrs")}
-                    >
-                      <DownloadIcon/>
-                      Not Working Download
-                    </button>
+                    <div className="flex justify-end mb-3">
+  {Number(Dashboard?.inactive_nvrs) > 0 && (
+    <button 
+      className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
+      onClick={() => InactiveList("nvrs")}
+    >
+      <DownloadIcon />
+      Not Working Download
+    </button>
+  )}
+</div>
+
                   </div>
 
                   {/* Chart */}
@@ -261,7 +268,7 @@ const DashboardNew = () => {
               ) : (
                 <>
                   {/* Button Row */}
-                  <div className="flex justify-end mb-3">
+                  {/* <div className="flex justify-end mb-3">
                     <button
                       className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
                       onClick={() => InactiveList("cameras")}
@@ -269,7 +276,20 @@ const DashboardNew = () => {
                       <DownloadIcon/>
                       Not Working Download
                     </button>
-                  </div>
+                  </div> */}
+                  <div className="flex justify-end mb-3">
+  {Number(Dashboard?.inactive_cameras
+) > 0 && (
+    <button 
+      className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
+      onClick={() => InactiveList("cameras")}
+    >
+      <DownloadIcon />
+      Not Working Download
+    </button>
+  )}
+</div>
+
                   {/* CAMERA STATUS PIE CHART */}
 {Number(Dashboard.total_cameras) === 0 ? (
   <div className="min-h-[325px] grid place-content-center text-gray-500 text-lg">
