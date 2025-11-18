@@ -133,7 +133,7 @@ const AppSettings = () => {
                         onClick={() => handleEdit(AppSetting)}
                         className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1 rounded-full p-2"
                       >
-                        <Edit size={20} />
+                        <Edit size={20} className="!text-white"/>
                       </button>
                     </div>
                   </td>
