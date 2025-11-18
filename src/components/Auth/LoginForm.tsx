@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import logo from "./../../asset/DashboardIcon.png";
 
 const LoginForm: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ const LoginForm: React.FC = () => {
                 <div className="text-center mb-8">
                     {/* <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4"> */}
                         {/* <LogIn className="text-white" size={24} /> */}
-                        <img src="/src/asset/DashboardIcon.png" alt="no" className="w-50 h-20 ms-10" />
+                        <img src={logo} alt="no" className="w-50 h-20 ms-10" />
                     {/* </div> */}
                     <h1 className="text-2xl font-bold text-gray-900 mt-5">Welcome Back</h1>
                     <p className="text-gray-600">Sign in to your account to continue</p>

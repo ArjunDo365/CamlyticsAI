@@ -17,6 +17,7 @@ import {
   Router
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import logo from "./../../asset/favicon.svg";
 
 interface SidebarProps {
   activeView: string;
@@ -76,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-gray-700">
           <div className="main-logo flex items-center shrink-0">
             <div className="w-20 h-10  rounded-lg flex items-center justify-center mr-1">
-              <span className="text-white font-bold text-lg"><img src="/src/asset/favicon.svg" alt="no" className="w-20 h-10 " /></span>
+              <span className="text-white font-bold text-lg"><img src={logo} alt="no" className="w-20 h-10 " /></span>
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               Camlytx AI

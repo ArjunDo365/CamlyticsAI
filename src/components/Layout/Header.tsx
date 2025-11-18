@@ -70,13 +70,13 @@ const Header: React.FC<HeaderProps> = ({ title, onToggleSidebar }) => {
           </div> */}
 
           {/* Theme Toggle */}
-          {/* <button
+          <button
             onClick={toggleTheme}
             className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title={`Switch to ${theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'} theme`}
           >
             {getThemeIcon()}
-          </button> */}
+          </button>
 
           {/* Notifications */}
           {/* <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
