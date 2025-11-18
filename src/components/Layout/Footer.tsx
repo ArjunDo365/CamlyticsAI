@@ -5,7 +5,7 @@ const Footer: React.FC = () => {
     <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-6 py-4 mt-auto">
       <div className="flex flex-col sm:flex-row items-center justify-between">
         <div className="text-sm text-gray-600 dark:text-gray-400">
-          © {new Date().getFullYear()} Camlytics AI. All rights reserved.
+          © {new Date().getFullYear()} Camlytx AI. All rights reserved.
         </div>
         <div className="flex items-center gap-4 mt-2 sm:mt-0">
           <span className="text-sm text-gray-600 dark:text-gray-400">

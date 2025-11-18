@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <span className="text-white font-bold text-lg">C</span>
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
-              Camlytics AI
+              Camlytx AI
               {/* <img src="/src/asset/CAMLYTIX FINAL.png" alt="" className="w-40 h-30 " /> */}
             </span>
           </div>

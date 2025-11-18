@@ -6,29 +6,29 @@ module.exports = {
 
   directories: {
     output: "dist-app",
-    buildResources: "assets"
+    buildResources: "assets",
   },
 
   files: [
     {
       from: "dist",
       to: "dist",
-      filter: ["**/*"]
+      filter: ["**/*"],
     },
     {
       from: "electron",
       to: "electron",
-      filter: ["**/*"]
+      filter: ["**/*"],
     },
     "package.json",
-    "!node_modules/*/{test,__tests__}/**"
+    "!node_modules/*/{test,__tests__}/**",
   ],
 
   extraResources: [
     {
       from: "./.env",
-      to: ".env"
-    }
+      to: ".env",
+    },
   ],
 
   asar: true,
@@ -37,26 +37,29 @@ module.exports = {
     category: "public.app-category.utilities",
     target: ["dmg"],
     hardenedRuntime: false,
-    icon: path.join(__dirname, "assets", "icon.icns")
+    icon: path.join(__dirname, "assets", "icon.icns"),
   },
 
   win: {
     target: ["nsis"],
     icon: path.join(__dirname, "assets", "icon.ico"),
-    artifactName: "CamlytxAI_Setup_${version}.exe"
+    artifactName: "CamlytxAI_Setup_${version}.exe",
   },
 
   linux: {
-    target: ["AppImage"],
+    target: ["deb", "AppImage"],
     category: "Utility",
-    icon: path.join(__dirname, "assets", "icon.png")
+    icon: path.join(__dirname, "assets", "icons"),
   },
 
   publish: [],
 
   extraMetadata: {
     description: "A desktop app for video analytics",
-    author: "Do365 Technologies Private Limited"
+    author: {
+      name: "Do365 Technologies Private Limited",
+      email: "support@do365tech.com",
+    },
   },
 
   nsis: {
@@ -65,6 +68,6 @@ module.exports = {
     allowElevation: true,
     allowToChangeInstallationDirectory: true,
     createDesktopShortcut: true,
-    createStartMenuShortcut: true
-  }
+    createStartMenuShortcut: true,
+  },
 };

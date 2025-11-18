@@ -233,63 +233,70 @@ class PingService {
   }
 
   async downloadNotWorkingExcel(type) {
-    try {
-      if (!type) return errorResponse(null, "Type is required");
+  try {
+    if (!type) return errorResponse(null, "Type is required");
 
-      const dataResponse = await this.notworkinglist({ type });
+    const dataResponse = await this.notworkinglist({ type });
 
-      if (!dataResponse.success) {
-        return errorResponse(null, "Failed to fetch data");
-      }
-
-      const rows = dataResponse.data;
-
-      const workbook = new ExcelJS.Workbook();
-      const sheet = workbook.addWorksheet("Not Working List");
-
-      sheet.columns = [
-        { header: "Asset No", key: "asset_no", width: 20 },
-        { header: "Model Name", key: "model_name", width: 20 },
-        { header: "IP Address", key: "ip_address", width: 20 },
-        { header: "Last Working", key: "last_working_on", width: 25 },
-        { header: "Location", key: "location_name", width: 20 },
-        { header: "Floor", key: "floor_name", width: 15 },
-        { header: "Block", key: "block_name", width: 15 },
-      ];
-
-      rows.forEach((row) => sheet.addRow(row));
-
-      // --------------------------
-      // WINDOWS: Save to C:/CamlytxAi/notworkingexcel/
-      // --------------------------
-      let saveDir;
-
-      if (os.platform() === "win32") {
-        saveDir = "C:/CamlytxAi/notworkingexcel";
-      } else {
-        // Linux/Mac → default Downloads folder
-        saveDir = app.getPath("downloads");
-      }
-
-      // Ensure directory exists
-      if (!fs.existsSync(saveDir)) {
-        fs.mkdirSync(saveDir, { recursive: true });
-      }
-
-      const fileName = `not_working_${type}_${Date.now()}.xlsx`;
-      const filePath = path.join(saveDir, fileName);
-
-      await workbook.xlsx.writeFile(filePath);
-
-      return successResponse(
-        { filePath, fileName },
-        `Excel saved to: ${filePath}`
-      );
-    } catch (error) {
-      console.error("Excel Generation Error:", error);
-      return errorResponse(error, "Failed to generate excel");
+    if (!dataResponse.success) {
+      return errorResponse(null, "Failed to fetch data");
     }
+
+    const rows = dataResponse.data;
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Not Working List");
+
+    // Updated headers
+    sheet.columns = [
+      { header: "Asset No", key: "asset_no", width: 20 },
+      { header: "Status", key: "status", width: 15 },
+      { header: "Model Name", key: "model_name", width: 20 },
+      { header: "IP Address", key: "ip_address", width: 20 },
+      { header: "Last Working", key: "last_working_on", width: 25 },
+      { header: "Location", key: "location_combined", width: 40 },
+    ];
+
+    // Process rows before adding to Excel
+    rows.forEach((row) => {
+      sheet.addRow({
+        asset_no: row.asset_no,
+        status: row.status == 1 ? "active" : "inactive",  
+        model_name: row.model_name,
+        ip_address: row.ip_address,
+        last_working_on: row.last_working_on,    
+        location_combined: `${row.location_name} → ${row.floor_name} → ${row.block_name}`,
+      });
+    });
+
+    // Saving logic (Windows / Linux)
+    let saveDir;
+
+    if (os.platform() === "win32") {
+      saveDir = "C:/CamlytxAi/notworkingexcel";
+    } else {
+      saveDir = app.getPath("downloads");
+    }
+
+    if (!fs.existsSync(saveDir)) {
+      fs.mkdirSync(saveDir, { recursive: true });
+    }
+
+    const fileName = `not_working_${type}_${Date.now()}.xlsx`;
+    const filePath = path.join(saveDir, fileName);
+
+    await workbook.xlsx.writeFile(filePath);
+
+    return successResponse(
+      { filePath, fileName },
+      `Excel saved to: ${filePath}`
+    );
+  } catch (error) {
+    console.error("Excel Generation Error:", error);
+    return errorResponse(error, "Failed to generate excel");
   }
+}
+
 
   async nvrcamerasummary() {
     try {
