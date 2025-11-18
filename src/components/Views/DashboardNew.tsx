@@ -64,7 +64,7 @@ const DashboardNew = () => {
       const FullDashboadData = await window.electronAPI.getCamerasAndNVRs();
 
       if (FullDashboadData.success) {
-        console.log(FullDashboadData);
+        // console.log(FullDashboadData);
 
         // ⬅️ Store last10NVRs data in state
         setLast10Cameras(FullDashboadData.data.last10Cameras);
@@ -83,7 +83,7 @@ const DashboardNew = () => {
     try {
       setLoading(true);
       const DashboardData = await window.electronAPI.nvrcamerasummary();
-      console.log("data from backend for Dashboard: ", DashboardData);
+      // console.log("data from backend for Dashboard: ", DashboardData);
 
       if (DashboardData.success) {
         setDashboard(DashboardData.data);
@@ -195,7 +195,7 @@ const DashboardNew = () => {
 
       <div className="grid xl:grid-cols-2 gap-6 mb-6">
         {/* NVR Status */}
-        <div className="panel h-full transition-all duration-300 dark:bg-[#c7c8c9]  rounded-2xl pb-3 mb-6">
+        <div className="panel h-full transition-all duration-300 bg-[#fff] shadow-[0_3px_10px_rgb(0,0,0,0.2)] dark:bg-[#e3e3e3]  rounded-2xl pb-3 mb-6">
           <div className=" rounded-2xl ">
             {/* Header */}
             <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
@@ -250,7 +250,7 @@ const DashboardNew = () => {
         </div>
 
         {/* Camera Status */}
-        <div className=" panel h-full transition-all duration-300 dark:bg-[#c7c8c9]  rounded-2xl pb-3 mb-6">
+        <div className=" panel h-full transition-all duration-300 bg-[#fff] shadow-[0_3px_10px_rgb(0,0,0,0.2)] dark:bg-[#e3e3e3]  rounded-2xl pb-3 mb-6">
           <div className=" rounded-2xl ">
             {/* Header */}
             <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
@@ -314,34 +314,38 @@ const DashboardNew = () => {
       <div className="mb-5 w-full">
 
         <Tab.Group>
-          <Tab.List className="mt-3 flex flex-wrap border-b border-white-light dark:border-[#191e3a]">
-            <Tab as={Fragment}>
-              {({ selected }) => (
-                <button
-                  className={`${selected
-                    ? "!border-white-light !border-b-white  text-blue-400 !outline-none dark:!border-[#191e3a] dark:!border-b-black dark:text-blue-400"
-                    : ""
-                    }
-                                                    dark:hover:border-b-black' -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-blue-500 text-gray-500`}
-                >
-                  NVR
-                </button>
-              )}
-            </Tab>
-            <Tab as={Fragment}>
-              {({ selected }) => (
-                <button
-                  className={`${selected
-                    ? "!border-white-light !border-b-white  text-blue-400 !outline-none dark:!border-[#191e3a] dark:!border-b-black dark:text-blue-400"
-                    : ""
-                    }
-                                                    dark:hover:border-b-black' -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-blue-500 text-gray-500`}
-                >
-                  Camera
-                </button>
-              )}
-            </Tab>
-          </Tab.List>
+         <Tab.List className="mt-3 flex flex-wrap border-b border-gray-300 dark:border-gray-700">
+  <Tab as={Fragment}>
+    {({ selected }) => (
+      <button
+        className={`-mb-[1px] px-4 py-2 border-b-2 transition-all duration-200 
+          ${
+            selected
+              ? "border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400"
+              : "border-transparent text-gray-500 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
+          }`}
+      >
+        NVR
+      </button>
+    )}
+  </Tab>
+
+  <Tab as={Fragment}>
+    {({ selected }) => (
+      <button
+        className={`-mb-[1px] px-4 py-2 border-b-2 transition-all duration-200 
+          ${
+            selected
+              ? "border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400"
+              : "border-transparent text-gray-500 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
+          }`}
+      >
+        Camera
+      </button>
+    )}
+  </Tab>
+</Tab.List>
+
           <Tab.Panels>
             <Tab.Panel>
               <div className="active pt-5">
