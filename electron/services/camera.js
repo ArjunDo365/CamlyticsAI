@@ -184,7 +184,7 @@ async getCameraById(id) {
       const [result] = await this.db.pool.query(
         `UPDATE cameras 
          SET location_id=?, nvr_id=?, asset_no=?, serial_number=?, model_name=?, ip_address=?, port=?, manufacturer=?, vendor=?, 
-             install_date=?, updated_at=CURRENT_TIMESTAMP ,status ?
+             install_date=?, updated_at=CURRENT_TIMESTAMP ,status=?
          WHERE id=?`,
         [
           location_id,
