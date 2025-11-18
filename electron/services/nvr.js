@@ -1,3 +1,4 @@
+const { convertToMySQLDate, formatFromMySQLDate } = require("../utils/helper");
 const { successResponse, errorResponse } = require("../utils/responseHandler");
 
 class NvrService {
@@ -26,6 +27,8 @@ class NvrService {
         return errorResponse(null, "Invalid IP Address. Example: 192.168.1.10");
       }
 
+      const mysqlDate = convertToMySQLDate(install_date);
+
       const [result] = await this.db.pool.query(
         `INSERT INTO nvrs 
         (location_id, asset_no, serial_number, model_name, ip_address, manufacturer, vendor, install_date, status)
@@ -38,7 +41,7 @@ class NvrService {
           ip_address,
           manufacturer,
           vendor,
-          install_date,
+          mysqlDate,
           status,
         ]
       );
@@ -70,7 +73,7 @@ class NvrService {
         n.ip_address,
         n.manufacturer,
         n.vendor,
-        n.install_date,
+        DATE_FORMAT(n.install_date, '%Y-%m-%d') AS install_date,
         n.last_working_on,
         n.is_working,
         n.created_at,
@@ -81,16 +84,21 @@ class NvrService {
       JOIN blocks b ON f.block_id = b.id
     `);
 
-      return successResponse(rows, "NVRs fetched successfully");
+    const nvr = rows.map((row) => ({
+      ...row,
+      install_date: formatFromMySQLDate(row.install_date),
+    }));
+
+      return successResponse(nvr, "NVRs fetched successfully");
     } catch (error) {
       return errorResponse(error, "Failed to fetch NVRs");
     }
   }
 
-  async getNvrById(id) {
-    try {
-      const [rows] = await this.db.pool.query(
-        `
+async getNvrById(id) {
+  try {
+    const [rows] = await this.db.pool.query(
+      `
       SELECT 
         n.id,
         n.status,
@@ -106,7 +114,7 @@ class NvrService {
         n.ip_address,
         n.manufacturer,
         n.vendor,
-        n.install_date,
+        DATE_FORMAT(n.install_date, '%Y-%m-%d') AS install_date,
         n.last_working_on,
         n.is_working,
         n.created_at,
@@ -117,17 +125,23 @@ class NvrService {
       JOIN blocks b ON f.block_id = b.id
       WHERE n.id = ?
     `,
-        [id]
-      );
+      [id]
+    );
 
-      if (rows.length === 0)
-        return errorResponse("NVR not found", "No record found");
+    if (rows.length === 0)
+      return errorResponse("NVR not found", "No record found");
 
-      return successResponse(rows[0], "NVR fetched successfully");
-    } catch (error) {
-      return errorResponse(error, "Failed to fetch NVR");
-    }
+    const nvr = rows.map((row) => ({
+      ...row,
+      install_date: formatFromMySQLDate(row.install_date),
+    }));
+
+    return successResponse(nvr, "NVR fetched successfully");
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch NVR");
   }
+}
+
 
   async updateNvr(data) {
     try {
@@ -151,6 +165,9 @@ class NvrService {
         return errorResponse(null, "Invalid IP Address. Example: 192.168.1.10");
       }
 
+
+      const mysqlDate = convertToMySQLDate(install_date);
+
       const [result] = await this.db.pool.query(
         `UPDATE nvrs 
          SET location_id=?, asset_no=?, serial_number=?, model_name=?, ip_address=?, manufacturer=?, vendor=?, 
@@ -164,7 +181,7 @@ class NvrService {
           ip_address,
           manufacturer,
           vendor,
-          install_date,
+          mysqlDate,
           status,
           id,
         ]

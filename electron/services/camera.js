@@ -6,42 +6,8 @@ class CameraService {
   }
 
   async createCamera(data) {
-  try {
-    const {
-      location_id,
-      nvr_id,
-      asset_no,
-      serial_number,
-      model_name,
-      ip_address,
-      port,
-      manufacturer,
-      vendor,
-      install_date,
-      status,
-    } = data;
-
-    // ---------------------------
-    // Validate IP Address
-    // ---------------------------
-    const ipv4Regex =
-      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-
-    if (!ip_address || !ipv4Regex.test(ip_address)) {
-      return errorResponse(
-        null,
-        "Invalid IP Address. Example: 192.168.1.10"
-      );
-    }
-
-    // ---------------------------
-    // Insert Camera
-    // ---------------------------
-    const [result] = await this.db.pool.query(
-      `INSERT INTO cameras 
-      (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date,status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
+    try {
+      const {
         location_id,
         nvr_id,
         asset_no,
@@ -53,24 +19,51 @@ class CameraService {
         vendor,
         install_date,
         status,
-      ]
-    );
+      } = data;
 
-    return successResponse(
-      { cameraId: result.insertId },
-      "Camera created successfully"
-    );
+      // ---------------------------
+      // Validate IP Address
+      // ---------------------------
+      const ipv4Regex =
+        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
-  } catch (error) {
-    return errorResponse(error, "Failed to create camera");
+      if (!ip_address || !ipv4Regex.test(ip_address)) {
+        return errorResponse(null, "Invalid IP Address. Example: 192.168.1.10");
+      }
+
+      const mysqlDate = convertToMySQLDate(install_date);
+
+      const [result] = await this.db.pool.query(
+        `INSERT INTO cameras 
+      (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date,status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          location_id,
+          nvr_id,
+          asset_no,
+          serial_number,
+          model_name,
+          ip_address,
+          port,
+          manufacturer,
+          vendor,
+          mysqlDate,
+          status,
+        ]
+      );
+
+      return successResponse(
+        { cameraId: result.insertId },
+        "Camera created successfully"
+      );
+    } catch (error) {
+      return errorResponse(error, "Failed to create camera");
+    }
   }
-}
-
-
 
   async getAllCameras() {
-  try {
-    const [rows] = await this.db.pool.query(`
+    try {
+      const [rows] = await this.db.pool.query(`
       SELECT 
         c.id,
         c.status,
@@ -81,7 +74,7 @@ class CameraService {
         c.port,
         c.manufacturer,
         c.vendor,
-        c.install_date,
+        DATE_FORMAT(c.install_date, '%Y-%m-%d') AS install_date,
         c.last_working_on,
         c.is_working,
         c.created_at,
@@ -103,15 +96,22 @@ class CameraService {
       JOIN blocks b ON f.block_id = b.id
     `);
 
-    return successResponse(rows, "Cameras fetched successfully");
-  } catch (error) {
-    return errorResponse(error, "Failed to fetch cameras");
-  }
-}
+      const result = rows.map((row) => ({
+      ...row,
+      install_date: formatFromMySQLDate(row.install_date),
+    }));
 
-async getCameraById(id) {
-  try {
-    const [rows] = await this.db.pool.query(`
+
+      return successResponse(result, "Cameras fetched successfully");
+    } catch (error) {
+      return errorResponse(error, "Failed to fetch cameras");
+    }
+  }
+
+  async getCameraById(id) {
+    try {
+      const [rows] = await this.db.pool.query(
+        `
       SELECT 
         c.id,
         c.status,
@@ -122,7 +122,7 @@ async getCameraById(id) {
         c.port,
         c.manufacturer,
         c.vendor,
-        c.install_date,
+        DATE_FORMAT(c.install_date, '%Y-%m-%d') AS install_date,
         c.last_working_on,
         c.is_working,
         c.created_at,
@@ -143,16 +143,23 @@ async getCameraById(id) {
       JOIN floors f ON l.floor_id = f.id
       JOIN blocks b ON f.block_id = b.id
       WHERE c.id = ?
-    `, [id]);
+    `,
+        [id]
+      );
 
-    if (rows.length === 0)
-      return errorResponse("Camera not found", "No record found");
+      if (rows.length === 0)
+        return errorResponse("Camera not found", "No record found");
 
-    return successResponse(rows[0], "Camera fetched successfully");
-  } catch (error) {
-    return errorResponse(error, "Failed to fetch camera");
+      const result = rows.map((row) => ({
+      ...row,
+      install_date: formatFromMySQLDate(row.install_date),
+    }));
+
+      return successResponse(result[0], "Camera fetched successfully");
+    } catch (error) {
+      return errorResponse(error, "Failed to fetch camera");
+    }
   }
-}
 
   async updateCamera(data) {
     try {
@@ -172,14 +179,13 @@ async getCameraById(id) {
       } = data;
 
       const ipv4Regex =
-      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
-    if (!ip_address || !ipv4Regex.test(ip_address)) {
-      return errorResponse(
-        null,
-        "Invalid IP Address. Example: 192.168.1.10"
-      );
-    }
+      if (!ip_address || !ipv4Regex.test(ip_address)) {
+        return errorResponse(null, "Invalid IP Address. Example: 192.168.1.10");
+      }
+
+      const mysqlDate = convertToMySQLDate(install_date);
 
       const [result] = await this.db.pool.query(
         `UPDATE cameras 
@@ -196,7 +202,7 @@ async getCameraById(id) {
           port,
           manufacturer,
           vendor,
-          install_date,
+          mysqlDate,
           status,
           id,
         ]
@@ -212,10 +218,12 @@ async getCameraById(id) {
     }
   }
 
-
   async deleteCamera(id) {
     try {
-      const [result] = await this.db.pool.query("DELETE FROM cameras WHERE id = ?", [id]);
+      const [result] = await this.db.pool.query(
+        "DELETE FROM cameras WHERE id = ?",
+        [id]
+      );
 
       if (result.affectedRows === 0) {
         return errorResponse("Camera not found", "Delete failed");

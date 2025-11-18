@@ -222,23 +222,24 @@ class Database {
 
       const keyName = "Health Check - Frequency in Milliseconds";
 
-const [rows] = await connection.query(
-  "SELECT * FROM appsetting WHERE KeyName = ?",
-  [keyName]
-);
+      const [rows] = await connection.query(
+        "SELECT * FROM appsetting WHERE KeyName = ?",
+        [keyName]
+      );
 
-if (rows.length === 0) {
-  const defaultValue = 30; // seconds
-  await connection.query(
-    "INSERT INTO appsetting (KeyName, KeyValue) VALUES (?, ?)",
-    [keyName, defaultValue]
-  );
-  console.log(`✅ Default ping interval record created (${defaultValue}s)`);
-}
-
-} finally {
-  connection.release();
-}
+      if (rows.length === 0) {
+        const defaultValue = 30; // seconds
+        await connection.query(
+          "INSERT INTO appsetting (KeyName, KeyValue) VALUES (?, ?)",
+          [keyName, defaultValue]
+        );
+        console.log(
+          `✅ Default ping interval record created (${defaultValue}s)`
+        );
+      }
+    } finally {
+      connection.release();
+    }
   }
 
   // Generic query runner
