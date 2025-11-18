@@ -106,7 +106,7 @@ const DashboardNew = () => {
               },
             },
 
-            labels: ["Active NVRS", "Inactive NVRS"],
+            labels: ["Working NVRS", "Not Working NVRS"],
 
             colors: ["#5d965d", "#ec6871"],
 
@@ -142,7 +142,7 @@ const DashboardNew = () => {
               },
             },
 
-            labels: ["Active Cameras", "Inactive Cameras"],
+            labels: ["Working Cameras", "Not Working Cameras"],
             colors: ["#5d965d", "#ec6871"],
 
             legend: {
@@ -210,7 +210,7 @@ const DashboardNew = () => {
                       className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
                       onClick={() => InactiveList("nvrs")}
                     >
-                      Inactive Download
+                      Not Working Download
                     </button>
                   </div>
 
@@ -251,7 +251,7 @@ const DashboardNew = () => {
                       className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
                       onClick={() => InactiveList("cameras")}
                     >
-                      Inactive Dounload
+                      Not Working Download
                     </button>
                   </div>
                   <ReactApexChart
@@ -267,219 +267,237 @@ const DashboardNew = () => {
         </div>
       </div>
 
-         <div className="mb-5 w-full">
+      <div className="mb-5 w-full">
 
-          <Tab.Group>
-            <Tab.List className="mt-3 flex flex-wrap border-b border-white-light dark:border-[#191e3a]">
-              <Tab as={Fragment}>
-                {({ selected }) => (
-                  <button
-                    className={`${selected
-                        ? "!border-white-light !border-b-white  text-blue-400 !outline-none dark:!border-[#191e3a] dark:!border-b-black dark:text-blue-400"
-                        : ""
-                      }
+        <Tab.Group>
+          <Tab.List className="mt-3 flex flex-wrap border-b border-white-light dark:border-[#191e3a]">
+            <Tab as={Fragment}>
+              {({ selected }) => (
+                <button
+                  className={`${selected
+                    ? "!border-white-light !border-b-white  text-blue-400 !outline-none dark:!border-[#191e3a] dark:!border-b-black dark:text-blue-400"
+                    : ""
+                    }
                                                     dark:hover:border-b-black' -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-blue-500 text-gray-500`}
-                  >
-                    NVR
-                  </button>
-                )}
-              </Tab>
-              <Tab as={Fragment}>
-                {({ selected }) => (
-                  <button
-                    className={`${selected
-                        ? "!border-white-light !border-b-white  text-blue-400 !outline-none dark:!border-[#191e3a] dark:!border-b-black dark:text-blue-400"
-                        : ""
-                      }
+                >
+                  NVR
+                </button>
+              )}
+            </Tab>
+            <Tab as={Fragment}>
+              {({ selected }) => (
+                <button
+                  className={`${selected
+                    ? "!border-white-light !border-b-white  text-blue-400 !outline-none dark:!border-[#191e3a] dark:!border-b-black dark:text-blue-400"
+                    : ""
+                    }
                                                     dark:hover:border-b-black' -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-blue-500 text-gray-500`}
-                  >
-                    Camera
-                  </button>
-                )}
-              </Tab>
-            </Tab.List>
-            <Tab.Panels>
-              <Tab.Panel>
-                <div className="active pt-5">
-                   <div className="flex justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-black mb-6">
-            Last 10 NVRS List
-          </h2>
-        </div>
-        <div>
-          {/* <button
+                >
+                  Camera
+                </button>
+              )}
+            </Tab>
+          </Tab.List>
+          <Tab.Panels>
+            <Tab.Panel>
+              <div className="active pt-5">
+                <div className="flex justify-between">
+                  <div>
+                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-black mb-6">
+                      Last 10 NVRS List
+                    </h2>
+                  </div>
+                  <div>
+                    {/* <button
             className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-800 transition"
             onClick={() => Manualping()}
           >
             Health Check
           </button> */}
-        </div>
-      </div>
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Name
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Modal Name
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Location
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Modal Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Location
+                          </th>
+                          {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Last Update on
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Status
-                            </th>
-                          </tr>
-                        </thead>
+                            </th> */}
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
 
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {Last10Cameras.map((data: any) => (
-                            <tr key={data.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center">
-                                  <div className="flex-shrink-0 h-10 w-10">
-                                    {/* <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {Last10Cameras.map((data: any) => (
+                          <tr key={data.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                {/* <div className="flex-shrink-0 h-10 w-10">
+                                  <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                           <span className="text-white font-medium">
                             {n?.asset_no?.charAt(0)?.toUpperCase()}
                           </span>
-                        </div> */}
+                        </div>
+                                </div> */}
+                                <div className="">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {data.asset_no}
                                   </div>
-                                  <div className="">
-                                    <div className="text-sm font-medium text-gray-900">
-                                      {data.asset_no}
-                                    </div>
-                                    {/* <div className="text-sm text-gray-500">{user.email}</div> */}
-                                  </div>
+                                  {/* <div className="text-sm text-gray-500">{user.email}</div> */}
                                 </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-500">
-                                  {data.model_name}
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-500">
-                                  {data.block_name} - {data.floor_name} -{" "}
-                                  {data.location_name}
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">
+                                {data.model_name}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">
+                                {data.block_name} - {data.floor_name} -{" "}
+                                {data.location_name}
+                              </div>
+                            </td>
+                            {/* <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm text-gray-500">
                                   {data.last_working_on}
                                 </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-500">
-                                  {data.is_working}
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                              </td> */}
+                           <td className="px-6 py-4 whitespace-nowrap">
+  <div className="text-sm">
+    {data.is_working == 0 ? (
+      <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
+        Inactive
+      </span>
+    ) : (
+      <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
+        Active
+      </span>
+    )}
+  </div>
+</td>
+
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              </Tab.Panel>
-              <Tab.Panel>
-                <div className="active pt-5">
-                   <div className="flex justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-black mb-6">
-            Last 10 Cameras List
-          </h2>
-        </div>
-        <div>
-          {/* <button
+              </div>
+            </Tab.Panel>
+            <Tab.Panel>
+              <div className="active pt-5">
+                <div className="flex justify-between">
+                  <div>
+                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-black mb-6">
+                      Last 10 Cameras List
+                    </h2>
+                  </div>
+                  <div>
+                    {/* <button
             className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-800 transition"
             onClick={() => Manualping()}
           >
             Health Check
           </button> */}
-        </div>
-      </div>
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Name
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Modal Name
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Location
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Modal Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Location
+                          </th>
+                          {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Last Update on
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Status
-                            </th>
-                          </tr>
-                        </thead>
+                            </th> */}
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
 
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {last10NVRs.map((data: any) => (
-                            <tr key={data.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center">
-                                  <div className="flex-shrink-0 h-10 w-10">
-                                    {/* <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {last10NVRs.map((data: any) => (
+                          <tr key={data.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                {/* <div className="flex-shrink-0 h-10 w-10">
+                                  <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                           <span className="text-white font-medium">
                             {n?.asset_no?.charAt(0)?.toUpperCase()}
                           </span>
-                        </div> */}
+                        </div>
+                                </div> */}
+                                <div className="">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {data.asset_no}
                                   </div>
-                                  <div className="">
-                                    <div className="text-sm font-medium text-gray-900">
-                                      {data.asset_no}
-                                    </div>
-                                    {/* <div className="text-sm text-gray-500">{user.email}</div> */}
-                                  </div>
+                                  {/* <div className="text-sm text-gray-500">{user.email}</div> */}
                                 </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-500">
-                                  {data.model_name}
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-500">
-                                  {data.block_name} - {data.floor_name} -{" "}
-                                  {data.location_name}
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">
+                                {data.model_name}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">
+                                {data.block_name} - {data.floor_name} -{" "}
+                                {data.location_name}
+                              </div>
+                            </td>
+                            {/* <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm text-gray-500">
                                   {data.last_working_on}
                                 </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-500">
-                                  {data.is_working}
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                              </td> */}
+                           <td className="px-6 py-4 whitespace-nowrap">
+  <div className="text-sm">
+    {data.is_working == 0 ? (
+      <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
+        Inactive
+      </span>
+    ) : (
+      <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
+        Active
+      </span>
+    )}
+  </div>
+</td>
+
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              </Tab.Panel>
-            </Tab.Panels>
-          </Tab.Group>
-        </div>
+              </div>
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
+      </div>
 
       {/* Modal */}
       {showModal && (

@@ -180,9 +180,9 @@ const NVR = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Location
                 </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Last Working on
-                </th>
+                </th> */}
                 {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Block Name
                 </th> */}
@@ -217,9 +217,9 @@ const NVR = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">{n.block_name} - {n.floor_name} - {n.location_name}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  {/* <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">{n.last_working_on}</div>
-                  </td>
+                  </td> */}
                   {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {section.block}
                   </td> */}
