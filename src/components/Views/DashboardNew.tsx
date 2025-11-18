@@ -330,12 +330,13 @@ const DashboardNew = () => {
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Location
                           </th>
-                          {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Last Update on
-                            </th> */}
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
+                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Is Working
                           </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Status
+                            </th>
+                         
                         </tr>
                       </thead>
 
@@ -370,14 +371,23 @@ const DashboardNew = () => {
                                 {data.location_name}
                               </div>
                             </td>
-                            {/* <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-500">
-                                  {data.last_working_on}
-                                </div>
-                              </td> */}
+                           
                            <td className="px-6 py-4 whitespace-nowrap">
   <div className="text-sm">
     {data.is_working == 0 ? (
+      <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
+        Not Working
+      </span>
+    ) : (
+      <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
+        Working
+      </span>
+    )}
+  </div>
+</td>
+ <td className="px-6 py-4 whitespace-nowrap">
+  <div className="text-sm">
+    {data.status == 0 ? (
       <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
         Inactive
       </span>
@@ -428,9 +438,9 @@ const DashboardNew = () => {
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Location
                           </th>
-                          {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Last Update on
-                            </th> */}
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Is Working
+                            </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Status
                           </th>
@@ -468,14 +478,23 @@ const DashboardNew = () => {
                                 {data.location_name}
                               </div>
                             </td>
-                            {/* <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-500">
-                                  {data.last_working_on}
-                                </div>
-                              </td> */}
+                            
                            <td className="px-6 py-4 whitespace-nowrap">
   <div className="text-sm">
     {data.is_working == 0 ? (
+      <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
+        Not Working
+      </span>
+    ) : (
+      <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
+        Working
+      </span>
+    )}
+  </div>
+</td>
+ <td className="px-6 py-4 whitespace-nowrap">
+  <div className="text-sm">
+    {data.status == 0 ? (
       <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
         Inactive
       </span>
@@ -486,6 +505,11 @@ const DashboardNew = () => {
     )}
   </div>
 </td>
+ {/* <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-500">
+                                  {data.status}
+                                </div>
+                              </td> */}
 
                           </tr>
                         ))}
