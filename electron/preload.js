@@ -66,7 +66,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   notworkinglist: () => ipcRenderer.invoke('ping:notworkingdata'),
   updatePingInterval: (data) => ipcRenderer.invoke('ping:updatePingIntervaldata', data),
   getCamerasAndNVRs: () => ipcRenderer.invoke('ping:getCamerasAndNVRsdata'),
-  downloadNotWorkingExcel: (type) => ipcRenderer.invoke("ping:downloadNotWorkingExcel", type),
-
+  downloadNotWorkingCSV: (type) => ipcRenderer.invoke("ping:downloadNotWorkingCSVdata", type),
+  openFileLocation: (filePath) => ipcRenderer.send("open-file-location", filePath),
 
 });

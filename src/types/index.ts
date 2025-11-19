@@ -174,13 +174,14 @@ declare global {
       nvrcamerasummary: () => Promise<any>;
       getCamerasAndNVRs: () => Promise<any>;
       manualPingTrigger: () => Promise<any>;
-      downloadNotWorkingExcel: (data: any) => Promise<any>;
+      downloadNotWorkingCSV: (data: any) => Promise<any>;
 
 
        //App Setting methods
       listAppSettings: () => Promise<any>;
       getPingInterval: (id: number) => Promise<any>;
       updatePingInterval: (id: number, data: any) => Promise<any>;
+      openFileLocation:(data:any) => Promise<any>;
     };
 
 

@@ -478,11 +478,12 @@
 
 const ping = require("ping");
 const { successResponse, errorResponse } = require("../utils/responseHandler");
-const ExcelJS = require("exceljs");
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
 const { app } = require("electron");
+const { format } = require("@fast-csv/format");
+const { to12HourFormat } = require("../utils/helper");
 
 class PingService {
   constructor(database, AppSettingService) {
@@ -621,54 +622,56 @@ class PingService {
     }
   }
 
-  async downloadNotWorkingExcel(type) {
-    try {
-      if (!type) return errorResponse(null, "Type is required");
+  async downloadNotWorkingCSV(type) {
+  try {
+    if (!type) return errorResponse(null, "Type is required");
 
-      const dataResponse = await this.notworkinglist({ type });
-      if (!dataResponse.success) return errorResponse(null, "Failed to fetch data");
+    // Fetch data
+    const dataResponse = await this.notworkinglist({ type });
+    if (!dataResponse.success) return errorResponse(null, "Failed to fetch data");
 
-      const rows = dataResponse.data;
-      const workbook = new ExcelJS.Workbook();
-      const sheet = workbook.addWorksheet("Not Working List");
+    const rows = dataResponse.data;
 
-      sheet.columns = [
-        { header: "Asset No", key: "asset_no", width: 20 },
-        { header: "Status", key: "status", width: 15 },
-        { header: "Model Name", key: "model_name", width: 20 },
-        { header: "IP Address", key: "ip_address", width: 20 },
-        { header: "Last Working", key: "last_working_on", width: 25 },
-        { header: "Location", key: "location_combined", width: 40 },
-      ];
-
-      rows.forEach((row) => {
-        sheet.addRow({
-          asset_no: row.asset_no,
-          status: row.status == 1 ? "active" : "inactive",
-          model_name: row.model_name,
-          ip_address: row.ip_address,
-          last_working_on: row.last_working_on,
-          location_combined: `${row.location_name} → ${row.floor_name} → ${row.block_name}`,
-        });
-      });
-
-      const saveDir = os.platform() === "win32"
-        ? "C:/CamlytxAi/notworkingexcel"
+    // Set folder path
+    const saveDir =
+      os.platform() === "win32"
+        ? "C:/CamlytxAi/notworkingcsv"
         : app.getPath("downloads");
 
-      if (!fs.existsSync(saveDir)) fs.mkdirSync(saveDir, { recursive: true });
+    if (!fs.existsSync(saveDir)) fs.mkdirSync(saveDir, { recursive: true });
 
-      const fileName = `not_working_${type}_${Date.now()}.xlsx`;
-      const filePath = path.join(saveDir, fileName);
+    const fileName = `not_working_${type}_${Date.now()}.csv`;
+    const filePath = path.join(saveDir, fileName);
 
-      await workbook.xlsx.writeFile(filePath);
+    // Create write stream
+    const ws = fs.createWriteStream(filePath);
 
-      return successResponse({ filePath, fileName }, `Excel saved to: ${filePath}`);
-    } catch (error) {
-      console.error("Excel Generation Error:", error);
-      return errorResponse(error, "Failed to generate excel");
-    }
+    const csvStream = format({ headers: true });
+
+    csvStream.pipe(ws).on("finish", () => {
+      console.log(`CSV saved to: ${filePath}`);
+    });
+
+    // Add rows
+    rows.forEach((row) => {
+      csvStream.write({
+        asset_no: row.asset_no,
+        status: row.status == 1 ? "active" : "inactive",
+        model_name: row.model_name,
+        ip_address: row.ip_address,
+        last_working_on: to12HourFormat(row.last_working_on),
+        location: `${row.block_name} → ${row.floor_name} → ${row.location_name}`,
+      });
+    });
+
+    csvStream.end();
+
+    return successResponse({ filePath, fileName }, `CSV saved to: ${filePath}`);
+  } catch (error) {
+    console.error("CSV Generation Error:", error);
+    return errorResponse(error, "Failed to generate csv");
   }
+}
 
   async nvrcamerasummary() {
     try {
@@ -828,7 +831,7 @@ class PingService {
 
       return successResponse(
         null,
-        "Manual ping executed and scheduler restarted successfully"
+        "Manual ping run successfully"
       );
     } catch (error) {
       console.error("Manual ping error:", error);

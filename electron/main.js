@@ -289,6 +289,11 @@ ipcMain.handle('ping:updatePingIntervaldata', (event, data) =>
 ipcMain.handle('ping:getCamerasAndNVRsdata', () =>
   pingService.getCamerasAndNVRs()
 );
-ipcMain.handle("ping:downloadNotWorkingExcel", (event, type) =>
-  pingService.downloadNotWorkingExcel(type)
+ipcMain.handle("ping:downloadNotWorkingCSVdata", (event, type) =>
+  pingService.downloadNotWorkingCSV(type)
 );
+
+ipcMain.on("open-file-location", (event, filePath) => {
+  shell.showItemInFolder(filePath); 
+});
+

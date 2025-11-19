@@ -20,4 +20,26 @@ function formatFromMySQLDate(yyyy_mm_dd) {
   return `${day}-${month}-${year}`;
 }
 
-module.exports = { convertToMySQLDate, formatFromMySQLDate };
+function to12HourFormat(dateValue) {
+  if (!dateValue) return "";
+
+  const d = new Date(dateValue);
+
+  const day = String(d.getDate()).padStart(2, "0");
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const month = monthNames[d.getMonth()];
+  const year = d.getFullYear();
+
+  let hours = d.getHours();
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  const seconds = String(d.getSeconds()).padStart(2, "0");
+
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;  
+  hours = String(hours).padStart(2, "0");
+
+  return `${day}-${month}-${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+}
+
+
+module.exports = { convertToMySQLDate, formatFromMySQLDate,to12HourFormat };
