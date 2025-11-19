@@ -17,7 +17,6 @@ class NvrService {
         manufacturer,
         vendor,
         install_date,
-        status,
       } = data;
 
       const ipv4Regex =
@@ -31,8 +30,8 @@ class NvrService {
 
       const [result] = await this.db.pool.query(
         `INSERT INTO nvrs 
-        (location_id, asset_no, serial_number, model_name, ip_address, manufacturer, vendor, install_date, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (location_id, asset_no, serial_number, model_name, ip_address, manufacturer, vendor, install_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           location_id,
           asset_no,
@@ -42,7 +41,6 @@ class NvrService {
           manufacturer,
           vendor,
           mysqlDate,
-          status,
         ]
       );
 

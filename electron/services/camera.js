@@ -19,7 +19,6 @@ class CameraService {
         manufacturer,
         vendor,
         install_date,
-        status,
       } = data;
 
       // ---------------------------
@@ -36,8 +35,8 @@ class CameraService {
 
       const [result] = await this.db.pool.query(
         `INSERT INTO cameras 
-      (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date,status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (location_id, nvr_id, asset_no, serial_number, model_name, ip_address, port, manufacturer, vendor, install_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           location_id,
           nvr_id,
@@ -49,7 +48,6 @@ class CameraService {
           manufacturer,
           vendor,
           mysqlDate,
-          status,
         ]
       );
 
