@@ -14,7 +14,8 @@ import {
   Cctv,
   Ratio,
   AlignVerticalJustifyEnd,
-  Router
+  Router,
+  Verified
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import logo from "./../../asset/favicon.svg";
@@ -204,6 +205,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Logout Section */}
+        <div className="absolute bottom-20 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <button
+            className="w-full flex items-center px-3 py-2 text-gray-300 dark:text-gray-300  hover:text-gray-600 dark:hover:text-gray-400 rounded-lg transition-colors group"
+          >
+<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-40-343 237-137-237-137-237 137 237 137ZM160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11L160-252Zm320-228Z"/></svg>            <span className="ml-3 text-gray-600 dark:text-gray-600">Version 1.0.0</span>
+          </button>
+        </div>
+        
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
           <button
             onClick={logout}

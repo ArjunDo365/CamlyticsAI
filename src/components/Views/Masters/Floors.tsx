@@ -184,14 +184,14 @@ const Floors = () => {
                 <tr key={floor.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
+                      {/* <div className="flex-shrink-0 h-10 w-10">
                         <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                           <span className="text-white font-medium">
                             {floor.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
-                      </div>
-                      <div className="ml-4">
+                      </div> */}
+                      <div className="">
                         <div className="text-sm font-medium text-gray-900">
                           {floor.name}
                         </div>

@@ -174,21 +174,42 @@ export abstract class CommonHelper {
         }
     }
 
-    public static SuccessToaster = (msg = '') => {
-        const toast: any = Swal.mixin({
-            toast: true,
-            position: 'top-right',
-            showConfirmButton: false,
-            timer: 3000,
-            customClass: { container: 'toast' },
-        });
-        toast.fire({
-            icon: 'success',
-            title: msg,
-            padding: '10px 20px',
-            showCloseButton: true,
-        });
-    };
+    // public static SuccessToaster = (msg = '') => {
+    //     const toast: any = Swal.mixin({
+    //         toast: true,
+    //         position: 'top-right',
+    //         showConfirmButton: false,
+    //         timer: 3000,
+    //         customClass: { container: 'toast' },
+    //     });
+    //     toast.fire({
+    //         icon: 'success',
+    //         title: msg,
+    //         padding: '10px 20px',
+    //         showCloseButton: true,
+    //     });
+    // };
+
+    public static SuccessToaster = (msg = '', filePath = '') => {
+    const toast: any = Swal.mixin({
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timer: 4000,
+        customClass: { container: 'toast' },
+    });
+
+    toast.fire({
+        icon: 'success',
+        title: filePath 
+            ? `<span>${msg}</span><br><a href="file://${filePath}" style="color:#4e73df; text-decoration: underline;" target="_blank">Open File</a>`
+            : msg,
+        padding: '10px 20px',
+        showCloseButton: true,
+
+    });
+};
+
 
     public static ErrorToaster = (msg = '') => {
         const toast: any = Swal.mixin({

@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Tab } from "@headlessui/react";
 import { CommonHelper } from "../../helper/helper";
-import { DownloadIcon, HeartCrackIcon, HeartIcon } from "lucide-react";
+import { Cctv, DownloadIcon, HeartCrackIcon, HeartIcon, Route, Router } from "lucide-react";
 
 const DashboardNew = () => {
   const [showModal, setShowModal] = useState(false);
@@ -18,6 +18,38 @@ const DashboardNew = () => {
   const [nvrStatus, setnvrStatus] = useState<any>({ series: [], options: {} });
   const [last10NVRs, setLast10NVRs] = useState<any[]>([]);
   const [Last10Cameras, setLast10Cameras] = useState<any[]>([]);
+  const [searchText, setSearchText] = useState("");
+  const [cameraSearchText, setCameraSearchText] = useState("");
+
+
+
+  const filteredNVRs = last10NVRs.filter((nvr: any) => {
+  const text = searchText.toLowerCase();
+
+  return (
+    nvr.asset_no?.toLowerCase().includes(text) ||
+    nvr.model_name?.toLowerCase().includes(text) ||
+    nvr.ip_address?.toLowerCase().includes(text) ||
+    nvr.location_name?.toLowerCase().includes(text) ||
+    nvr.floor_name?.toLowerCase().includes(text) ||
+    nvr.block_name?.toLowerCase().includes(text)
+  );
+});
+
+const filteredCameras = Last10Cameras.filter((cam: any) => {
+  const text = cameraSearchText.toLowerCase();
+
+  return (
+    cam.asset_no?.toLowerCase().includes(text) ||
+    cam.model_name?.toLowerCase().includes(text) ||
+    cam.ip_address?.toLowerCase().includes(text) ||
+    cam.location_name?.toLowerCase().includes(text) ||
+    cam.floor_name?.toLowerCase().includes(text) ||
+    cam.block_name?.toLowerCase().includes(text)
+  );
+});
+
+
 
   useEffect(() => {
     loadData();
@@ -25,16 +57,18 @@ const DashboardNew = () => {
   }, []);
 
   const InactiveList = async (data: any) => {
+    debugger
     try {
       setLoading(true);
 
-      const result = await window.electronAPI.downloadNotWorkingExcel(data);
+      const result = await window.electronAPI.downloadNotWorkingCSV(data);
 
-      if (result.success) {
-        CommonHelper.SuccessToaster(result.message);
-      } else {
-        CommonHelper.ErrorToaster(result.message);
-      }
+     if (result.success) {
+    CommonHelper.SuccessToaster(result.message, result.data.filePath);
+} else {
+    CommonHelper.ErrorToaster(result.message);
+}
+
     } catch (err) {
       console.error(err);
     } finally {
@@ -64,13 +98,13 @@ const DashboardNew = () => {
       const FullDashboadData = await window.electronAPI.getCamerasAndNVRs();
 
       if (FullDashboadData.success) {
-        // console.log(FullDashboadData);
+        console.log(FullDashboadData);
 
         // ⬅️ Store last10NVRs data in state
-        setLast10Cameras(FullDashboadData.data.last10Cameras);
+        setLast10Cameras(FullDashboadData.data.cameras);
 
         // ⬅️ Store last10Cameras data in state
-        setLast10NVRs(FullDashboadData.data.last10NVRs);
+        setLast10NVRs(FullDashboadData.data.nvrs);
       }
 
       setLoading(false);
@@ -102,7 +136,7 @@ const DashboardNew = () => {
             },
 
             title: {
-              text: `Total NVRS: ${d.total_nvrs}`,
+              text: `Total : ${d.total_nvrs}`,
               align: "center",
               style: {
                 fontSize: "20px",
@@ -111,7 +145,7 @@ const DashboardNew = () => {
               },
             },
 
-            labels: ["Working NVRS", "Not Working NVRS"],
+            labels: ["Working ", "Not Working "],
 
             colors: ["#5d965d", "#ec6871"],
 
@@ -138,7 +172,7 @@ const DashboardNew = () => {
             },
 
             title: {
-              text: `Total Cameras: ${d.total_cameras}`,
+              text: `Total : ${d.total_cameras}`,
               align: "center",
               style: {
                 fontSize: "20px",
@@ -147,7 +181,7 @@ const DashboardNew = () => {
               },
             },
 
-            labels: ["Working Cameras", "Not Working Cameras"],
+            labels: ["Working ", "Not Working "],
             colors: ["#5d965d", "#ec6871"],
 
             legend: {
@@ -174,21 +208,21 @@ const DashboardNew = () => {
 
   return (
     <div>
-      <div className="flex justify-between">
+      <div className="flex justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-black mb-6">
+          {/* <h2 className="text-2xl font-semibold text-gray-800 dark:text-black mb-6">
             Dashboard
-          </h2>
+          </h2> */}
         </div>
         <div>
           <button
             className="flex gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-800 transition"
             onClick={() => Manualping()}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M480-480Zm0 360q-18 0-34.5-6.5T416-146L148-415q-35-35-51.5-80T80-589q0-103 67-177t167-74q48 0 90.5 19t75.5 53q32-34 74.5-53t90.5-19q100 0 167.5 74T880-590q0 49-17 94t-51 80L543-146q-13 13-29 19.5t-34 6.5Zm40-520q10 0 19 5t14 13l68 102h166q7-17 10.5-34.5T801-590q-2-69-46-118.5T645-758q-31 0-59.5 12T536-711l-27 29q-5 6-13 9.5t-16 3.5q-8 0-16-3.5t-14-9.5l-27-29q-21-23-49-36t-60-13q-66 0-110 50.5T160-590q0 18 3 35.5t10 34.5h187q10 0 19 5t14 13l35 52 54-162q4-12 14.5-20t23.5-8Zm12 130-54 162q-4 12-15 20t-24 8q-10 0-19-5t-14-13l-68-102H236l237 237q2 2 3.5 2.5t3.5.5q2 0 3.5-.5t3.5-2.5l236-237H600q-10 0-19-5t-15-13l-34-52Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M480-480Zm0 360q-18 0-34.5-6.5T416-146L148-415q-35-35-51.5-80T80-589q0-103 67-177t167-74q48 0 90.5 19t75.5 53q32-34 74.5-53t90.5-19q100 0 167.5 74T880-590q0 49-17 94t-51 80L543-146q-13 13-29 19.5t-34 6.5Zm40-520q10 0 19 5t14 13l68 102h166q7-17 10.5-34.5T801-590q-2-69-46-118.5T645-758q-31 0-59.5 12T536-711l-27 29q-5 6-13 9.5t-16 3.5q-8 0-16-3.5t-14-9.5l-27-29q-21-23-49-36t-60-13q-66 0-110 50.5T160-590q0 18 3 35.5t10 34.5h187q10 0 19 5t14 13l35 52 54-162q4-12 14.5-20t23.5-8Zm12 130-54 162q-4 12-15 20t-24 8q-10 0-19-5t-14-13l-68-102H236l237 237q2 2 3.5 2.5t3.5.5q2 0 3.5-.5t3.5-2.5l236-237H600q-10 0-19-5t-15-13l-34-52Z" /></svg>
             {/* <HeartIcon/> */}
             {/* <HeartCrackIcon/> */}
-            Health Check
+            Run Health Check
           </button>
         </div>
       </div>
@@ -199,8 +233,8 @@ const DashboardNew = () => {
           <div className=" rounded-2xl ">
             {/* Header */}
             <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
-              <h5 className="font-semibold text-lg text-gray-800 dark:text-dark">
-                NVR Status
+              <h5 className="font-semibold text-lg text-gray-800 dark:text-dark flex gap-2">
+               <Router/> NVR
               </h5>
             </div>
 
@@ -214,34 +248,34 @@ const DashboardNew = () => {
                 <>
                   {/* Button Row */}
                   <div className="flex justify-end mb-3">
-                     
+
                     <div className="flex justify-end mb-3">
-  {Number(Dashboard?.inactive_nvrs) > 0 && (
-    <button 
-      className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
-      onClick={() => InactiveList("nvrs")}
-    >
-      <DownloadIcon />
-      Not Working Download
-    </button>
-  )}
-</div>
+                      {Number(Dashboard?.inactive_nvrs) > 0 && (
+                        <button
+                          className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
+                          onClick={() => InactiveList("nvrs")}
+                        >
+                          <DownloadIcon />
+                          Not Working Download
+                        </button>
+                      )}
+                    </div>
 
                   </div>
 
                   {/* Chart */}
-               {Number(Dashboard.total_nvrs) === 0 ? (
-  <div className="min-h-[325px] grid place-content-center text-gray-500 text-lg">
-    No NVR Data Available
-  </div>
-) : (
-  <ReactApexChart
-    series={nvrStatus.series}
-    options={nvrStatus.options}
-    type="pie"
-    height={380}
-  />
-)}
+                  {Number(Dashboard.total_nvrs) === 0 ? (
+                    <div className="min-h-[325px] grid place-content-center text-gray-500 text-lg">
+                      No NVR Data Available
+                    </div>
+                  ) : (
+                    <ReactApexChart
+                      series={nvrStatus.series}
+                      options={nvrStatus.options}
+                      type="pie"
+                      height={380}
+                    />
+                  )}
 
                 </>
               )}
@@ -254,8 +288,8 @@ const DashboardNew = () => {
           <div className=" rounded-2xl ">
             {/* Header */}
             <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
-              <h5 className="font-semibold text-lg text-gray-800 dark:text-dark">
-                Camera Status
+              <h5 className="font-semibold text-lg text-gray-800 dark:text-dark flex gap-2">
+                 <Cctv/> Camera
               </h5>
             </div>
 
@@ -278,31 +312,31 @@ const DashboardNew = () => {
                     </button>
                   </div> */}
                   <div className="flex justify-end mb-3">
-  {Number(Dashboard?.inactive_cameras
-) > 0 && (
-    <button 
-      className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
-      onClick={() => InactiveList("cameras")}
-    >
-      <DownloadIcon />
-      Not Working Download
-    </button>
-  )}
-</div>
+                    {Number(Dashboard?.inactive_cameras
+                    ) > 0 && (
+                        <button
+                          className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
+                          onClick={() => InactiveList("cameras")}
+                        >
+                          <DownloadIcon />
+                          Not Working Download
+                        </button>
+                      )}
+                  </div>
 
                   {/* CAMERA STATUS PIE CHART */}
-{Number(Dashboard.total_cameras) === 0 ? (
-  <div className="min-h-[325px] grid place-content-center text-gray-500 text-lg">
-    No Camera Data Available
-  </div>
-) : (
-  <ReactApexChart
-    series={cameraStatus.series}
-    options={cameraStatus.options}
-    type="pie"
-    height={380}
-  />
-)}
+                  {Number(Dashboard.total_cameras) === 0 ? (
+                    <div className="min-h-[325px] grid place-content-center text-gray-500 text-lg">
+                      No Camera Data Available
+                    </div>
+                  ) : (
+                    <ReactApexChart
+                      series={cameraStatus.series}
+                      options={cameraStatus.options}
+                      type="pie"
+                      height={380}
+                    />
+                  )}
 
                 </>
               )}
@@ -314,56 +348,54 @@ const DashboardNew = () => {
       <div className="mb-5 w-full">
 
         <Tab.Group>
-         <Tab.List className="mt-3 flex flex-wrap border-b border-gray-300 dark:border-gray-700">
-  <Tab as={Fragment}>
-    {({ selected }) => (
-      <button
-        className={`-mb-[1px] px-4 py-2 border-b-2 transition-all duration-200 
-          ${
-            selected
-              ? "border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400"
-              : "border-transparent text-gray-500 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
-          }`}
-      >
-        NVR
-      </button>
-    )}
-  </Tab>
+          <Tab.List className="mt-3 flex flex-wrap border-b border-gray-300 dark:border-gray-700">
+            <Tab as={Fragment}>
+              {({ selected }) => (
+                <button
+                  className={`-mb-[1px] px-4 py-2 border-b-2 transition-all duration-200 
+          ${selected
+                      ? "border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400"
+                      : "border-transparent text-gray-500 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
+                    }`}
+                >
+                  NVR
+                </button>
+              )}
+            </Tab>
 
-  <Tab as={Fragment}>
-    {({ selected }) => (
-      <button
-        className={`-mb-[1px] px-4 py-2 border-b-2 transition-all duration-200 
-          ${
-            selected
-              ? "border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400"
-              : "border-transparent text-gray-500 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
-          }`}
-      >
-        Camera
-      </button>
-    )}
-  </Tab>
-</Tab.List>
+            <Tab as={Fragment}>
+              {({ selected }) => (
+                <button
+                  className={`-mb-[1px] px-4 py-2 border-b-2 transition-all duration-200 
+          ${selected
+                      ? "border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400"
+                      : "border-transparent text-gray-500 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400"
+                    }`}
+                >
+                  Camera
+                </button>
+              )}
+            </Tab>
+          </Tab.List>
 
           <Tab.Panels>
             <Tab.Panel>
               <div className="active pt-5">
-                <div className="flex justify-between">
-                  <div>
-                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-black mb-6">
-                      Last 10 NVRS List
-                    </h2>
-                  </div>
-                  <div>
-                    {/* <button
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-800 transition"
-            onClick={() => Manualping()}
-          >
-            Health Check
-          </button> */}
-                  </div>
-                </div>
+               <div className="flex justify-between mb-4">
+  <h2 className="text-2xl font-semibold text-gray-800 dark:text-black">
+    NVRS List
+  </h2>
+
+  <input
+    type="text"
+    placeholder="Search NVR..."
+    className="px-3 py-2 border rounded-lg focus:ring focus:ring-purple-300 text-black"
+    
+    value={searchText}
+    onChange={(e) => setSearchText(e.target.value)}
+  />
+</div>
+
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -378,18 +410,24 @@ const DashboardNew = () => {
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Location
                           </th>
-                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            IP Address
+                          </th>
+                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Last Working on
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Is Working
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Status
-                            </th>
-                         
+                            Status
+                          </th>
+
                         </tr>
                       </thead>
 
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {last10NVRs.map((data: any) => (             
+                        {filteredNVRs.map((data: any) => (
                           <tr key={data.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
@@ -419,33 +457,65 @@ const DashboardNew = () => {
                                 {data.location_name}
                               </div>
                             </td>
-                           
-                           <td className="px-6 py-4 whitespace-nowrap">
-  <div className="text-sm">
-    {data.is_working == 0 ? (
-      <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
-        Not Working
-      </span>
-    ) : (
-      <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
-        Working
-      </span>
-    )}
-  </div>
-</td>
- <td className="px-6 py-4 whitespace-nowrap">
-  <div className="text-sm">
-    {data.status == 0 ? (
-      <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
-        Inactive
-      </span>
-    ) : (
-      <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
-        Active
-      </span>
-    )}
-  </div>
-</td>
+                             <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">
+                                {data.ip_address} 
+                              </div>
+                            </td>
+                             <td className="px-6 py-4 whitespace-nowrap">
+                         <div className="text-sm text-gray-500">
+  {data.last_working_on
+    ? new Date(data.last_working_on)
+        .toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+        .replace(/ /g, "-")
+        .replace(",-", " ")
+    : "-"
+  }
+</div>
+
+
+
+
+                            </td>
+
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm">
+                                {data.is_working == 0 ? (
+                                  <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
+                                    Not Working
+                                  </span>
+                                ) : (
+                                  <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
+                                    Working
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm">
+                                {data.status == 0 ? (
+                                  <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
+                                    Inactive
+                                  </span>
+                                ) : (
+                                  <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
+                                    Active
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            {/* <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-500">
+                                  {data.status}
+                                </div>
+                              </td> */}
 
                           </tr>
                         ))}
@@ -457,21 +527,19 @@ const DashboardNew = () => {
             </Tab.Panel>
             <Tab.Panel>
               <div className="active pt-5">
-                <div className="flex justify-between">
-                  <div>
-                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-black mb-6">
-                      Last 10 Cameras List
-                    </h2>
-                  </div>
-                  <div>
-                    {/* <button
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-800 transition"
-            onClick={() => Manualping()}
-          >
-            Health Check
-          </button> */}
-                  </div>
-                </div>
+                <div className="flex justify-between mb-4">
+  <h2 className="text-2xl font-semibold text-gray-800 dark:text-black">
+    Camera List
+  </h2>
+
+  <input
+    type="text"
+    placeholder="Search Camera..."
+    className="px-3 py-2 border rounded-lg focus:ring focus:ring-purple-300 text-black"
+    value={cameraSearchText}
+    onChange={(e) => setCameraSearchText(e.target.value)}
+  />
+</div>
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -486,9 +554,15 @@ const DashboardNew = () => {
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Location
                           </th>
+                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            IP Address
+                          </th>
+                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Last Working on
+                          </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Is Working
-                            </th>
+                            Is Working
+                          </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Status
                           </th>
@@ -496,7 +570,7 @@ const DashboardNew = () => {
                       </thead>
 
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {Last10Cameras.map((data: any) => (
+                        {filteredCameras.map((data: any) => (
                           <tr key={data.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
@@ -526,34 +600,61 @@ const DashboardNew = () => {
                                 {data.location_name}
                               </div>
                             </td>
-                            
-                           <td className="px-6 py-4 whitespace-nowrap">
-  <div className="text-sm">
-    {data.is_working == 0 ? (
-      <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
-        Not Working
-      </span>
-    ) : (
-      <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
-        Working
-      </span>
-    )}
-  </div>
-</td>
- <td className="px-6 py-4 whitespace-nowrap">
-  <div className="text-sm">
-    {data.status == 0 ? (
-      <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
-        Inactive
-      </span>
-    ) : (
-      <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
-        Active
-      </span>
-    )}
-  </div>
-</td>
- {/* <td className="px-6 py-4 whitespace-nowrap">
+                             <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">
+                                {data.ip_address} 
+                              </div>
+                            </td>
+                             <td className="px-6 py-4 whitespace-nowrap">
+                         <div className="text-sm text-gray-500">
+  {data.last_working_on
+    ? new Date(data.last_working_on)
+        .toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+        .replace(/ /g, "-")
+        .replace(",-", " ")
+    : "-"
+  }
+</div>
+
+
+
+
+                            </td>
+
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm">
+                                {data.is_working == 0 ? (
+                                  <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
+                                    Not Working
+                                  </span>
+                                ) : (
+                                  <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
+                                    Working
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm">
+                                {data.status == 0 ? (
+                                  <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
+                                    Inactive
+                                  </span>
+                                ) : (
+                                  <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
+                                    Active
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            {/* <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm text-gray-500">
                                   {data.status}
                                 </div>
