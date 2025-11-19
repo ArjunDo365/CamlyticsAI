@@ -17,9 +17,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   createRole: (roleData) => ipcRenderer.invoke('roles:create', roleData),
   updateRole: (id, roleData) => ipcRenderer.invoke('roles:update', { id, roleData }),
   deleteRole: (id) => ipcRenderer.invoke('roles:delete', id),
-  
-  // // Dialog methods
-  // showOpenDialog: () => ipcRenderer.invoke('dialog:showOpenDialog'),
 
   //block
   createBlock: (data) => ipcRenderer.invoke('block:create', data),
