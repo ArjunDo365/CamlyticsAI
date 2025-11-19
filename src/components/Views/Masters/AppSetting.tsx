@@ -100,8 +100,8 @@ const AppSettings = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key Value</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -110,14 +110,14 @@ const AppSettings = () => {
                 <tr key={AppSetting.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
+                      {/* <div className="flex-shrink-0 h-10 w-10">
                         <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                           <span className="text-white font-medium">
                             {(AppSetting.keyname?.charAt(0) || "").toUpperCase()}
                           </span>
                         </div>
-                      </div>
-                      <div className="ml-4">
+                      </div> */}
+                      <div className="">
                         <div className="text-sm font-medium text-gray-900">
                           {AppSetting.keyname || "-"}
                         </div>
@@ -152,7 +152,7 @@ const AppSettings = () => {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1">Key Name</label>
+                <label className="text-sm font-medium text-gray-700 mb-1"> Name</label>
                 <input
                   type="text"
                   value={formData.keyname}
@@ -161,7 +161,7 @@ const AppSettings = () => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1">Key Value</label>
+                <label className="text-sm font-medium text-gray-700 mb-1">Value</label>
                 <input
                   type="text"
                   value={formData.keyvalue}

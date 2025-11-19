@@ -453,7 +453,7 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-500">
-                                {data.block_name} - {data.floor_name} -{" "}
+                                {data.block_name} &gt; {data.floor_name} &gt;{" "}
                                 {data.location_name}
                               </div>
                             </td>
@@ -479,10 +479,6 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
     : "-"
   }
 </div>
-
-
-
-
                             </td>
 
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -596,7 +592,7 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-500">
-                                {data.block_name} - {data.floor_name} -{" "}
+                                {data.block_name} &gt; {data.floor_name} &gt;{" "}
                                 {data.location_name}
                               </div>
                             </td>

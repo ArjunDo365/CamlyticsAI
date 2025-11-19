@@ -76,7 +76,7 @@ export interface Nvr {
   vendor: string;
   install_date: string;
   last_working_on?:string;
-  is_working?:string;
+  is_working?:any;
   status?:number;
 }
 
@@ -84,7 +84,7 @@ export interface Camera {
   location_name: ReactNode;
   floor_name: ReactNode;
   block_name: ReactNode;
-  id: number|null;
+  id: number;
   location_id: number;
   nvr_id:number;
   asset_no: string;
@@ -96,7 +96,7 @@ export interface Camera {
   vendor: string;
   install_date: string;
   last_working_on?:string;
-  is_working?:string;
+  is_working?:any;
   status:number
 }
 

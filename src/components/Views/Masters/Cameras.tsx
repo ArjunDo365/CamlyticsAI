@@ -15,6 +15,7 @@ const Cameras = () => {
   const [editingCamera, setEditingCamera] = useState<Camera | null>(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    id: 0,
     location_id: 0,
     nvr_id: 0,
     asset_no: "",
@@ -38,6 +39,7 @@ const Cameras = () => {
 
   const resetForm = () => {
     setFormData({
+      id: 0,
       location_id: 0,
       nvr_id: 0,
       asset_no: "",
@@ -82,6 +84,7 @@ const Cameras = () => {
   const handleEdit = (cam: Camera) => {
     setEditingCamera(cam);
     setFormData({
+      id: cam.id,
       location_id: cam.location_id,
       nvr_id: cam.nvr_id,
       asset_no: cam.asset_no,
@@ -194,6 +197,24 @@ const Cameras = () => {
     }
   };
 
+    const updateCameraStatus = async (payload: typeof formData) => {
+    try {
+      console.log("Updating NVR with full data:", payload);
+  
+      const result = await window.electronAPI.updateCamera(payload.id, payload);
+  
+      if (result.success) {
+        CommonHelper.SuccessToaster(result.message || "Status updated successfully");
+        await loadData(); // refresh table
+      } else {
+        CommonHelper.ErrorToaster(result.message || "Failed to update Camera");
+      }
+    } catch (error) {
+      console.error("Error updating Camera:", error);
+      CommonHelper.ErrorToaster("An error occurred");
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-6">
@@ -237,6 +258,18 @@ const Cameras = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Location
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            IP Address
+                          </th>
+                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Last Working on
+                          </th>
+                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Is Working
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
                 {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Last Working on
                 </th> */}
@@ -272,10 +305,88 @@ const Cameras = () => {
                     <div className="text-sm text-gray-500">{n.model_name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {n.block_name} - {n.floor_name} - {n.location_name}
-                    </div>
-                  </td>
+                                     <div className="text-sm text-gray-500">
+                                       {n.block_name} &gt; {n.floor_name} &gt; {n.location_name}
+                                     </div>
+                                   </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                               <div className="text-sm text-gray-500">
+                                                 {n.ip_address} 
+                                               </div>
+                                             </td>
+                                              <td className="px-6 py-4 whitespace-nowrap">
+                                          <div className="text-sm text-gray-500">
+                   {n.last_working_on
+                     ? new Date(n.last_working_on)
+                         .toLocaleString("en-GB", {
+                           day: "2-digit",
+                           month: "short",
+                           year: "numeric",
+                           hour: "2-digit",
+                           minute: "2-digit",
+                           hour12: true,
+                         })
+                         .replace(/ /g, "-")
+                         .replace(",-", " ")
+                     : "-"
+                   }
+                 </div>
+                                             </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                               <div className="text-sm">
+                                                 {n.is_working == 0 ? (
+                                                   <span className="px-3 py-1 rounded-full bg-red-200 text-red-800 font-medium">
+                                                     Not Working
+                                                   </span>
+                                                 ) : (
+                                                   <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-medium">
+                                                     Working
+                                                   </span>
+                                                 )}
+                                               </div>
+                                             </td>
+                                             
+                                              <td className="px-6 py-4 whitespace-nowrap">
+                                                 <div className="text-sm flex items-center">
+                   <label className="w-12 h-6 relative block">
+                     <input
+                       type="checkbox"
+                       className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                       checked={!!n.status}
+                       onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+                         const updatedStatus = e.target.checked ? 1 : 0;
+                 
+                         // Create full payload for this row, updating only status
+                         const payload = { ...n, status: updatedStatus };
+                 
+                         // Optionally update local formData if needed
+                         setFormData(payload);
+                 
+                         // Call API to update the full NVR data
+                         await updateCameraStatus(payload);
+                       }}
+                     />
+                 
+                     <span
+                       className="bg-[#ebedf2] 
+                         block h-full rounded-full 
+                         border-2 border-blue-300
+                         peer-checked:bg-blue-600 
+                         peer-checked:border-blue-600
+                         before:absolute before:left-1 
+                         before:bg-white before:peer-checked:bg-white 
+                         before:bottom-1 before:w-4 before:h-4 
+                         before:rounded-full peer-checked:before:left-7 
+                         before:transition-all before:duration-300"
+                     ></span>
+                   </label>
+                 
+                   {/* <span className="ml-2 font-medium">
+                     {n.status == 0 ? "Inactive" : "Active"}
+                   </span> */}
+                 </div>
+                 
+                                              </td>
                   {/* <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">{n.last_working_on}</div>
                   </td> */}
@@ -417,7 +528,7 @@ const Cameras = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
                     required
                   >
-                    <option value={0}>-- Select Floor --</option>
+                    <option value={0}>-- Select NVR --</option>
                     {nvrs.map((n) => (
                       <option key={n.id} value={n.id}>
                         {n.asset_no}
@@ -514,8 +625,8 @@ const Cameras = () => {
                     <option value={0}>-- Select Location --</option>
                     {sections.map((section) => (
                       <option key={section.id} value={section.id}>
-                        {section.name} - {section.floor_name} -{" "}
-                        {section.block_name}
+                       {section.block_name} &gt; {section.floor_name} &gt; {section.name}
+                       
                       </option>
                     ))}
                   </select>
@@ -541,41 +652,37 @@ const Cameras = () => {
                     }
                   />
                 </div>
-                <div className="relative rounded-md bg-white">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Status
-                    </label>
-                  </div>
-                  <div>
-                    <label className="w-12 h-6 relative block">
-                      <input
-                        type="checkbox"
-                        className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
-                        id="custom_switch_checkbox1"
-                        checked={!!formData.status}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            status: e.target.checked ? 1 : 0,
-                          }))
-                        }
-                      />
-                      <span
-                        className="bg-[#ebedf2] 
-                      block h-full rounded-full 
-                      border-2 border-blue-300
-                      peer-checked:bg-blue-600 
-                      peer-checked:border-blue-600
-                      before:absolute before:left-1 
-                      before:bg-white before:peer-checked:bg-white 
-                      before:bottom-1 before:w-4 before:h-4 
-                      before:rounded-full peer-checked:before:left-7 
-                      before:transition-all before:duration-300"
-                      ></span>
-                    </label>
-                  </div>
-                </div>
+                {editingCamera && (
+                 <div>
+                   <label className="w-12 h-6 relative block">
+                     <input
+                       type="checkbox"
+                       className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                       id="custom_switch_checkbox1"
+                       checked={!!formData.status}
+                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                         setFormData((prevData) => ({
+                           ...prevData,
+                           status: e.target.checked ? 1 : 0,
+                         }))
+                       }
+                     />
+               
+                     <span
+                       className="bg-[#ebedf2] 
+                       block h-full rounded-full 
+                       border-2 border-blue-300
+                       peer-checked:bg-blue-600 
+                       peer-checked:border-blue-600
+                       before:absolute before:left-1 
+                       before:bg-white before:peer-checked:bg-white 
+                       before:bottom-1 before:w-4 before:h-4 
+                       before:rounded-full peer-checked:before:left-7 
+                       before:transition-all before:duration-300"
+                     ></span>
+                   </label>
+                 </div>
+               )}
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <button
