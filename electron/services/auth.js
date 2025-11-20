@@ -54,6 +54,7 @@ class AuthService {
     }
   }
 
+  
   async register(userData) {
     try {
       const { name, email, password, user_role_id = 2 } = userData;

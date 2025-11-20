@@ -153,7 +153,7 @@ ipcMain.handle('auth:login', (event, { email, password }) =>
   authService.login(email, password)
 );
 ipcMain.handle('auth:register', (event, userData) =>
-  authService.register(userData)
+  authService.registerLicense(userData)
 );
 ipcMain.handle('auth:verify-token', (event, token) =>
   authService.verifyToken(token)
