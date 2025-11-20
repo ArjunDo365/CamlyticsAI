@@ -190,7 +190,11 @@ ipcMain.handle('users:update', (event, { id, userData }) =>
 ipcMain.handle('users:delete', (event, id) =>
   authService.deleteUser(id)
 );
+ipcMain.handle('users:delete', (event, id) => authService.deleteUser(id));
 
+ipcMain.handle('getRegistrationById:getRegistrationById', (event, id) =>
+  authService.getRegistrationById(id)
+);
 // ROLES
 ipcMain.handle('roles:getAll', () => authService.getAllRoles());
 ipcMain.handle('roles:create', (event, roleData) =>
