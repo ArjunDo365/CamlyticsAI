@@ -126,6 +126,7 @@ const LocationService = require('./services/location');
 const FloorsService = require('./services/floors');
 const PingService = require('./services/ping');
 const AppsettingService = require('./services/appsettings');
+const LicenseService = require('./services/license');
 
 const db = new Database();
 
@@ -136,6 +137,7 @@ const locationService = new LocationService(db);
 const nvrService = new NvrService(db);
 const cameraService = new CameraService(db);
 const appsettingService = new AppsettingService(db);
+const licenseService = new LicenseService(db)
 
 const pingService = new PingService(db, appsettingService);
 
