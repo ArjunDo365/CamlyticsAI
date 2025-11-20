@@ -8,8 +8,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 
 const LoginForm: React.FC = () => {
     const [formData, setFormData] = useState({
-        email: 'admin@app.com',
-        password: 'admin123'
+        email: 'admin@camlytx.ai',
+        password: 'Login@123'
     });
       const navigate = useNavigate();
 
