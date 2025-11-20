@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { FrameIcon } = require('lucide-react');
 
 class AuthService {
   constructor(database) {
@@ -79,8 +80,85 @@ class AuthService {
         success: false,
         error: error.message
       };
+    }   
+  }
+
+
+   async registerLicense(userData) {
+    try {
+      const { name, email, company_name, mobile,address } = userData;
+      
+      // Check if user already exists
+      const existingUsers = await this.db.query('SELECT id FROM registration WHERE email = ?', [email]);
+      if (existingUsers.length > 0) {
+        throw new Error('Given email already exists');
+      }
+
+      
+      const result = await this.db.run(`
+        INSERT INTO registration (name, email, company_name, mobile,address) 
+        VALUES (?, ?, ?, ?,?)
+      `, [name, email, company_name, mobile, address]);
+
+      return {
+        success: true,
+        message: 'Registration successful',
+        userId: result.id
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message
+      };
     }
   }
+
+  async isRegistered() {
+  try {
+    const rows = await this.db.query('SELECT COUNT(*) as count FROM registration');
+    const data = await this.db.query('SELECT * FROM registration');
+    const count = rows[0]?.count || 0;
+
+    return {
+      registered: count > 0,
+      total: count,
+      success: true,
+      data_id:count != 0 ? data[0].id : null
+    };
+  } catch (error) {
+    console.error('Check registration error:', error);
+    return {
+      registered: false,
+      total: 0,
+      error: error.message,
+      success: false
+    };
+  }
+}
+
+async isLicensed() {
+  try {
+    const rows = await this.db.query('SELECT COUNT(*) as count FROM license');
+    const count = rows[0]?.count || 0;
+
+    return {
+      licensed: count > 0,
+      total: count,
+      success: true,
+    };
+  } catch (error) {
+    console.error('Check registration error:', error);
+    return {
+      licensed: false,
+      total: 0,
+      error: error.message,
+      success: false
+    };
+  }
+}
+
+
+
 
   async verifyToken(token) {
     try {
@@ -96,6 +174,8 @@ class AuthService {
       };
     }
   }
+
+  
 
   async getAllUsers() {
     try {
@@ -120,6 +200,10 @@ class AuthService {
 
   async createUser(userData) {
     return await this.register(userData);
+  }
+
+  async createRegistration(userData) {
+    return await this.registerLicense(userData);
   }
 
   async updateUser(id, userData) {
@@ -158,6 +242,28 @@ class AuthService {
       };
     }
   }
+
+  async getRegistrationById(id) {
+  try {
+    const user = await this.db.query('SELECT * FROM registration WHERE id = ?', [id]);
+    if (!user) {
+      return {
+        success: false,
+        message: 'registration not found'
+      };
+    }
+    return {
+      success: true,
+      data: user
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
 
   async getAllRoles() {
     try {

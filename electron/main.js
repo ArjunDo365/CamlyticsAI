@@ -157,6 +157,26 @@ ipcMain.handle('auth:verify-token', (event, token) =>
   authService.verifyToken(token)
 );
 
+ipcMain.handle('auth:isRegistered', async () => {
+  try {
+    const result = await authService.isRegistered();
+    return result;
+  } catch (err) {
+    console.error('Error in auth:isRegistered:', err);
+    return { registered: false, total: 0, success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('auth:isLicensed', async () => {
+  try {
+    const result = await authService.isLicensed();
+    return result;
+  } catch (err) {
+    console.error('Error in auth:isLicensed:', err);
+    return { registered: false, total: 0, success: false, error: err.message };
+  }
+});
+
 // USERS
 ipcMain.handle('users:getAll', () => authService.getAllUsers());
 ipcMain.handle('users:create', (event, userData) =>
@@ -297,3 +317,17 @@ ipcMain.on("open-file-location", (event, filePath) => {
   shell.showItemInFolder(filePath); 
 });
 
+// ---------------------------
+// LICENSE HANDLERS
+// ---------------------------
+ipcMain.handle('get-hdd-serial', async () => {
+  return await licenseService.getHddSerial();
+});
+
+ipcMain.handle('insertlicense', (event, userData) =>
+  licenseService.InsertLicense(userData)
+);
+
+ipcMain.handle('generate-hmc', async (event, { registered_id, hddSerial }) =>
+  licenseService.generateHmcKey(registered_id, hddSerial)
+);

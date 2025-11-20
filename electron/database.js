@@ -185,6 +185,29 @@ class Database {
   )
 `;
 
+    const createlicensetable = `
+CREATE TABLE IF NOT EXISTS license (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  system_code VARCHAR(255) NOT NULL UNIQUE,
+  license_key VARCHAR(255) NOT NULL,
+  registered_id VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+`;
+
+    const createregistrationtable = `
+CREATE TABLE IF NOT EXISTS registration (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  company_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  mobile VARCHAR(20) NOT NULL,
+  address TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+`;
+
+
     // ----------------------------------------------------
 
     const connection = await this.pool.getConnection();
@@ -198,6 +221,8 @@ class Database {
       await connection.query(createNvrs);
       await connection.query(createCameras);
       await connection.query(createAppSettingTable);
+      await connection.query(createlicensetable);
+      await connection.query(createregistrationtable);
 
       // Default roles
       await connection.query(`
