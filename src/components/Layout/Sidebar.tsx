@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import logo from "./../../asset/favicon.svg";
+import { Block } from "../../types";
 
 interface SidebarProps {
   activeView: string;
@@ -33,13 +34,17 @@ const Sidebar: React.FC<SidebarProps> = ({
   sidebarOpen,
   setSidebarOpen,
 }) => {
+
   const { user, logout } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [blocks, setBlocks] = useState<Block[]>([]);
+  
   const [dashboardOpen, setDashboardOpen] = useState(false);
 
   const menuItems = [
-    { id: "upload", label: "Upload PDF", icon: Upload },
-    { id: "files", label: "Files", icon: FileText },
-    ...(user?.role_name === "Admin"
+    // { id: "upload", label: "Upload PDF", icon: Upload },
+    // { id: "files", label: "Files", icon: FileText },
+    ...(user?.role_name === "S Admin"
       ? [
           { id: "users", label: "Users", icon: Users },
           { id: "roles", label: "Roles", icon: UserCheck },
@@ -48,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const masterItems = [
-    ...(user?.role_name === "Admin"
+    ...(user?.role_name === "S Admin"
       ? [
               { id: "blocks", label: "Blocks", icon: Building2 },
                    { id: "floors", label: "Floors", icon: AlignVerticalJustifyEnd },
@@ -63,7 +68,25 @@ const Sidebar: React.FC<SidebarProps> = ({
       : []),
   ];
 
+   const loadData = async () => {
+    
+    try {
+      setLoading(true);
+      const blockData = await window.electronAPI.getAllUsers();
+      // console.log("data from backend for blocks: ", blockData);
+
+      if (blockData.success) {
+        setBlocks(blockData.data);
+      }
+    } catch (error) {
+      console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    loadData();
     if (window.innerWidth < 1024 && sidebarOpen) {
       setSidebarOpen(false);
     }
@@ -135,14 +158,16 @@ const Sidebar: React.FC<SidebarProps> = ({
                 )}
               </li>
 
+                  {user?.role_name === "S Admin" && (
+                <>
               {/* Section Header */}
-              {/* <li className="py-3 px-3 flex items-center uppercase font-extrabold text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 -mx-4 mb-1 mt-4">
+              <li className="py-3 px-3 flex items-center uppercase font-extrabold text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 -mx-4 mb-1 mt-4">
                 <Minus className="w-4 h-4 mr-2 hidden" />
                 <span>FILE MANAGEMENT</span>
-              </li> */}
+              </li>
 
               {/* Menu Items */}
-              {/* {menuItems.map((item) => {
+              {menuItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.id}>
@@ -165,9 +190,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                   </li>
                 );
-              })} */}
+              })}
+               </>
+              )}
 
-              {user?.role_name === "Admin" && (
+              {user?.role_name === "S Admin" && (
                 <>
                   {/* Admin Section Header */}
                   <li className="py-3 px-3 flex items-center uppercase font-extrabold text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 -mx-4 mb-1 mt-4">

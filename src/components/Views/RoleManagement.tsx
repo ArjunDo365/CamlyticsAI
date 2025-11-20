@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserCheck, Plus, CreditCard as Edit, Trash2 } from 'lucide-react';
+import { UserCheck, Plus, CreditCard as Edit, Trash2, Edit2, XCircle, Save } from 'lucide-react';
 import { UserRole } from '../../types';
 
 const RoleManagement: React.FC = () => {
@@ -10,6 +10,17 @@ const RoleManagement: React.FC = () => {
   const [formData, setFormData] = useState({
     name: ''
   });
+
+
+   const [searchText, setSearchText] = useState("");
+      const filterData = roles.filter((role: any) => {
+    const text = searchText.toLowerCase();
+  
+    return (
+      role.name?.toLowerCase().includes(text) 
+  
+    );
+  }); 
 
   useEffect(() => {
     loadRoles();
@@ -108,7 +119,8 @@ const RoleManagement: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-900">Role Management</h2>
           <p className="text-gray-600">Manage user roles and permissions</p>
         </div>
-        <button
+        <div className='flex gap-2'>
+       <button
           onClick={() => {
             resetForm();
             setShowModal(true);
@@ -118,6 +130,16 @@ const RoleManagement: React.FC = () => {
           <Plus size={20} />
           Add Role
         </button>
+           <input
+    type="text"
+    placeholder="Search..."
+    className="px-3 py-2 border rounded-lg focus:ring focus:ring-purple-300 text-black"
+    
+    value={searchText}
+    onChange={(e) => setSearchText(e.target.value)}
+  />
+        </div>
+     
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -137,7 +159,7 @@ const RoleManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {roles.map((role) => (
+              {filterData.map((role) => (
                 <tr key={role.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -158,10 +180,10 @@ const RoleManagement: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleEdit(role)}
-                        className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
+                        className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1 rounded-full p-2"
                       >
-                        <Edit size={14} />
-                        Edit
+                           <Edit2 size={20} className="!text-white"/>
+                        
                       </button>
                       {role.id > 2 && ( // Don't allow deletion of Admin and User roles
                         <button
@@ -208,14 +230,16 @@ const RoleManagement: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors flex gap-2"
                 >
+                  <XCircle/>
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors flex gap-2"
                 >
+                  <Save/>
                   {editingRole ? 'Update' : 'Create'} Role
                 </button>
               </div>

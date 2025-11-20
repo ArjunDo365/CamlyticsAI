@@ -98,7 +98,6 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
       const FullDashboadData = await window.electronAPI.getCamerasAndNVRs();
 
       if (FullDashboadData.success) {
-        console.log(FullDashboadData);
 
         // ⬅️ Store last10NVRs data in state
         setLast10Cameras(FullDashboadData.data.cameras);
