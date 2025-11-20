@@ -126,7 +126,7 @@ const LocationService = require('./services/location');
 const FloorsService = require('./services/floors');
 const PingService = require('./services/ping');
 const AppsettingService = require('./services/appsettings');
-const LicenseService = require('./services/license');
+const LicenseService = require('./services/license')
 
 const db = new Database();
 
@@ -186,9 +186,6 @@ ipcMain.handle('users:create', (event, userData) =>
 );
 ipcMain.handle('users:update', (event, { id, userData }) =>
   authService.updateUser(id, userData)
-);
-ipcMain.handle('users:delete', (event, id) =>
-  authService.deleteUser(id)
 );
 ipcMain.handle('users:delete', (event, id) => authService.deleteUser(id));
 
