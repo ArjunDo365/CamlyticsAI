@@ -34,6 +34,9 @@ export interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isRegistered: boolean;
+  isLicensed:boolean;
+  data_id: number
 }
 
 export interface Section {
@@ -110,6 +113,18 @@ export interface AppSetting {
 declare global {
   interface Window {
     electronAPI: {
+
+      //  Registration methods
+      getHddSerial: () => Promise<string | null>;
+      registerLicense: (userData: any) => Promise<any>;
+      generateHmc: (data: { registered_id: number; hddSerial: string }) => Promise<string>;
+      insertlicense: (userData: any) => Promise<any>;
+
+       // Auth methods
+      isRegistered: () => Promise<any>;
+      isLicensed: () => Promise<any>;
+
+
       // Auth methods
       login: (credentials: { email: string; password: string }) => Promise<any>;
       register: (userData: any) => Promise<any>;
@@ -117,6 +132,7 @@ declare global {
 
       // User methods
       getAllUsers: () => Promise<any>;
+      getRegistrationById: (id: number) => Promise<any>;
       createUser: (userData: any) => Promise<any>;
       updateUser: (id: number, userData: any) => Promise<any>;
       deleteUser: (id: number) => Promise<any>;
@@ -185,6 +201,9 @@ declare global {
     };
 
 
+    // Registration Process
+
+   
 
 
   }

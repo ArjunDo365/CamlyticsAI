@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import logo from "./../../asset/DashboardIcon.png";
+import { useNavigate } from 'react-router-dom';
+
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 const LoginForm: React.FC = () => {
     const [formData, setFormData] = useState({
         email: 'admin@app.com',
         password: 'admin123'
     });
+      const navigate = useNavigate();
+
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -24,6 +29,13 @@ const LoginForm: React.FC = () => {
         if (!success) {
             setError('Invalid email or password');
         }
+         else {
+      navigate("/upload", { replace: true });
+    }
+    //       else {
+    // //   navigator("/dashboard", { replace: true });
+    // <Navigate to="/dashboard"  />
+    // }
 
         setLoading(false);
     };

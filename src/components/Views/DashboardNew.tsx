@@ -57,7 +57,7 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
   }, []);
 
   const InactiveList = async (data: any) => {
-    debugger
+    
     try {
       setLoading(true);
 
