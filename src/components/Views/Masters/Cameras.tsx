@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Camera, Nvr, Section } from "../../../types";
 import Swal from "sweetalert2";
 import { CommonHelper } from "../../../helper/helper";
-import { Edit, Plus, Trash2 } from "lucide-react";
+import { Edit, Plus, Save, Trash2, XCircle } from "lucide-react";
 import "flatpickr/dist/flatpickr.css";
 import Flatpickr from "react-flatpickr";
 import moment from "moment";
@@ -31,6 +31,21 @@ const Cameras = () => {
   const [errors, setErrors] = useState({
     ip_address: "",
     port: "",
+  });
+
+       const [searchText, setSearchText] = useState("");
+  
+      const filterData = cameras.filter((cam: any) => {
+    const text = searchText.toLowerCase();
+  
+    return (
+      cam.asset_no?.toLowerCase().includes(text) ||
+      cam.model_name?.toLowerCase().includes(text) ||
+      cam.ip_address?.toLowerCase().includes(text) ||
+      cam.location_name?.toLowerCase().includes(text) ||
+      cam.floor_name?.toLowerCase().includes(text) ||
+      cam.block_name?.toLowerCase().includes(text)
+    );
   });
 
   useEffect(() => {
@@ -232,7 +247,8 @@ const Cameras = () => {
           <h2 className="text-2xl font-bold text-gray-900">Camera Master</h2>
           <p className="text-gray-600">Manage Cameras in the organisation</p>
         </div>
-        <button
+        <div className="flex gap-2">
+            <button
           onClick={() => {
             resetForm();
             setShowModal(true);
@@ -242,6 +258,16 @@ const Cameras = () => {
           <Plus size={20} />
           Add Camera
         </button>
+         <input
+    type="text"
+    placeholder="Search..."
+    className="px-3 py-2 border rounded-lg focus:ring focus:ring-purple-300 text-black"
+    
+    value={searchText}
+    onChange={(e) => setSearchText(e.target.value)}
+  />
+        </div>
+
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -282,7 +308,7 @@ const Cameras = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {cameras.map((n) => (
+              {filterData.map((n) => (
                 <tr key={n.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     {/* <div className="flex items-center">
@@ -688,14 +714,16 @@ const Cameras = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors flex gap-2"
                 >
+                  <XCircle/>
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors flex gap-2"
                 >
+                  <Save/>
                   {editingCamera ? "Update" : "Create"} Camera
                 </button>
               </div>

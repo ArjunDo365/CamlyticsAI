@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AppSetting } from "../../../types";
-import { Edit } from "lucide-react";
+import { Edit, Save, XCircle } from "lucide-react";
 import { CommonHelper } from "../../../helper/helper";
 
 const AppSettings = () => {
@@ -12,6 +12,17 @@ const AppSettings = () => {
     keyname: "",
     keyvalue: "",
   });
+
+   const [searchText, setSearchText] = useState("");
+      const filterData = AppSettings.filter((app: any) => {
+    const text = searchText.toLowerCase();
+  
+    return (
+      app.keyname?.toLowerCase().includes(text) ||
+      app.keyvalue?.toLowerCase().includes(text) 
+  
+    );
+  });  
 
   useEffect(() => {
     loadData();
@@ -90,8 +101,19 @@ const AppSettings = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">AppSetting Master</h2>
-          <p className="text-gray-600">Manage AppSettings in the organisation</p>
+          <h2 className="text-2xl font-bold text-gray-900">App Settings</h2>
+          <p className="text-gray-600">Manage App Settings in the organisation</p>
+        </div>
+         <div className="flex gap-2">
+           
+          <input
+    type="text"
+    placeholder="Search..."
+    className="px-3 py-2 border rounded-lg focus:ring focus:ring-purple-300 text-black"
+    
+    value={searchText}
+    onChange={(e) => setSearchText(e.target.value)}
+  />
         </div>
       </div>
 
@@ -106,7 +128,7 @@ const AppSettings = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {AppSettings.map((AppSetting) => (
+              {filterData.map((AppSetting) => (
                 <tr key={AppSetting.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -176,15 +198,17 @@ const AppSettings = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors flex gap-2"
                 >
+                  <XCircle/>
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors flex gap-2"
                 >
-                  Update AppSetting
+                  <Save/>
+                  Update App Setting
                 </button>
               </div>
             </form>

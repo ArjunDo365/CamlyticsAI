@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Block } from "../../../types";
-import { Edit, Plus, Trash2 } from "lucide-react";
+import { Edit, Plus, Save, Trash2, XCircle, XIcon } from "lucide-react";
 import Swal from "sweetalert2";
 import { CommonHelper } from "../../../helper/helper";
 
@@ -14,6 +14,17 @@ const Blocks = () => {
     description: "",
     display_order: 0,
   });
+
+   const [searchText, setSearchText] = useState("");
+    const filterData = blocks.filter((block: any) => {
+  const text = searchText.toLowerCase();
+
+  return (
+    block.name?.toLowerCase().includes(text) ||
+    block.description?.toLowerCase().includes(text) 
+
+  );
+});  
 
   useEffect(() => {
     loadData();
@@ -137,7 +148,9 @@ const Blocks = () => {
           <h2 className="text-2xl font-bold text-gray-900">Block Master</h2>
           <p className="text-gray-600">Manage Blocks in the organisation</p>
         </div>
-        <button
+
+        <div className="flex gap-2">
+            <button
           onClick={() => {
             resetForm();
             setShowModal(true);
@@ -147,6 +160,16 @@ const Blocks = () => {
           <Plus size={20} />
           Add Block
         </button>
+          <input
+    type="text"
+    placeholder="Search..."
+    className="px-3 py-2 border rounded-lg focus:ring focus:ring-purple-300 text-black"
+    
+    value={searchText}
+    onChange={(e) => setSearchText(e.target.value)}
+  />
+        </div>
+
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -169,7 +192,7 @@ const Blocks = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {blocks.map((block) => (
+              {filterData.map((block) => (
                 <tr key={block.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -284,14 +307,16 @@ const Blocks = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors flex gap-2"
                 >
+                 <XCircle/>
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors"
-                >
+                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors flex gap-2"
+                > 
+                  <Save/>
                   {editingBlock ? "Update" : "Create"} Block
                 </button>
               </div>

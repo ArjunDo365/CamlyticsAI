@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Nvr, Section } from "../../../types";
-import { Edit, Plus, Trash2 } from "lucide-react";
+import { Edit, Plus, Save, Trash2, XCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import { CommonHelper } from "../../../helper/helper";
 import "flatpickr/dist/flatpickr.css";
@@ -28,6 +28,20 @@ const NVR = () => {
   const [errors, setErrors] = useState({
     ip_address: "",
   });
+     const [searchText, setSearchText] = useState("");
+
+    const filterData = nvrs.filter((nvr: any) => {
+  const text = searchText.toLowerCase();
+
+  return (
+    nvr.asset_no?.toLowerCase().includes(text) ||
+    nvr.model_name?.toLowerCase().includes(text) ||
+    nvr.ip_address?.toLowerCase().includes(text) ||
+    nvr.location_name?.toLowerCase().includes(text) ||
+    nvr.floor_name?.toLowerCase().includes(text) ||
+    nvr.block_name?.toLowerCase().includes(text)
+  );
+});
 
   useEffect(() => {
     loadData();
@@ -206,7 +220,9 @@ const NVR = () => {
           <h2 className="text-2xl font-bold text-gray-900">NVR Master</h2>
           <p className="text-gray-600">Manage NVRs in the organisation</p>
         </div>
-        <button
+
+        <div className="flex gap-2">
+          <button
           onClick={() => {
             resetForm();
             setShowModal(true);
@@ -216,6 +232,16 @@ const NVR = () => {
           <Plus size={20} />
           Add NVR
         </button>
+           <input
+    type="text"
+    placeholder="Search..."
+    className="px-3 py-2 border rounded-lg focus:ring focus:ring-purple-300 text-black"
+    
+    value={searchText}
+    onChange={(e) => setSearchText(e.target.value)}
+  />
+        </div>
+        
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -256,7 +282,7 @@ const NVR = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {nvrs.map((n) => (
+              {filterData.map((n) => (
                 <tr key={n.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     {/* <div className="flex items-center">
@@ -605,14 +631,16 @@ const NVR = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-200 bg-black hover:bg-black rounded-lg transition-colors flex gap-2"
                 >
+                  <XCircle/>
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors flex gap-2"
                 >
+                  <Save/>
                   {editingNvr ? "Update" : "Create"} NVR
                 </button>
               </div>

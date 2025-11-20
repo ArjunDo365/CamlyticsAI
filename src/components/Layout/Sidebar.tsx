@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           { id: "nvr", label: "NVR", icon: Router },
           { id: "cameras", label: "Cameras", icon: Cctv },
           // { id: "employees", label: "Employees", icon: UserCheck },
-          { id: "appsetting", label: "App Setting", icon: Settings },
+          { id: "appsetting", label: "App Settings", icon: Settings },
         ]
       : []),
   ];

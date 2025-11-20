@@ -216,7 +216,7 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
         </div>
         <div>
           <button
-            className="flex gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-800 transition"
+            className="flex gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition"
             onClick={() => Manualping()}
           >
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M480-480Zm0 360q-18 0-34.5-6.5T416-146L148-415q-35-35-51.5-80T80-589q0-103 67-177t167-74q48 0 90.5 19t75.5 53q32-34 74.5-53t90.5-19q100 0 167.5 74T880-590q0 49-17 94t-51 80L543-146q-13 13-29 19.5t-34 6.5Zm40-520q10 0 19 5t14 13l68 102h166q7-17 10.5-34.5T801-590q-2-69-46-118.5T645-758q-31 0-59.5 12T536-711l-27 29q-5 6-13 9.5t-16 3.5q-8 0-16-3.5t-14-9.5l-27-29q-21-23-49-36t-60-13q-66 0-110 50.5T160-590q0 18 3 35.5t10 34.5h187q10 0 19 5t14 13l35 52 54-162q4-12 14.5-20t23.5-8Zm12 130-54 162q-4 12-15 20t-24 8q-10 0-19-5t-14-13l-68-102H236l237 237q2 2 3.5 2.5t3.5.5q2 0 3.5-.5t3.5-2.5l236-237H600q-10 0-19-5t-15-13l-34-52Z" /></svg>
@@ -252,11 +252,11 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
                     <div className="flex justify-end mb-3">
                       {Number(Dashboard?.inactive_nvrs) > 0 && (
                         <button
-                          className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
+                          className="flex gap-2 px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-700 transition"
                           onClick={() => InactiveList("nvrs")}
                         >
                           <DownloadIcon />
-                          Not Working Download
+                          Download Not Working NVR 
                         </button>
                       )}
                     </div>
@@ -315,11 +315,11 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
                     {Number(Dashboard?.inactive_cameras
                     ) > 0 && (
                         <button
-                          className="flex gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-700 transition"
+                          className="flex gap-2 px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-700 transition"
                           onClick={() => InactiveList("cameras")}
                         >
                           <DownloadIcon />
-                          Not Working Download
+                          Download Not Working Camera
                         </button>
                       )}
                   </div>
@@ -383,12 +383,12 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
               <div className="active pt-5">
                <div className="flex justify-between mb-4">
   <h2 className="text-2xl font-semibold text-gray-800 dark:text-black">
-    NVRS List
+    NVR List
   </h2>
 
   <input
     type="text"
-    placeholder="Search NVR..."
+    placeholder="Search..."
     className="px-3 py-2 border rounded-lg focus:ring focus:ring-purple-300 text-black"
     
     value={searchText}
@@ -530,7 +530,7 @@ const filteredCameras = Last10Cameras.filter((cam: any) => {
 
   <input
     type="text"
-    placeholder="Search Camera..."
+    placeholder="Search..."
     className="px-3 py-2 border rounded-lg focus:ring focus:ring-purple-300 text-black"
     value={cameraSearchText}
     onChange={(e) => setCameraSearchText(e.target.value)}
