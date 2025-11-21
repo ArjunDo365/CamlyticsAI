@@ -92,7 +92,7 @@ const Header: React.FC<HeaderProps> = ({ title, onToggleSidebar }) => {
             </div>
             <div className="hidden sm:block">
               <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.name}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{user?.role_name}</p>
+              {/* <p className="text-xs text-gray-500 dark:text-gray-400">{user?.role_name}</p> */}
             </div>
           </div>
         </div>
