@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 
 const LoginForm: React.FC = () => {
     const [formData, setFormData] = useState({
-        email: 'admin@camlytx.ai',
+        email: 'admin@camlytix.ai',
         password: 'Login@123'
     });
       const navigate = useNavigate();
@@ -30,7 +30,7 @@ const LoginForm: React.FC = () => {
             setError('Invalid email or password');
         }
          else {
-      navigate("/upload", { replace: true });
+      navigate("/dashboard", { replace: true });
     }
     //       else {
     // //   navigator("/dashboard", { replace: true });
@@ -125,7 +125,7 @@ const LoginForm: React.FC = () => {
 
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                     <p className="text-sm text-gray-600 font-medium mb-2">Demo Credentials:</p>
-                    <p className="text-xs text-gray-500">Email: admin@camlytx.ai</p>
+                    <p className="text-xs text-gray-500">Email: admin@camlytix.ai</p>
                     <p className="text-xs text-gray-500">Password: Login@123</p>
                 </div>
             </div>

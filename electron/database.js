@@ -262,13 +262,13 @@ const usersToInsert = [];
 // Insert S Admin user if missing
 if (!existingEmails.includes('do365@camlytix.ai')) {
   const hashedPassword = bcrypt.hashSync("Ex10sion!#$.", 10);
-  usersToInsert.push([1, "S Admin", "do365@camlytx.ai", hashedPassword]);
+  usersToInsert.push([1, "S Admin", "do365@camlytix.ai", hashedPassword]);
 }
 
 // Insert Admin user if missing
 if (!existingEmails.includes('admin@camlytix.ai')) {
   const adminpass = bcrypt.hashSync("Login@123", 10);
-  usersToInsert.push([2, "Admin", "admin@camlytx.ai", adminpass]);
+  usersToInsert.push([2, "Admin", "admin@camlytix.ai", adminpass]);
 }
 
 // Insert missing users
