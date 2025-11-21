@@ -43,7 +43,6 @@ const Active: React.FC<ActiveProps> = ({ id }) => {
   // Submit Handler
   // ----------------------------------------
   const handleSubmit = async (e: React.FormEvent) => {
-    
     e.preventDefault();
     setError("");
     setLoading(true);

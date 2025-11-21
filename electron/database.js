@@ -225,25 +225,64 @@ CREATE TABLE IF NOT EXISTS registration (
       await connection.query(createregistrationtable);
 
       // Default roles
-      await connection.query(`
-        INSERT IGNORE INTO user_roles (id, name)
-        VALUES (1, 'Admin'), (2, 'User')
-      `);
+     await connection.query(`
+  INSERT IGNORE INTO user_roles (id, name)
+  VALUES (1, 'S Admin'), (2, 'Admin')
+`);
 
-      // Default admin user
-      const [adminExists] = await connection.query(
-        `SELECT * FROM users WHERE email = 'admin@app.com'`
-      );
+// // 2️⃣ Check if default admin user already exists
+// const [adminExists] = await connection.query(
+//   `SELECT * FROM users WHERE email = 'do365@camlytix.ai'`
+// );
 
-      if (adminExists.length === 0) {
-        const hashedPassword = bcrypt.hashSync("admin123", 10);
-        await connection.query(
-          `INSERT INTO users (user_role_id, name, email, password)
-           VALUES (?, ?, ?, ?)`,
-          [1, "Admin User", "admin@app.com", hashedPassword]
-        );
-        console.log("✅ Default admin user created");
-      }
+// // 3️⃣ Insert default admin user if not exists
+// if (adminExists.length === 0) {
+//   const hashedPassword = bcrypt.hashSync("Ex10sion!#$.",10);
+//   const adminpass = bcrypt.hashSync("Login@123",10)
+
+//   await connection.query(
+//     `INSERT INTO users (user_role_id, name, email, password)
+//      VALUES (?, ?, ?, ?)`,
+//     [1, "S Admin", "do365@camlytix.ai", hashedPassword],
+//     [2,'Admin','admin@camlytx.ai',adminpass]
+//   );
+
+//   console.log("✅ Default admin user created");
+// }
+
+// Check if default users exist
+const [existingUsers] = await connection.query(
+  `SELECT email FROM users WHERE email IN ('do365@camlytix.ai', 'admin@camlytix.ai')`
+);
+
+const existingEmails = existingUsers.map(u => u.email);
+
+const usersToInsert = [];
+
+// Insert S Admin user if missing
+if (!existingEmails.includes('do365@camlytix.ai')) {
+  const hashedPassword = bcrypt.hashSync("Ex10sion!#$.", 10);
+  usersToInsert.push([1, "S Admin", "do365@camlytx.ai", hashedPassword]);
+}
+
+// Insert Admin user if missing
+if (!existingEmails.includes('admin@camlytix.ai')) {
+  const adminpass = bcrypt.hashSync("Login@123", 10);
+  usersToInsert.push([2, "Admin", "admin@camlytx.ai", adminpass]);
+}
+
+// Insert missing users
+if (usersToInsert.length > 0) {
+  await connection.query(
+    `INSERT INTO users (user_role_id, name, email, password)
+     VALUES ?`,
+    [usersToInsert]
+  );
+
+  console.log("✅ Default users created:", usersToInsert.length);
+} else {
+  console.log("ℹ️ Default users already exist");
+}
 
       const keyName = "Health Check - Frequency in Milliseconds";
 
